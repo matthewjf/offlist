@@ -2,12 +2,15 @@
 
 * `App`
   * `SearchIndex`
-  * `NotebooksIndex`
-    * `NotebookIndexItem`
-  * `NotebookForm`
-  * `NotesIndex`
-    * `NoteForm`
-    * `NoteIndexItem`
-  * `NoteDetail`
-    * `NoteTags`
-    * `NoteEditArea`
+  * `ProductsIndex`
+    * `ProductIndexItem`
+  * `ProductForm`
+  * `ProductShow`
+    * `OfferForm`
+  * `Account`
+      * `OfferIndex`
+        * `OfferIndexItem`
+          * `OfferDecision`
+      * `FeedbackIndex`
+        * `FeedbackIndexItem`
+      * `AccountDetails`

@@ -2,43 +2,43 @@
 
 ## Rails
 ### Models
-* Notebook
+* Offer
 * Tag
 * Tagging
 
 ### Controllers
-* Api::NotebooksController (create, destroy, index, show, update)
+* Api::OffersController (create, destroy, index, show, update)
 
 ### Views
-* notebooks/index.json.jbuilder
-* notebooks/show.json.jbuilder
+* offers/index.json.jbuilder
+* offers/show.json.jbuilder
 * tags/show.json.jbuilder
 
 ## Flux
 ### Views (React Components)
-* NotebooksIndex
-  - NotebookIndexItem
-* NotebookForm
+* OffersIndex
+  - OFferIndexItem
+* OfferForm
 * SearchIndex
 
 ### Stores
-* Notebook
+* Offer
 
 ### Actions
-* ApiActions.receiveAllNotebooks -> triggered by ApiUtil
-* ApiActions.receiveSingleNotebook
-* ApiActions.deleteNotebook
-* NotebookActions.fetchAllNotebooks -> triggers ApiUtil
-* NotebookActions.fetchSingleNotebook
-* NotebookActions.createNotebook
-* NotebookActions.editNotebook
-* NotebookActions.destroyNotebook
+* ApiActions.receiveAllOffers -> triggered by ApiUtil
+* ApiActions.receiveSingleOffers
+* ApiActions.deleteOffer
+* NotebookActions.fetchAllOffers -> triggers ApiUtil
+* NotebookActions.fetchSingleOffers
+* NotebookActions.createOffer
+* NotebookActions.editOffer
+* NotebookActions.destroyOffer
 
 ### ApiUtil
-* ApiUtil.fetchAllNotebooks
-* ApiUtil.fetchSingleNotebook
-* ApiUtil.createNotebook
-* ApiUtil.editNotebook
-* ApiUtil.destroyNotebook
+* ApiUtil.fetchAllOffer
+* ApiUtil.fetchSingleOffer
+* ApiUtil.createOffer
+* ApiUtil.editOffer
+* ApiUtil.destroyOffer
 
 ## Gems/Libraries

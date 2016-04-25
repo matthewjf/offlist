@@ -12,108 +12,108 @@ because once you start implementing your flux loops, that's precisely
 what you'll need to do.
 
 
-## Note Cycles
+## Product Cycles
 
-### Notes API Request Actions
+### Products API Request Actions
 
-* `fetchAllNotes`
-  0. invoked from `NotesIndex` `didMount`/`willReceiveProps`
-  0. `GET /api/notes` is called.
-  0. `receiveAllNotes` is set as the callback.
+* `fetchProducts`
+  0. invoked from `ProductsIndex` `didMount`/`willReceiveProps`
+  0. `GET /api/products` is called.
+  0. `receiveProducts` is set as the callback.
 
-* `createNote`
+* `createProduct`
   0. invoked from new note button `onClick`
-  0. `POST /api/notes` is called.
-  0. `receiveSingleNote` is set as the callback.
+  0. `POST /api/products` is called.
+  0. `receiveSingleProduct` is set as the callback.
 
-* `fetchSingleNote`
-  0. invoked from `NoteDetail` `didMount`/`willReceiveProps`
+* `fetchSingleProduct`
+  0. invoked from `ProductDetail` `didMount`/`willReceiveProps`
   0. `GET /api/notes/:id` is called.
-  0. `receiveSingleNote` is set as the callback.
+  0. `receiveSingleProduct` is set as the callback.
 
-* `updateNote`
-  0. invoked from `NoteForm` `onSubmit`
-  0. `POST /api/notes` is called.
-  0. `receiveSingleNote` is set as the callback.
+* `updateProduct`
+  0. invoked from `productForm` `onSubmit`
+  0. `POST /api/products` is called.
+  0. `receiveSingleProduct` is set as the callback.
 
-* `destroyNote`
+* `destroyProduct`
   0. invoked from delete note button `onClick`
-  0. `DELETE /api/notes/:id` is called.
-  0. `removeNote` is set as the callback.
+  0. `DELETE /api/products/:id` is called.
+  0. `removeProduct` is set as the callback.
 
-### Notes API Response Actions
+### Products API Response Actions
 
-* `receiveAllNotes`
+* `receiveAll`
   0. invoked from an API callback.
-  0. `Note` store updates `_notes` and emits change.
+  0. `Product` store updates `_products` and emits change.
 
-* `receiveSingleNote`
+* `receiveSingleProduct`
   0. invoked from an API callback.
-  0. `Note` store updates `_notes[id]` and emits change.
+  0. `Product` store updates `_products[id]` and emits change.
 
-* `removeNote`
+* `removeProduct`
   0. invoked from an API callback.
-  0. `Note` store removes `_notes[id]` and emits change.
+  0. `Product` store removes `_products[id]` and emits change.
 
 ### Store Listeners
 
-* `NotesIndex` component listens to `Note` store.
-* `NoteDetail` component listens to `Note` store.
+* `ProductsIndex` component listens to `Product` store.
+* `ProductDetail` component listens to `Product` store.
 
 
-## Notebook Cycles
+## Offer Cycles
 
-### Notebooks API Request Actions
+### Offer API Request Actions
 
-* `fetchAllNotebooks`
-  0. invoked from `NotebooksIndex` `didMount`/`willReceiveProps`
-  0. `GET /api/notebooks` is called.
-  0. `receiveAllNotebooks` is set as the callback.
+* `fetchAllOffers`
+  0. invoked from `OfferIndex` `didMount`/`willReceiveProps`
+  0. `GET /api/offers` is called.
+  0. `receiveAllOffers` is set as the callback.
 
-* `createNotebook`
-  0. invoked from new notebook button `onClick`
-  0. `POST /api/notebooks` is called.
-  0. `receiveSingleNotebook` is set as the callback.
+* `createOffer`
+  0. invoked from new offer button `onClick`
+  0. `POST /api/offers` is called.
+  0. `receiveSingleOffer` is set as the callback.
 
-* `fetchSingleNotebook`
-  0. invoked from `NotebookDetail` `didMount`/`willReceiveProps`
-  0. `GET /api/notebooks/:id` is called.
-  0. `receiveSingleNotebook` is set as the callback.
+* `fetchSingleOffer`
+  0. invoked from `OfferDetail` `didMount`/`willReceiveProps`
+  0. `GET /api/offers/:id` is called.
+  0. `receiveSingleOffer` is set as the callback.
 
-* `updateNotebook`
-  0. invoked from `NotebookForm` `onSubmit`
-  0. `POST /api/notebooks` is called.
-  0. `receiveSingleNotebook` is set as the callback.
+* `updateOffer`
+  0. invoked from `OfferForm` `onSubmit`
+  0. `POST /api/offers` is called.
+  0. `receiveSingleOffer` is set as the callback.
 
-* `destroyNotebook`
+* `destroyOffer`
   0. invoked from delete notebook button `onClick`
-  0. `DELETE /api/notebooks/:id` is called.
-  0. `removeNotebook` is set as the callback.
+  0. `DELETE /api/offers/:id` is called.
+  0. `removeOffer` is set as the callback.
 
-### Notebooks API Response Actions
+### Offers API Response Actions
 
-* `receiveAllNotebooks`
+* `receiveAllOffers`
   0. invoked from an API callback.
-  0. `Notebook` store updates `_notebooks` and emits change.
+  0. `Offer` store updates `_offers` and emits change.
 
-* `receiveSingleNotebook`
+* `receiveSingleOffer`
   0. invoked from an API callback.
-  0. `Notebook` store updates `_notebooks[id]` and emits change.
+  0. `Offer` store updates `_offers[id]` and emits change.
 
-* `removeNotebook`
+* `removeOffer`
   0. invoked from an API callback.
-  0. `Notebook` store removes `_notebooks[id]` and emits change.
+  0. `Offer` store removes `_offers[id]` and emits change.
 
 ### Store Listeners
 
-* `NotebooksIndex` component listens to `Notebook` store.
+* `OffersIndex` component listens to `Offer` store.
 
 
 ## SearchSuggestion Cycles
 
 * `fetchSearchSuggestions`
-  0. invoked from `NoteSearchBar` `onChange` when there is text
-  0. `GET /api/notes` is called with `text` param.
+  0. invoked from `ProductSearchBar` `onChange` when there is text
+  0. `GET /api/products` is called with `text` param.
   0. `receiveSearchSuggestions` is set as the callback.
 
 * `receiveSearchSuggestions`
@@ -121,7 +121,7 @@ what you'll need to do.
   0. `SearchSuggestion` store updates `_suggestions` and emits change.
 
 * `removeSearchSuggestions`
-  0. invoked from `NoteSearchBar` `onChange` when empty
+  0. invoked from `ProductSearchBar` `onChange` when empty
   0. `SearchSuggestion` store resets `_suggestions` and emits change.
 
 ### Store Listeners

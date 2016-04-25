@@ -9,30 +9,30 @@
 
 ## Flux
 ### Views (React Components)
-* NotesIndex
-  - NotesIndexItem
-* NoteForm
+* ProductsIndex
+  - ProductsIndexItem
+* ProductForm
 
 ### Stores
-* Note
+* Product
 
 ### Actions
-* ApiActions.receiveAllNotes -> triggered by ApiUtil
-* ApiActions.receiveSingleNote
-* ApiActions.deleteNote
-* NoteActions.fetchAllNotes -> triggers ApiUtil
-* NoteActions.fetchSingleNote 
-* NoteActions.createNote
-* NoteActions.editNote 
-* NoteActions.destroyNote
+* ApiActions.receiveAllProducts -> triggered by ApiUtil
+* ApiActions.receiveSingleProduct
+* ApiActions.deleteProduct
+* ProductActions.fetchAllProducts -> triggers ApiUtil
+* ProductActions.fetchSingleProduct
+* ProductActions.createProduct
+* ProductActions.editProduct
+* ProductActions.destroyProduct
 
 ### ApiUtil
-* ApiUtil.fetchAllNotes
-* ApiUtil.fetchSingleNote
-* ApiUtil.createNote
-* ApiUtil.editNote
-* ApiUtil.destroyNote
+* ApiUtil.fetchAllProducts
+* ApiUtil.fetchSingleProduct
+* ApiUtil.createProduct
+* ApiUtil.editProduct
+* ApiUtil.destroyProduct
 
 ## Gems/Libraries
 * Flux Dispatcher (npm)
-* Twitter Bootstrap
+* Material-Sass

@@ -1,22 +1,22 @@
 # View Wireframes
 
-## New User
-![new-user]
+## ProductIndex
+![product-index]
 
-## New Session
-![new-session]
+## ProductDetail
+![product-detail]
 
-## NotesIndex / NoteIndexItem / NoteForm
-![notes]
+## ProductForm
+![product-form]
 
-## NotebooksIndex / NotebookIndexItem
-![notebooks]
+## OfferIndex
+![offer-index]
 
-## NotebookForm
-![notebook-form]
+## OfferForm
+![offer-form]
 
-[new-user]: ./wireframes/new_user.png
-[new-session]: ./wireframes/new_session.png
-[notes]: ./wireframes/root_notes.png
-[notebooks]: ./wireframes/root_notebooks.png
-[notebook-form]: ./wireframes/notebook_form.png
+[product-index]: ./wireframes/product_index.png
+[product-detail]: ./wireframes/product_detail.png
+[product-form]: ./wireframes/product_form.png
+[offer-index]: ./wireframes/offer_index.png
+[offer-form]: ./wireframes/offer_form.png
