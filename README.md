@@ -45,35 +45,35 @@ progress. Put an x between the brackets for a checkmark: [x] -->
 
 **Objective:** Functioning rails project with Authentication
 
-- [ ] create new project
-- [ ] create `User` model
-- [ ] authentication
-- [ ] user signup/signin pages
-- [ ] blank landing page after signin
+- [x] create new project
+- [x] create `User` model
+- [x] authentication
+- [x] user signup/signin pages
+- [x] blank landing page after signin
 
 ### Phase 2: Product Model, API, and basic APIUtil (1.5 days)
 
 **Objective:** Products can be created, read, edited and destroyed through
 the API.
 
-- [ ] create `Product` model
-- [ ] seed the database with a small amount of test data
-- [ ] CRUD API for products (`ProductsController`)
+- [x] create `Product` model
+- [x] seed the database with a small amount of test data
+- [x] CRUD API for products (`ProductsController`)
 - [ ] jBuilder views for products
-- [ ] setup Webpack & Flux scaffold
-- [ ] setup `APIUtil` to interact with the API
-- [ ] test out API interaction in the console.
+- [x] setup Webpack & Flux scaffold
+- [x] setup `APIUtil` to interact with the API
+- [x] test out API interaction in the console.
 
 ### Phase 3: Flux Architecture and Router (1 day)
 
 **Objective:** Products can be created, read, edited and destroyed with the
 user interface.
 
-- [ ] setup the flux loop with skeleton files
-- [ ] setup React Router
+- [x] setup the flux loop with skeleton files
+- [x] setup React Router
 - implement each product component, building out the flux loop as needed.
-  - [ ] `ProductIndex`
-  - [ ] `ProductIndexItem`
+  - [x] `ProductIndex`
+  - [x] `ProductIndexItem`
   - [ ] `ProductForm`
   - [ ] `ProductDetail`
 - [ ] save Products to the DB when the form loses focus or is left idle
@@ -83,9 +83,9 @@ user interface.
 
 **Objective:** Existing pages (including singup/signin) will look good.
 
-- [ ] create a basic style guide
-- [ ] position elements on the page
-- [ ] add basic colors & styles
+- [x] create a basic style guide
+- [x] position elements on the page
+- [x] add basic colors & styles
 
 ### Phase 5: Location (1 day)
 
