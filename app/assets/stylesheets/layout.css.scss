@@ -1,0 +1,62 @@
+$primary-color: #f45434;
+
+/* fonts */
+html {
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* sticky footer */
+
+#app {
+ display: flex;
+ min-height: 100vh;
+ flex-direction: column;
+}
+
+main {
+ flex: 1 0 auto;
+}
+
+/* logo */
+
+#logo {
+ max-height: 50px;
+}
+
+.brand-logo {
+ color: $primary-color !important;
+ display: flex !important;
+ vertical-align: middle;
+ font-family: 'Raleway', sans-serif;
+}
+
+/* links */
+
+nav li a {
+ color: color('grey', 'darken-1');
+}
+nav .material-icons {
+  color: $primary-color !important;
+}
+
+/* footer */
+
+.page-footer {
+  .row {
+    margin-bottom: 0;
+  }
+}
+
+footer.page-footer {
+  margin-top: 0;
+  padding: 0 20px;
+}
+
+/* helpers */
+
+.truncate {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

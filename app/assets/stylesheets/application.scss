@@ -13,3 +13,9 @@
  *= require_tree .
  *= require_self
  */
+ @import "materialize/components/color";
+ $primary-color: #f45434 !default;
+ @import 'materialize';
+ @import 'layout';
+ @import 'products';
+ @import 'test';
