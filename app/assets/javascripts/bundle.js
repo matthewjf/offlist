@@ -33230,8 +33230,23 @@
 			this.setState({ password: e.target.value });
 		},
 	
-		setForm: function (e) {
-			this.setState({ form: e.target.value });
+		toggleForm: function (e) {
+			var self = this;
+			e.preventDefault();
+	
+			$('#login-modal').closeModal();
+	
+			setTimeout(function () {
+				if (self.state.form === 'login') self.setState({ form: 'signup' });else self.setState({ form: 'login' });
+	
+				$('#login-modal').openModal();
+			}, 300);
+		},
+	
+		cancelForm: function (e) {
+			e.preventDefault();
+			$('#login-modal').closeModal();
+			this.resetState();
 		},
 	
 		handleSubmit: function (e) {
@@ -33313,7 +33328,11 @@
 						React.createElement(
 							"div",
 							{ className: "input-field col s12" },
-							React.createElement("input", { type: "text", value: this.state.username, onChange: this.setUsername, id: "username" }),
+							React.createElement("input", {
+								type: "text",
+								value: this.state.username,
+								onChange: this.setUsername,
+								id: "username" }),
 							React.createElement(
 								"label",
 								{ "for": "username" },
@@ -33327,7 +33346,11 @@
 						React.createElement(
 							"div",
 							{ className: "input-field col s12" },
-							React.createElement("input", { id: "password", type: "password", value: this.state.password, onChange: this.setPassword }),
+							React.createElement("input", {
+								id: "password",
+								type: "password",
+								value: this.state.password,
+								onChange: this.setPassword }),
 							React.createElement(
 								"label",
 								{ "for": "password" },
@@ -33337,11 +33360,29 @@
 					)
 				),
 				React.createElement(
+					"button",
+					{
+						className: "waves-effect waves-light btn-flat left",
+						onClick: this.toggleForm },
+					this.altText()
+				),
+				React.createElement(
 					"p",
 					{ className: "right-align" },
 					React.createElement(
 						"button",
-						{ type: "Submit", name: "action", value: "Submit", className: "waves-effect waves-light btn" },
+						{
+							className: "waves-effect waves-light btn-flat",
+							onClick: this.cancelForm },
+						"cancel"
+					),
+					React.createElement(
+						"button",
+						{
+							type: "Submit",
+							name: "action",
+							value: "Submit",
+							className: "waves-effect waves-light btn" },
 						this.formText()
 					)
 				)
@@ -33350,6 +33391,10 @@
 	
 		formText: function () {
 			return this.state.form === 'login' ? 'Log In' : 'Sign Up';
+		},
+	
+		altText: function () {
+			return this.state.form === 'login' ? 'Sign Up' : 'Log In';
 		},
 	
 		openLogin: function () {
