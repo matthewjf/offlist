@@ -54,8 +54,9 @@
 	
 	var Search = __webpack_require__(225),
 	    Header = __webpack_require__(259),
-	    Footer = __webpack_require__(260),
-	    LoginForm = __webpack_require__(261);
+	    Footer = __webpack_require__(265),
+	    LoginForm = __webpack_require__(266),
+	    SignupForm = __webpack_require__(267);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -69,6 +70,7 @@
 	        'main',
 	        null,
 	        React.createElement(LoginForm, null),
+	        React.createElement(SignupForm, null),
 	        this.props.children
 	      )
 	    );
@@ -32969,8 +32971,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var UserActions = __webpack_require__(262);
-	var CurrentUserState = __webpack_require__(266);
+	var UserActions = __webpack_require__(260);
+	var CurrentUserState = __webpack_require__(264);
 	
 	module.exports = React.createClass({
 	  displayName: "exports",
@@ -32984,6 +32986,10 @@
 	
 	  openLogin: function () {
 	    $('#login-modal').openModal();
+	  },
+	
+	  openSignup: function () {
+	    $('#signup-modal').openModal();
 	  },
 	
 	  notLoggedIn: function () {
@@ -33019,7 +33025,7 @@
 	        null,
 	        React.createElement(
 	          "a",
-	          null,
+	          { onClick: this.openSignup, className: "modal-trigger" },
 	          "Sign Up"
 	        )
 	      ),
@@ -33068,7 +33074,7 @@
 	        null,
 	        React.createElement(
 	          "a",
-	          { href: "#" },
+	          { onClick: this.openSignup, className: "modal-trigger" },
 	          "Sign Up"
 	        )
 	      ),
@@ -33117,9 +33123,203 @@
 	  }
 	
 	});
+	
+	$(document).ready(function () {
+	  $('.modal-trigger').leanModal();
+	});
 
 /***/ },
 /* 260 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserConstants = __webpack_require__(261);
+	var UserApiUtil = __webpack_require__(262);
+	var UserStore = __webpack_require__(263);
+	var AppDispatcher = __webpack_require__(246);
+	
+	var UserActions = {
+		fetchCurrentUser: function () {
+			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUser, UserActions.handleError);
+		},
+		signup: function (user) {
+			UserApiUtil.post({
+				url: "/api/user",
+				user: user,
+				success: UserActions.receiveCurrentUser,
+				error: UserActions.handleError
+			});
+		},
+		login: function (user) {
+			UserApiUtil.post({
+				url: "/api/session",
+				user: user,
+				success: UserActions.receiveCurrentUser,
+				error: UserActions.handleError
+			});
+		},
+		guestLogin: function () {
+			UserActions.login({ username: "guest", password: "password" });
+		},
+		receiveCurrentUser: function (user) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.LOGIN,
+				user: user
+			});
+		},
+		handleError: function (error) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.ERROR,
+				errors: error.responseJSON.errors
+			});
+		},
+		removeCurrentUser: function () {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.LOGOUT
+			});
+		},
+		logout: function () {
+			UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
+		}
+	};
+	
+	module.exports = UserActions;
+
+/***/ },
+/* 261 */
+/***/ function(module, exports) {
+
+	var UserConstants = {
+		LOGIN: "LOGIN",
+		ERROR: "ERROR",
+		LOGOUT: "LOGOUT"
+	};
+	
+	module.exports = UserConstants;
+
+/***/ },
+/* 262 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(246);
+	
+	var UserApiUtil = {
+		post: function (options) {
+			$.ajax({
+				url: options.url,
+				type: "post",
+				data: { user: options.user },
+				success: options.success,
+				error: options.error
+			});
+		},
+		logout: function (success, error) {
+			$.ajax({
+				url: '/api/session',
+				method: 'delete',
+				success: success,
+				error: error
+			});
+		},
+		fetchCurrentUser: function (success, error) {
+			$.ajax({
+				url: '/api/session',
+				method: 'get',
+				success: success,
+				error: error
+			});
+		}
+	};
+	
+	module.exports = UserApiUtil;
+
+/***/ },
+/* 263 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(246);
+	var Store = __webpack_require__(228).Store;
+	
+	var UserStore = new Store(AppDispatcher);
+	
+	var _currentUser, _errors;
+	
+	UserStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "LOGIN":
+	      UserStore.login(payload.user);
+	      break;
+	    case "LOGOUT":
+	      UserStore.logout();
+	      break;
+	    case "ERROR":
+	      UserStore.setErrors(payload.errors);
+	      break;
+	  }
+	  UserStore.__emitChange();
+	};
+	
+	UserStore.login = function (user) {
+	  _currentUser = user;
+	  _errors = null;
+	};
+	
+	UserStore.logout = function () {
+	  _currentUser = null;
+	  _errors = null;
+	};
+	
+	UserStore.currentUser = function () {
+	  if (_currentUser) {
+	    return $.extend({}, _currentUser);
+	  }
+	};
+	
+	UserStore.setErrors = function (errors) {
+	  _errors = errors;
+	};
+	
+	UserStore.errors = function () {
+	  if (_errors) {
+	    return [].slice.call(_errors);
+	  }
+	};
+	
+	module.exports = UserStore;
+
+/***/ },
+/* 264 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserStore = __webpack_require__(263);
+	var UserActions = __webpack_require__(260);
+	
+	var CurrentUserState = {
+	
+		getInitialState: function () {
+			return {
+				currentUser: UserStore.currentUser(),
+				userErrors: UserStore.errors()
+			};
+		},
+		componentDidMount: function () {
+			UserStore.addListener(this.updateUser);
+			if (typeof UserStore.currentUser() === 'undefined') {
+				UserActions.fetchCurrentUser();
+			}
+		},
+		updateUser: function () {
+			this.setState({
+				currentUser: UserStore.currentUser(),
+				userErrors: UserStore.errors()
+			});
+		}
+	
+	};
+	
+	module.exports = CurrentUserState;
+
+/***/ },
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -33206,12 +33406,12 @@
 	});
 
 /***/ },
-/* 261 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var UserActions = __webpack_require__(262);
-	var CurrentUserState = __webpack_require__(266);
+	var UserActions = __webpack_require__(260);
+	var CurrentUserState = __webpack_require__(264);
 	
 	var LoginForm = React.createClass({
 		displayName: "LoginForm",
@@ -33219,7 +33419,7 @@
 		mixins: [CurrentUserState],
 	
 		getInitialState: function () {
-			return { form: "login", username: '', password: '' };
+			return { username: '', password: '' };
 		},
 	
 		setUsername: function (e) {
@@ -33231,15 +33431,13 @@
 		},
 	
 		toggleForm: function (e) {
-			var self = this;
 			e.preventDefault();
+			this.cancelForm(e);
 	
 			$('#login-modal').closeModal();
 	
 			setTimeout(function () {
-				if (self.state.form === 'login') self.setState({ form: 'signup' });else self.setState({ form: 'login' });
-	
-				$('#login-modal').openModal();
+				$('#signup-modal').openModal();
 			}, 300);
 		},
 	
@@ -33251,7 +33449,7 @@
 	
 		handleSubmit: function (e) {
 			e.preventDefault();
-			UserActions[this.state.form]({
+			UserActions['login']({
 				username: this.state.username,
 				password: this.state.password
 			});
@@ -33265,33 +33463,6 @@
 	
 		resetState: function () {
 			this.setState({ username: '', password: '' });
-		},
-	
-		greeting: function () {
-			if (!this.state.currentUser) {
-				return;
-			}
-			return React.createElement(
-				"div",
-				null,
-				React.createElement(
-					"h2",
-					null,
-					"Hi, ",
-					this.state.currentUser.username,
-					"!"
-				),
-				React.createElement(
-					"button",
-					{
-						type: "Submit",
-						name: "action",
-						value: "Submit",
-						className: "waves-effect waves-light btn",
-						onClick: this.logout },
-					"logout"
-				)
-			);
 		},
 	
 		errors: function () {
@@ -33360,15 +33531,17 @@
 					)
 				),
 				React.createElement(
-					"button",
-					{
-						className: "waves-effect waves-light btn-flat left",
-						onClick: this.toggleForm },
-					this.altText()
-				),
-				React.createElement(
 					"p",
 					{ className: "right-align" },
+					React.createElement(
+						"button",
+						{
+							type: "submit",
+							name: "action",
+							value: "submit",
+							className: "waves-effect waves-grey btn right" },
+						"Log In"
+					),
 					React.createElement(
 						"button",
 						{
@@ -33379,22 +33552,12 @@
 					React.createElement(
 						"button",
 						{
-							type: "Submit",
-							name: "action",
-							value: "Submit",
-							className: "waves-effect waves-light btn" },
-						this.formText()
+							className: "waves-effect waves-grey btn-flat left",
+							onClick: this.toggleForm },
+						"Sign Up"
 					)
 				)
 			);
-		},
-	
-		formText: function () {
-			return this.state.form === 'login' ? 'Log In' : 'Sign Up';
-		},
-	
-		altText: function () {
-			return this.state.form === 'login' ? 'Sign Up' : 'Log In';
 		},
 	
 		openLogin: function () {
@@ -33415,7 +33578,7 @@
 						React.createElement(
 							"h4",
 							null,
-							this.formText()
+							"Log In"
 						),
 						this.errors(),
 						this.form()
@@ -33432,194 +33595,183 @@
 	module.exports = LoginForm;
 
 /***/ },
-/* 262 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var UserConstants = __webpack_require__(263);
-	var UserApiUtil = __webpack_require__(264);
-	var UserStore = __webpack_require__(265);
-	var AppDispatcher = __webpack_require__(246);
+	var React = __webpack_require__(1);
+	var UserActions = __webpack_require__(260);
+	var CurrentUserState = __webpack_require__(264);
 	
-	var UserActions = {
-		fetchCurrentUser: function () {
-			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUser, UserActions.handleError);
-		},
-		signup: function (user) {
-			UserApiUtil.post({
-				url: "/api/user",
-				user: user,
-				success: UserActions.receiveCurrentUser,
-				error: UserActions.handleError
-			});
-		},
-		login: function (user) {
-			UserApiUtil.post({
-				url: "/api/session",
-				user: user,
-				success: UserActions.receiveCurrentUser,
-				error: UserActions.handleError
-			});
-		},
-		guestLogin: function () {
-			UserActions.login({ username: "guest", password: "password" });
-		},
-		receiveCurrentUser: function (user) {
-			AppDispatcher.dispatch({
-				actionType: UserConstants.LOGIN,
-				user: user
-			});
-		},
-		handleError: function (error) {
-			AppDispatcher.dispatch({
-				actionType: UserConstants.ERROR,
-				errors: error.responseJSON.errors
-			});
-		},
-		removeCurrentUser: function () {
-			AppDispatcher.dispatch({
-				actionType: UserConstants.LOGOUT
-			});
-		},
-		logout: function () {
-			UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
-		}
-	};
+	var SignupForm = React.createClass({
+		displayName: "SignupForm",
 	
-	module.exports = UserActions;
-
-/***/ },
-/* 263 */
-/***/ function(module, exports) {
-
-	var UserConstants = {
-		LOGIN: "LOGIN",
-		ERROR: "ERROR",
-		LOGOUT: "LOGOUT"
-	};
-	
-	module.exports = UserConstants;
-
-/***/ },
-/* 264 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(246);
-	
-	var UserApiUtil = {
-		post: function (options) {
-			$.ajax({
-				url: options.url,
-				type: "post",
-				data: { user: options.user },
-				success: options.success,
-				error: options.error
-			});
-		},
-		logout: function (success, error) {
-			$.ajax({
-				url: '/api/session',
-				method: 'delete',
-				success: success,
-				error: error
-			});
-		},
-		fetchCurrentUser: function (success, error) {
-			$.ajax({
-				url: '/api/session',
-				method: 'get',
-				success: success,
-				error: error
-			});
-		}
-	};
-	
-	module.exports = UserApiUtil;
-
-/***/ },
-/* 265 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(246);
-	var Store = __webpack_require__(228).Store;
-	
-	var UserStore = new Store(AppDispatcher);
-	
-	var _currentUser, _errors;
-	
-	UserStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case "LOGIN":
-	      UserStore.login(payload.user);
-	      break;
-	    case "LOGOUT":
-	      UserStore.logout();
-	      break;
-	    case "ERROR":
-	      UserStore.setErrors(payload.errors);
-	      break;
-	  }
-	  UserStore.__emitChange();
-	};
-	
-	UserStore.login = function (user) {
-	  _currentUser = user;
-	  _errors = null;
-	};
-	
-	UserStore.logout = function () {
-	  _currentUser = null;
-	  _errors = null;
-	};
-	
-	UserStore.currentUser = function () {
-	  if (_currentUser) {
-	    return $.extend({}, _currentUser);
-	  }
-	};
-	
-	UserStore.setErrors = function (errors) {
-	  _errors = errors;
-	};
-	
-	UserStore.errors = function () {
-	  if (_errors) {
-	    return [].slice.call(_errors);
-	  }
-	};
-	
-	module.exports = UserStore;
-
-/***/ },
-/* 266 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var UserStore = __webpack_require__(265);
-	var UserActions = __webpack_require__(262);
-	
-	var CurrentUserState = {
+		mixins: [CurrentUserState],
 	
 		getInitialState: function () {
-			return {
-				currentUser: UserStore.currentUser(),
-				userErrors: UserStore.errors()
-			};
+			return { username: '', password: '' };
 		},
-		componentDidMount: function () {
-			UserStore.addListener(this.updateUser);
-			if (typeof UserStore.currentUser() === 'undefined') {
-				UserActions.fetchCurrentUser();
-			}
+	
+		setUsername: function (e) {
+			this.setState({ username: e.target.value });
 		},
-		updateUser: function () {
-			this.setState({
-				currentUser: UserStore.currentUser(),
-				userErrors: UserStore.errors()
+	
+		setPassword: function (e) {
+			this.setState({ password: e.target.value });
+		},
+	
+		toggleForm: function (e) {
+			e.preventDefault();
+			this.cancelForm(e);
+	
+			$('#signup-modal').closeModal();
+	
+			setTimeout(function () {
+				$('#login-modal').openModal();
+			}, 300);
+		},
+	
+		cancelForm: function (e) {
+			e.preventDefault();
+			$('#signup-modal').closeModal();
+			this.resetState();
+		},
+	
+		handleSubmit: function (e) {
+			e.preventDefault();
+			UserActions['signup']({
+				username: this.state.username,
+				password: this.state.password
 			});
+			this.resetState();
+		},
+	
+		resetState: function () {
+			this.setState({ username: '', password: '' });
+		},
+	
+		errors: function () {
+			if (!this.state.userErrors) {
+				return;
+			}
+			var self = this;
+			return React.createElement(
+				"ul",
+				null,
+				Object.keys(this.state.userErrors).map(function (key, i) {
+					return React.createElement(
+						"li",
+						{ key: i },
+						self.state.userErrors[key]
+					);
+				})
+			);
+		},
+	
+		form: function () {
+			if (this.state.currentUser) {
+				return;
+			}
+			return React.createElement(
+				"form",
+				{ onSubmit: this.handleSubmit },
+				React.createElement(
+					"section",
+					null,
+					React.createElement(
+						"div",
+						{ className: "row" },
+						React.createElement(
+							"div",
+							{ className: "input-field col s12" },
+							React.createElement("input", {
+								type: "text",
+								value: this.state.username,
+								onChange: this.setUsername,
+								id: "username" }),
+							React.createElement(
+								"label",
+								{ "for": "username" },
+								"Username"
+							)
+						)
+					),
+					React.createElement(
+						"div",
+						{ className: "row" },
+						React.createElement(
+							"div",
+							{ className: "input-field col s12" },
+							React.createElement("input", {
+								id: "password",
+								type: "password",
+								value: this.state.password,
+								onChange: this.setPassword }),
+							React.createElement(
+								"label",
+								{ "for": "password" },
+								"Password"
+							)
+						)
+					)
+				),
+				React.createElement(
+					"p",
+					{ className: "right-align" },
+					React.createElement(
+						"button",
+						{
+							type: "submit",
+							name: "action",
+							value: "submit",
+							className: "waves-effect waves-grey btn right" },
+						"Log In"
+					),
+					React.createElement(
+						"button",
+						{
+							className: "waves-effect waves-light btn-flat",
+							onClick: this.cancelForm },
+						"cancel"
+					),
+					React.createElement(
+						"button",
+						{
+							className: "waves-effect waves-grey btn-flat left",
+							onClick: this.toggleForm },
+						"Sign Up"
+					)
+				)
+			);
+		},
+	
+		openSignup: function () {
+			$('#signup-modal').openModal();
+		},
+	
+		render: function () {
+			return React.createElement(
+				"div",
+				{ id: "signup-form" },
+				React.createElement(
+					"div",
+					{ id: "signup-modal", className: "modal" },
+					React.createElement(
+						"div",
+						{ className: "modal-content" },
+						React.createElement(
+							"h4",
+							null,
+							"Sign Up"
+						),
+						this.errors(),
+						this.form()
+					)
+				)
+			);
 		}
+	});
 	
-	};
-	
-	module.exports = CurrentUserState;
+	module.exports = SignupForm;
 
 /***/ }
 /******/ ]);

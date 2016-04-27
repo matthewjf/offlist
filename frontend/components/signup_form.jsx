@@ -2,7 +2,7 @@ var React = require("react");
 var UserActions = require("../actions/user_actions");
 var CurrentUserState = require("../mixins/current_user_state");
 
-var LoginForm = React.createClass({
+var SignupForm = React.createClass({
 	mixins: [CurrentUserState],
 
 	getInitialState: function(){
@@ -21,33 +21,28 @@ var LoginForm = React.createClass({
 		e.preventDefault();
 		this.cancelForm(e);
 
-		$('#login-modal').closeModal();
+		$('#signup-modal').closeModal();
 
 		setTimeout(function(){
-			$('#signup-modal').openModal();
+			$('#login-modal').openModal();
 		}, 300);
 
 	},
 
 	cancelForm: function(e){
 		e.preventDefault();
-		$('#login-modal').closeModal();
+		$('#signup-modal').closeModal();
 		this.resetState();
 	},
 
 
 	handleSubmit: function(e){
 		e.preventDefault();
-		UserActions['login']({
+		UserActions['signup']({
 			username: this.state.username,
 			password: this.state.password
 		});
 		this.resetState();
-	},
-
-	logout: function(e){
-		e.preventDefault();
-		UserActions.logout();
 	},
 
 	resetState: function() {
@@ -117,17 +112,16 @@ var LoginForm = React.createClass({
 		);
 	},
 
-	openLogin: function() {
-		$('#login-modal').openModal();
+	openSignup: function() {
+		$('#signup-modal').openModal();
 	},
 
 	render: function(){
-
 		return (
-			<div id="login-form">
-				<div id="login-modal" className="modal">
+			<div id="signup-form">
+				<div id="signup-modal" className="modal">
 			     <div className="modal-content">
-			       <h4>Log In</h4>
+			       <h4>Sign Up</h4>
 						 	{this.errors()}
 							{this.form()}
 			     </div>
@@ -137,8 +131,4 @@ var LoginForm = React.createClass({
 	}
 });
 
-$(document).ready(function(){
-  $('.modal-trigger').leanModal();
-});
-
-module.exports = LoginForm;
+module.exports = SignupForm;

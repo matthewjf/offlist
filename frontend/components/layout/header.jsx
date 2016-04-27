@@ -14,6 +14,10 @@ module.exports = React.createClass({
 		$('#login-modal').openModal();
 	},
 
+	openSignup: function() {
+		$('#signup-modal').openModal();
+	},
+
   notLoggedIn: function(){
     if (this.state.currentUser) {
 			return (
@@ -25,8 +29,16 @@ module.exports = React.createClass({
 		}
     return (
       <ul className="right hide-on-med-and-down">
-        <li><a>Sign Up</a></li>
-				<li><a onClick={this.openLogin} className="modal-trigger">Log In</a></li>
+				<li>
+					<a onClick={this.openSignup} className="modal-trigger">
+						Sign Up
+					</a>
+				</li>
+				<li>
+					<a onClick={this.openLogin} className="modal-trigger">
+						Log In
+					</a>
+				</li>
       </ul>
     );
   },
@@ -42,8 +54,16 @@ module.exports = React.createClass({
 		}
     return (
       <ul id="nav-mobile" className="side-nav">
-        <li><a href="#">Sign Up</a></li>
-        <li><a onClick={this.openLogin} className="modal-trigger">Log In</a></li>
+				<li>
+					<a onClick={this.openSignup} className="modal-trigger">
+						Sign Up
+					</a>
+				</li>
+				<li>
+					<a onClick={this.openLogin} className="modal-trigger">
+						Log In
+					</a>
+				</li>
       </ul>
     );
   },
@@ -68,4 +88,9 @@ module.exports = React.createClass({
     );
   }
 
+});
+
+
+$(document).ready(function(){
+  $('.modal-trigger').leanModal();
 });
