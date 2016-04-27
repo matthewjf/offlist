@@ -33165,6 +33165,8 @@
 				actionType: UserConstants.LOGIN,
 				user: user
 			});
+			$('#signup-modal').closeModal();
+			$('#login-modal').closeModal();
 		},
 		handleError: function (error) {
 			AppDispatcher.dispatch({
@@ -33433,8 +33435,6 @@
 		toggleForm: function (e) {
 			e.preventDefault();
 			this.cancelForm(e);
-	
-			$('#login-modal').closeModal();
 	
 			setTimeout(function () {
 				$('#signup-modal').openModal();
@@ -33724,7 +33724,7 @@
 							name: "action",
 							value: "submit",
 							className: "waves-effect waves-grey btn right" },
-						"Log In"
+						"Sign Up"
 					),
 					React.createElement(
 						"button",
@@ -33738,7 +33738,7 @@
 						{
 							className: "waves-effect waves-grey btn-flat left",
 							onClick: this.toggleForm },
-						"Sign Up"
+						"Log In"
 					)
 				)
 			);

@@ -2,7 +2,7 @@ var React = require("react");
 var UserActions = require("../actions/user_actions");
 var CurrentUserState = require("../mixins/current_user_state");
 
-var SignupForm = React.createClass({
+var AuthForm = {
 	mixins: [CurrentUserState],
 
 	getInitialState: function(){
@@ -21,28 +21,33 @@ var SignupForm = React.createClass({
 		e.preventDefault();
 		this.cancelForm(e);
 
-		$('#signup-modal').closeModal();
+    var otherModal = (this.state.form === 'login' ? 'signup' : 'login');
 
 		setTimeout(function(){
-			$('#login-modal').openModal();
+			$('#' + otherModal + '-modal').openModal();
 		}, 300);
 
 	},
 
 	cancelForm: function(e){
 		e.preventDefault();
-		$('#signup-modal').closeModal();
+		$('#' + this.state.form + '-modal').closeModal();
 		this.resetState();
 	},
 
 
 	handleSubmit: function(e){
 		e.preventDefault();
-		UserActions['signup']({
+		UserActions[this.state.form]({
 			username: this.state.username,
 			password: this.state.password
 		});
 		this.resetState();
+	},
+
+	logout: function(e){
+		e.preventDefault();
+		UserActions.logout();
 	},
 
 	resetState: function() {
@@ -98,33 +103,28 @@ var SignupForm = React.createClass({
 							name='action'
 							value="submit"
 							className='waves-effect waves-grey btn right'>
-							Sign Up
+              {this.state.form}
 						</button>
 						<button
 							className='waves-effect waves-light btn-flat'
-							onClick={this.cancelForm}>
-							cancel
+							onClick={this.cancelForm}>cancel
 						</button>
 						<button
 							className='waves-effect waves-grey btn-flat left'
-							onClick={this.toggleForm} >
-							Log In
+							onClick={this.toggleForm} >Sign Up
 						</button>
 					</p>
 				</form>
 		);
 	},
 
-	openSignup: function() {
-		$('#signup-modal').openModal();
-	},
-
 	render: function(){
+
 		return (
-			<div id="signup-form">
-				<div id="signup-modal" className="modal">
+			<div id={this.state.form + '-form'}>
+				<div id={this.state.form + '-modal'} className="modal">
 			     <div className="modal-content">
-			       <h4>Sign Up</h4>
+			       <h4>{this.state.form}</h4>
 						 	{this.errors()}
 							{this.form()}
 			     </div>
@@ -132,6 +132,10 @@ var SignupForm = React.createClass({
 			</div>
 		);
 	}
+};
+
+$(document).ready(function(){
+  $('.modal-trigger').leanModal();
 });
 
-module.exports = SignupForm;
+module.exports = AuthForm;

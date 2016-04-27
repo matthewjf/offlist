@@ -21,8 +21,6 @@ var LoginForm = React.createClass({
 		e.preventDefault();
 		this.cancelForm(e);
 
-		$('#login-modal').closeModal();
-
 		setTimeout(function(){
 			$('#signup-modal').openModal();
 		}, 300);

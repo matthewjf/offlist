@@ -31,6 +31,8 @@ var UserActions = {
 			actionType: UserConstants.LOGIN,
 			user: user
 		});
+		$('#signup-modal').closeModal();
+		$('#login-modal').closeModal();
 	},
 	handleError: function(error) {
 		AppDispatcher.dispatch({
