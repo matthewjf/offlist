@@ -53,9 +53,9 @@
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	var Search = __webpack_require__(225),
-	    Header = __webpack_require__(261),
-	    Footer = __webpack_require__(262),
-	    LoginForm = __webpack_require__(263);
+	    Header = __webpack_require__(259),
+	    Footer = __webpack_require__(260),
+	    LoginForm = __webpack_require__(261);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -32965,15 +32965,124 @@
 
 
 /***/ },
-/* 259 */,
-/* 260 */,
-/* 261 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
+	var UserActions = __webpack_require__(262);
+	var CurrentUserState = __webpack_require__(266);
 	
 	module.exports = React.createClass({
 	  displayName: "exports",
+	
+	  mixins: [CurrentUserState],
+	
+	  logout: function (e) {
+	    e.preventDefault();
+	    UserActions.logout();
+	  },
+	
+	  openLogin: function () {
+	    $('#login-modal').openModal();
+	  },
+	
+	  notLoggedIn: function () {
+	    if (this.state.currentUser) {
+	      return React.createElement(
+	        "ul",
+	        { className: "right hide-on-med-and-down" },
+	        React.createElement(
+	          "li",
+	          null,
+	          React.createElement(
+	            "a",
+	            null,
+	            this.state.currentUser.username
+	          )
+	        ),
+	        React.createElement(
+	          "li",
+	          null,
+	          React.createElement(
+	            "a",
+	            { onClick: this.logout },
+	            "Log Out"
+	          )
+	        )
+	      );
+	    }
+	    return React.createElement(
+	      "ul",
+	      { className: "right hide-on-med-and-down" },
+	      React.createElement(
+	        "li",
+	        null,
+	        React.createElement(
+	          "a",
+	          null,
+	          "Sign Up"
+	        )
+	      ),
+	      React.createElement(
+	        "li",
+	        null,
+	        React.createElement(
+	          "a",
+	          { onClick: this.openLogin, className: "modal-trigger" },
+	          "Log In"
+	        )
+	      )
+	    );
+	  },
+	
+	  notLoggedInMobile: function () {
+	    if (this.state.currentUser) {
+	      return React.createElement(
+	        "ul",
+	        { id: "nav-mobile", className: "side-nav" },
+	        React.createElement(
+	          "li",
+	          null,
+	          React.createElement(
+	            "a",
+	            null,
+	            this.state.currentUser.username
+	          )
+	        ),
+	        React.createElement(
+	          "li",
+	          null,
+	          React.createElement(
+	            "a",
+	            { onClick: this.logout },
+	            "Log Out"
+	          )
+	        )
+	      );
+	    }
+	    return React.createElement(
+	      "ul",
+	      { id: "nav-mobile", className: "side-nav" },
+	      React.createElement(
+	        "li",
+	        null,
+	        React.createElement(
+	          "a",
+	          { href: "#" },
+	          "Sign Up"
+	        )
+	      ),
+	      React.createElement(
+	        "li",
+	        null,
+	        React.createElement(
+	          "a",
+	          { onClick: this.openLogin, className: "modal-trigger" },
+	          "Log In"
+	        )
+	      )
+	    );
+	  },
 	
 	  render: function () {
 	    return React.createElement(
@@ -32991,50 +33100,8 @@
 	            React.createElement("img", { id: "logo", src: "/logo.png" }),
 	            "splashy"
 	          ),
-	          React.createElement(
-	            "ul",
-	            { className: "right hide-on-med-and-down" },
-	            React.createElement(
-	              "li",
-	              null,
-	              React.createElement(
-	                "a",
-	                { href: "#" },
-	                "Sign Up"
-	              )
-	            ),
-	            React.createElement(
-	              "li",
-	              null,
-	              React.createElement(
-	                "a",
-	                { href: "#" },
-	                "Log In"
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            "ul",
-	            { id: "nav-mobile", className: "side-nav" },
-	            React.createElement(
-	              "li",
-	              null,
-	              React.createElement(
-	                "a",
-	                { href: "#" },
-	                "Sign Up"
-	              )
-	            ),
-	            React.createElement(
-	              "li",
-	              null,
-	              React.createElement(
-	                "a",
-	                { href: "#" },
-	                "Log In"
-	              )
-	            )
-	          ),
+	          this.notLoggedIn(),
+	          this.notLoggedInMobile(),
 	          React.createElement(
 	            "a",
 	            { href: "#", "data-activates": "nav-mobile", className: "button-collapse" },
@@ -33052,7 +33119,7 @@
 	});
 
 /***/ },
-/* 262 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -33139,12 +33206,12 @@
 	});
 
 /***/ },
-/* 263 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var UserActions = __webpack_require__(264);
-	var CurrentUserState = __webpack_require__(270);
+	var UserActions = __webpack_require__(262);
+	var CurrentUserState = __webpack_require__(266);
 	
 	var LoginForm = React.createClass({
 		displayName: "LoginForm",
@@ -33152,19 +33219,19 @@
 		mixins: [CurrentUserState],
 	
 		getInitialState: function () {
-			return { form: "login" };
+			return { form: "login", username: '', password: '' };
 		},
 	
 		setUsername: function (e) {
-			this.setState({ username: e.currentTarget.value });
+			this.setState({ username: e.target.value });
 		},
 	
 		setPassword: function (e) {
-			this.setState({ password: e.currentTarget.value });
+			this.setState({ password: e.target.value });
 		},
 	
 		setForm: function (e) {
-			this.setState({ form: e.currentTarget.value });
+			this.setState({ form: e.target.value });
 		},
 	
 		handleSubmit: function (e) {
@@ -33173,11 +33240,16 @@
 				username: this.state.username,
 				password: this.state.password
 			});
+			this.resetState();
 		},
 	
 		logout: function (e) {
 			e.preventDefault();
 			UserActions.logout();
+		},
+	
+		resetState: function () {
+			this.setState({ username: '', password: '' });
 		},
 	
 		greeting: function () {
@@ -33194,7 +33266,16 @@
 					this.state.currentUser.username,
 					"!"
 				),
-				React.createElement("input", { type: "submit", value: "logout", onClick: this.logout })
+				React.createElement(
+					"button",
+					{
+						type: "Submit",
+						name: "action",
+						value: "Submit",
+						className: "waves-effect waves-light btn",
+						onClick: this.logout },
+					"logout"
+				)
 			);
 		},
 	
@@ -33227,57 +33308,91 @@
 					"section",
 					null,
 					React.createElement(
-						"label",
-						null,
-						" Username:",
-						React.createElement("input", { type: "text", value: this.state.username, onChange: this.setUsername })
+						"div",
+						{ className: "row" },
+						React.createElement(
+							"div",
+							{ className: "input-field col s12" },
+							React.createElement("input", { type: "text", value: this.state.username, onChange: this.setUsername, id: "username" }),
+							React.createElement(
+								"label",
+								{ "for": "username" },
+								"Username"
+							)
+						)
 					),
 					React.createElement(
-						"label",
-						null,
-						" Password:",
-						React.createElement("input", { type: "password", value: this.state.password, onChange: this.setPassword })
+						"div",
+						{ className: "row" },
+						React.createElement(
+							"div",
+							{ className: "input-field col s12" },
+							React.createElement("input", { id: "password", type: "password", value: this.state.password, onChange: this.setPassword }),
+							React.createElement(
+								"label",
+								{ "for": "password" },
+								"Password"
+							)
+						)
 					)
 				),
 				React.createElement(
-					"section",
-					null,
+					"p",
+					{ className: "right-align" },
 					React.createElement(
-						"label",
-						null,
-						" Login",
-						React.createElement("input", { type: "radio", name: "action", value: "login", onClick: this.setForm })
-					),
-					React.createElement(
-						"label",
-						null,
-						" Sign Up",
-						React.createElement("input", { type: "radio", name: "action", value: "signup", onClick: this.setForm })
+						"button",
+						{ type: "Submit", name: "action", value: "Submit", className: "waves-effect waves-light btn" },
+						this.formText()
 					)
-				),
-				React.createElement("input", { type: "Submit", value: "Submit" })
+				)
 			);
 		},
+	
+		formText: function () {
+			return this.state.form === 'login' ? 'Log In' : 'Sign Up';
+		},
+	
+		openLogin: function () {
+			$('#login-modal').openModal();
+		},
+	
 		render: function () {
+	
 			return React.createElement(
 				"div",
 				{ id: "login-form" },
-				this.greeting(),
-				this.errors(),
-				this.form()
+				React.createElement(
+					"div",
+					{ id: "login-modal", className: "modal" },
+					React.createElement(
+						"div",
+						{ className: "modal-content" },
+						React.createElement(
+							"h4",
+							null,
+							this.formText()
+						),
+						this.errors(),
+						this.form()
+					)
+				)
 			);
 		}
+	});
+	
+	$(document).ready(function () {
+		$('.modal-trigger').leanModal();
 	});
 	
 	module.exports = LoginForm;
 
 /***/ },
-/* 264 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var UserConstants = __webpack_require__(265);
-	var UserApiUtil = __webpack_require__(266);
-	var UserStore = __webpack_require__(271);
+	var UserConstants = __webpack_require__(263);
+	var UserApiUtil = __webpack_require__(264);
+	var UserStore = __webpack_require__(265);
 	var AppDispatcher = __webpack_require__(246);
 	
 	var UserActions = {
@@ -33328,7 +33443,7 @@
 	module.exports = UserActions;
 
 /***/ },
-/* 265 */
+/* 263 */
 /***/ function(module, exports) {
 
 	var UserConstants = {
@@ -33340,7 +33455,7 @@
 	module.exports = UserConstants;
 
 /***/ },
-/* 266 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(246);
@@ -33376,42 +33491,7 @@
 	module.exports = UserApiUtil;
 
 /***/ },
-/* 267 */,
-/* 268 */,
-/* 269 */,
-/* 270 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var UserStore = __webpack_require__(271);
-	var UserActions = __webpack_require__(264);
-	
-	var CurrentUserState = {
-	
-		getInitialState: function () {
-			return {
-				currentUser: UserStore.currentUser(),
-				userErrors: UserStore.errors()
-			};
-		},
-		componentDidMount: function () {
-			UserStore.addListener(this.updateUser);
-			if (typeof UserStore.currentUser() === 'undefined') {
-				UserActions.fetchCurrentUser();
-			}
-		},
-		updateUser: function () {
-			this.setState({
-				currentUser: UserStore.currentUser(),
-				userErrors: UserStore.errors()
-			});
-		}
-	
-	};
-	
-	module.exports = CurrentUserState;
-
-/***/ },
-/* 271 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(246);
@@ -33463,6 +33543,38 @@
 	};
 	
 	module.exports = UserStore;
+
+/***/ },
+/* 266 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserStore = __webpack_require__(265);
+	var UserActions = __webpack_require__(262);
+	
+	var CurrentUserState = {
+	
+		getInitialState: function () {
+			return {
+				currentUser: UserStore.currentUser(),
+				userErrors: UserStore.errors()
+			};
+		},
+		componentDidMount: function () {
+			UserStore.addListener(this.updateUser);
+			if (typeof UserStore.currentUser() === 'undefined') {
+				UserActions.fetchCurrentUser();
+			}
+		},
+		updateUser: function () {
+			this.setState({
+				currentUser: UserStore.currentUser(),
+				userErrors: UserStore.errors()
+			});
+		}
+	
+	};
+	
+	module.exports = CurrentUserState;
 
 /***/ }
 /******/ ]);

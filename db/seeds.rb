@@ -11,6 +11,11 @@ img_urls = [
   'https://img1.etsystatic.com/041/0/8749411/il_570xN.645288353_g9sx.jpg'
 ]
 
+User.create(
+  username: 'guest',
+  password: 'password'
+)
+
 10.times do |i|
   Product.create(
     title: Faker::Hipster.word,

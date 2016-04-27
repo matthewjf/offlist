@@ -9,16 +9,16 @@ var UserActions = {
 	},
 	signup: function(user){
 		UserApiUtil.post({
-			url: "/api/user", 
-			user: user, 
+			url: "/api/user",
+			user: user,
 			success: UserActions.receiveCurrentUser,
 			error: UserActions.handleError
 		});
 	},
 	login: function(user){
 		UserApiUtil.post({
-			url: "/api/session", 
-			user: user, 
+			url: "/api/session",
+			user: user,
 			success: UserActions.receiveCurrentUser,
 			error: UserActions.handleError
 		});
