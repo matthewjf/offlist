@@ -10,7 +10,8 @@ var Router = require('react-router').Router,
 var Search = require('./components/search'),
     Header = require('./components/layout/header'),
     Footer = require('./components/layout/footer'),
-    LoginForm = require('./components/login_form');
+    LoginForm = require('./components/login_form'),
+    SignupForm = require('./components/signup_form');
 
 var App = React.createClass({
   render: function(){
@@ -19,6 +20,7 @@ var App = React.createClass({
           <Header />
           <main>
             <LoginForm />
+            <SignupForm />
             {this.props.children}
           </main>
         </div>
