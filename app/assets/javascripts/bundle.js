@@ -53,8 +53,8 @@
 	    browserHistory = __webpack_require__(166).browserHistory;
 	
 	var Search = __webpack_require__(225),
-	    Header = __webpack_require__(271),
-	    Footer = __webpack_require__(272);
+	    Header = __webpack_require__(259),
+	    Footer = __webpack_require__(260);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -32963,19 +32963,7 @@
 
 
 /***/ },
-/* 259 */,
-/* 260 */,
-/* 261 */,
-/* 262 */,
-/* 263 */,
-/* 264 */,
-/* 265 */,
-/* 266 */,
-/* 267 */,
-/* 268 */,
-/* 269 */,
-/* 270 */,
-/* 271 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -33060,7 +33048,7 @@
 	});
 
 /***/ },
-/* 272 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
