@@ -4,12 +4,13 @@ var React = require('react'),
 var Router = require('react-router').Router,
     Route = require('react-router').Route,
     IndexRoute = require('react-router').IndexRoute,
-    browserHistory = require('react-router').browserHistory;
+    hashHistory = require('react-router').hashHistory;
 
 
 var Search = require('./components/search'),
-    Header = require('./components/header'),
-    Footer = require('./components/footer');
+    Header = require('./components/layout/header'),
+    Footer = require('./components/layout/footer'),
+    LoginForm = require('./components/login_form');
 
 var App = React.createClass({
   render: function(){
@@ -17,6 +18,7 @@ var App = React.createClass({
         <div id='app'>
           <Header />
           <main>
+            <LoginForm />
             {this.props.children}
           </main>
         </div>
@@ -25,7 +27,7 @@ var App = React.createClass({
 });
 
 var Rtr = (
-  <Router history={browserHistory}>
+  <Router history={hashHistory}>
     <Route path='/' component={App}>
       <IndexRoute component={Search} />
     </Route>
