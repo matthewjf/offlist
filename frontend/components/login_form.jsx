@@ -1,6 +1,8 @@
 var React = require("react");
 var UserActions = require("../actions/user_actions");
 var CurrentUserState = require("../mixins/current_user_state");
+var UserStore = require('../stores/user_store');
+
 
 var LoginForm = React.createClass({
 	mixins: [CurrentUserState],
@@ -19,7 +21,7 @@ var LoginForm = React.createClass({
 
 	toggleForm: function(e){
 		e.preventDefault();
-		this.cancelForm(e);
+		this.closeModal(e);
 
 		setTimeout(function(){
 			$('#signup-modal').openModal();
@@ -27,7 +29,7 @@ var LoginForm = React.createClass({
 
 	},
 
-	cancelForm: function(e){
+	closeModal: function(e){
 		e.preventDefault();
 		$('#login-modal').closeModal();
 		this.resetState();
@@ -79,7 +81,8 @@ var LoginForm = React.createClass({
 									type="text"
 									value={this.state.username}
 									onChange={this.setUsername}
-									id='username'/>
+									id='username'
+									className='validate' />
 								<label for='username'>Username</label>
 							</div>
 						</div>
@@ -90,8 +93,9 @@ var LoginForm = React.createClass({
 									id='password'
 									type="password"
 									value={this.state.password}
-									onChange={this.setPassword}/>
-								<label for='password'>Password</label>
+									onChange={this.setPassword}
+									className='validate' />
+									<label for='password'>Password</label>
 							</div>
 						</div>
 					</section>
@@ -100,14 +104,14 @@ var LoginForm = React.createClass({
 							type="submit"
 							name='action'
 							value="submit"
-							className='waves-effect waves-grey btn right'>Log In
+							className='waves-effect waves-light btn right'>Log In
 						</button>
 						<button
-							className='waves-effect waves-light btn-flat'
-							onClick={this.cancelForm}>cancel
+							className='waves-effect waves-ripple btn-flat'
+							onClick={this.closeModal}>cancel
 						</button>
 						<button
-							className='waves-effect waves-grey btn-flat left'
+							className='waves-effect btn-flat left'
 							onClick={this.toggleForm} >Sign Up
 						</button>
 					</p>
@@ -117,6 +121,7 @@ var LoginForm = React.createClass({
 
 	openLogin: function() {
 		$('#login-modal').openModal();
+		$('input').siblings('label, i').addClass('active');
 	},
 
 	render: function(){

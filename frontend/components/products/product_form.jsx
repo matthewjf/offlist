@@ -1,57 +1,77 @@
 var React = require('react'),
     ApiUtil = require('../../util/api_util.js'),
     hashHistory = require('react-router').hashHistory,
-    LinkedStateMixin = require('react-addons-linked-state-mixin'),
-    NewBenchMap = require('./new_bench_map');
+    NewProductMap = require('./new_product_map');
 
 
 var cloudinary = require('cloudinary');
 
-cloudinary.config({
+cloudinary.config({              // not too worried about this
   cloud_name: 'dn0zhjiai',
   api_key: '441363689224142',
   api_secret: 'dbpQvs_7s-55S5koBars1o2FeZw'
 });
 
-module.exports = React.createClass({
-  mixins: [LinkedStateMixin],
+var cloudinaryWidgetOptions = {
+  cloud_name: 'dn0zhjiai',
+  upload_preset: 'ls86piw7',
+  theme: 'minimal',
+  button_class: 'waves-effect btn-flat',
+  sources: ['local', 'url'],
+  folder: 'splashy',
+  thumbnails: '.thumbnails',
+};
 
+module.exports = React.createClass({
   blankAttrs: {
     title: '',
     description: '',
     lat: '',
     lng: '',
-    seating: '',
-    image_urls: []
+    img_urls: []
   },
 
   getInitialState: function () {
     return this.blankAttrs;
   },
 
-  setLatLng: function(lat, lng) {
-    this.setState({lat: lat, lng: lng});
+  setTitle: function(e){
+    this.setState({title: e.target.value});
   },
 
-  createBench: function (event) {
+  setDescription: function(e){
+    this.setState({description: e.target.value});
+  },
+
+
+  setLatLng: function(lat, lng) {
+    this.setState({lat: lat, lng: lng});
+    $(document).ready(function() {
+      /* global Materialize (make linter happy) */
+      Materialize.updateTextFields();
+    });
+  },
+
+  createProduct: function (event) {
     event.preventDefault();
-    ApiUtil.createBench(this.state);
+    ApiUtil.createProduct(this.state);
   },
 
   setImageUrls: function(error, result) {
     var self = this;
     for (var idx in result) {
       if (result.hasOwnProperty(idx))
-        self.setState({image_urls: self.state.image_urls.concat([result[idx].url])});
+        self.setState({
+          img_urls: self.state.img_urls.concat([result[idx].url])
+        });
     }
   },
 
   componentDidMount: function() {
     var self = this;
     $('#upload_widget_opener').cloudinary_upload_widget(
-      { cloud_name: 'dn0zhjiai', upload_preset: 'ls86piw7', theme: 'minimal',
-        button_class: 'waves-effect waves-brown btn-flat'},
-        function(error, result) {self.setImageUrls(error, result);});
+      cloudinaryWidgetOptions,
+      function(error, result) {self.setImageUrls(error, result);});
   },
 
   render: function () {
@@ -59,39 +79,32 @@ module.exports = React.createClass({
       <div id='content'>
         <div id='sidebar'>
           <div className='sidebar-content'>
-            <h3 className='center-align'>Bench Form</h3>
-            <form className='col s12' onSubmit={this.createBench}>
+            <h3 className='center-align'>Product Form</h3>
+            <form className='col s12' onSubmit={this.createProduct}>
 
               <div className='row'>
                 <div className='input-field col s12'>
-                  <label for='title'>Title</label>
                   <input
-                    id='title' type='text'
-                    valueLink={this.linkState('title')} />
+                    id='title'
+                    type='text'
+                    className='validate'
+                    value={this.state.title}
+                    onChange={this.setTitle}
+                  />
+                  <label for='title'>Title</label>
                 </div>
               </div>
 
               <div className='row'>
                 <div className='input-field col s12'>
-                  <label for='description'>Description</label>
                   <textarea
                     id='description'
-                    type='text' className='materialize-textarea'
-                    valueLink={this.linkState('description')}
+                    type='text'
+                    className='materialize-textarea validate'
+                    value={this.state.description}
+                    onChange={this.setDescription}
                   />
-                </div>
-              </div>
-
-              <div className='row'>
-                <div className='input-field col s12'>
-                  <label for='seating'>Seating</label>
-                    <input
-                      id='seating'
-                      type='number'
-                      valueLink={this.linkState('seating')}
-                      min='0'
-                      max='20'
-                    />
+                  <label for='description'>Description</label>
                 </div>
               </div>
 
@@ -101,7 +114,8 @@ module.exports = React.createClass({
                   <input disabled
                     id='latitude'
                     type='text'
-                    valueLink={this.linkState('lat')}
+                    className='validate'
+                    value={this.state.lat}
                   />
                 </div>
                 <div className='input-field col s6'>
@@ -109,29 +123,30 @@ module.exports = React.createClass({
                   <input disabled
                     id='longitude'
                     type='text'
-                    valueLink={this.linkState('lng')}
+                    className='validate'
+                    value={this.state.lng}
                   />
                 </div>
               </div>
-            <div className='button-row'>
-              <div className='upload_widget'>
-                <a id='upload_widget_opener' />
+              <div className='button-row'>
+                <div>
+                  <p className='right-align'>
+                    <button
+                      className="waves-effect waves-light btn">
+                      Create Product
+                    </button>
+                    <div className='upload_widget left'>
+                      <a id='upload_widget_opener' />
+                    </div>
+                  </p>
+                </div>
               </div>
-
-              <div>
-                <p className='right-align'>
-                  <button
-                    className="waves-effect waves-light btn btn-large">
-                    Create Bench
-                  </button>
-                </p>
-              </div>
-              </div>
+              <div className='thumbnails'></div>
             </form>
           </div>
         </div>
 
-        <NewBenchMap clickCB={this.setLatLng} />
+        <NewProductMap clickCB={this.setLatLng} />
       </div>
     );
   }

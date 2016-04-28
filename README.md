@@ -6,11 +6,11 @@
 
 Splashy is a web application inspired by Etsy that will be built using Ruby on Rails and React.js.  It's a site for people selling locally made products, locally.  By the end of Week 9, this app will, at a minimum, satisfy the following criteria:
 
-- [ ] New account creation, login, and guest/demo login
+- [x] New account creation, login, and guest/demo login
 - [ ] Smooth, bug-free navigation
 - [ ] Adequate seed data to demonstrate the site's features
 - [ ] The minimally necessary features for an Etsy-inspired site: product browsing and search, product creation and saving
-- [ ] Hosting on Heroku
+- [x] Hosting on Heroku
 - [ ] CSS styling that is satisfactorily visually appealing
 - [ ] A production README, replacing this README
 
@@ -21,7 +21,7 @@ Splashy will allow users to do the following:
 <!-- This is a Markdown checklist. Use it to keep track of your
 progress. Put an x between the brackets for a checkmark: [x] -->
 
-- [ ] Create an account (MVP)
+- [x] Create an account (MVP)
 - [ ] Log in / Log out, including as a Guest/Demo User (MVP)
 - [ ] Browse and search for products (MVP)
 - [ ] Create, read, edit, and delete products (MVP)

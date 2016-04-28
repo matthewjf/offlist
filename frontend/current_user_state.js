@@ -20,8 +20,7 @@ var CurrentUserState = {
 			currentUser: UserStore.currentUser(),
 			userErrors: UserStore.errors()
 		});
-	}
-	
+	},
 };
 
 module.exports = CurrentUserState;

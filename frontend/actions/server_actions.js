@@ -8,7 +8,8 @@ var ServerActions = {
       products: products
     });
   },
-  receiveSingleBench: function(product){
+  receiveProduct: function(product){
+
     Dispatcher.dispatch({
       actionType: ProductConstants.CREATE_PRODUCT,
       product: product

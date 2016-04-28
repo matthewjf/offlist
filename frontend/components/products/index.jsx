@@ -22,6 +22,10 @@ module.exports = React.createClass({
     this.productListener.remove();
   },
 
+  placeholder: function() {
+    return <li className='placeholder-card card product-item'></li>;
+  },
+
   render: function() {
     var links = this.state.products.map(function(product) {
       return <IndexItem
@@ -34,10 +38,10 @@ module.exports = React.createClass({
       <div className='sidebar-content'>
         <ul className='sidebar-list'>
           {links}
-          <li className='placeholder-card card product-item'></li>
-          <li className='placeholder-card card product-item'></li>
-          <li className='placeholder-card card product-item'></li>
-          <li className='placeholder-card card product-item'></li>
+          {this.placeholder()}
+          {this.placeholder()}
+          {this.placeholder()}
+          {this.placeholder()}
         </ul>
       </div>
     </div>;

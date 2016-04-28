@@ -28,7 +28,7 @@ module.exports = React.createClass({
     MarkerStore.resetMarkers(markers);
   },
 
-  getBenches: function() {
+  getProducts: function() {
     var currLoc = this.map.getBounds();
     var northEast = {
       lat: currLoc.getNorthEast().lat(),

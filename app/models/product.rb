@@ -13,4 +13,10 @@
 
 class Product < ActiveRecord::Base
   validates :title, :description, :img_urls, presence: true
+  def self.in_bounds(bounds)
+    lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]
+    lng = [bounds["northEast"]["lng"], bounds["southWest"]["lng"]]
+
+    Product.where(lat: lat.min..lat.max,lng: lng.max..lng.min)
+  end
 end

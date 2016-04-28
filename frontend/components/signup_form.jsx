@@ -1,6 +1,8 @@
 var React = require("react");
 var UserActions = require("../actions/user_actions");
 var CurrentUserState = require("../mixins/current_user_state");
+var UserStore = require('../stores/user_store');
+
 
 var SignupForm = React.createClass({
 	mixins: [CurrentUserState],
@@ -19,9 +21,7 @@ var SignupForm = React.createClass({
 
 	toggleForm: function(e){
 		e.preventDefault();
-		this.cancelForm(e);
-
-		$('#signup-modal').closeModal();
+		this.closeModal(e);
 
 		setTimeout(function(){
 			$('#login-modal').openModal();
@@ -29,12 +29,11 @@ var SignupForm = React.createClass({
 
 	},
 
-	cancelForm: function(e){
+	closeModal: function(e){
 		e.preventDefault();
 		$('#signup-modal').closeModal();
 		this.resetState();
 	},
-
 
 	handleSubmit: function(e){
 		e.preventDefault();
@@ -47,6 +46,10 @@ var SignupForm = React.createClass({
 
 	resetState: function() {
 		this.setState({username: '', password: ''});
+	},
+
+	activateInput: function(){
+		$('.input').siblings().addClass('activate');
 	},
 
 	errors: function(){
@@ -76,8 +79,11 @@ var SignupForm = React.createClass({
 									type="text"
 									value={this.state.username}
 									onChange={this.setUsername}
-									id='username'/>
-								<label for='username'>Username</label>
+									id='username'
+									className='validate' />
+								<label for='username'>
+									Username
+								</label>
 							</div>
 						</div>
 
@@ -87,8 +93,11 @@ var SignupForm = React.createClass({
 									id='password'
 									type="password"
 									value={this.state.password}
-									onChange={this.setPassword}/>
-								<label for='password'>Password</label>
+									onChange={this.setPassword}
+									className='validate' />
+								<label for='password'>
+									Password
+								</label>
 							</div>
 						</div>
 					</section>
@@ -97,12 +106,12 @@ var SignupForm = React.createClass({
 							type="submit"
 							name='action'
 							value="submit"
-							className='waves-effect waves-grey btn right'>
+							className='waves-effect waves-light btn right'>
 							Sign Up
 						</button>
 						<button
 							className='waves-effect waves-light btn-flat'
-							onClick={this.cancelForm}>
+							onClick={this.closeModal}>
 							cancel
 						</button>
 						<button
@@ -117,6 +126,7 @@ var SignupForm = React.createClass({
 
 	openSignup: function() {
 		$('#signup-modal').openModal();
+		$('input').siblings('label, i').addClass('active');
 	},
 
 	render: function(){

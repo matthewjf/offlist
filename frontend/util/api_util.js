@@ -1,9 +1,10 @@
 var ServerActions = require('../actions/server_actions.js');
 
 module.exports = {
-  fetchProducts: function () {
+  fetchProducts: function (bounds) {
     $.ajax({
       url: "api/products",
+      data: bounds,
       success: function (products) {
         ServerActions.receiveAll(products);
       }

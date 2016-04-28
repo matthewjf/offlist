@@ -17,9 +17,14 @@ User.create(
 )
 
 10.times do |i|
+  lat = 37.7 + (rand()/10)
+  lng = -122.4 - (rand()/10)
+
   Product.create(
     title: Faker::Hipster.word,
     description: Faker::Hipster.paragraph,
-    img_urls: ['https://unsplash.it/500/500/?random']
+    img_urls: ['https://unsplash.it/500/500/?random'],
+    lat: lat,
+    lng: lng    
   )
 end

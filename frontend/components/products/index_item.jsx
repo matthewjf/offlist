@@ -24,14 +24,14 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    var hoverTransp = (this.state.isHovered ? 'hover z-depth-3' : '');
+    var hoverTransp = (this.state.isHovered ? 'hover' : '');
     var product = this.props.product;
 
     var productUrl = (product.img_urls ? product.img_urls[0] : '');
 
     return(
 
-    <li className='card product-item'
+    <li className='card product-item hoverable'
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}>
       <div className='card-image'>

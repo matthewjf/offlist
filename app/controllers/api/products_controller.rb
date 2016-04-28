@@ -1,6 +1,6 @@
 class Api::ProductsController < ApplicationController
   def index
-    @products = Product.all
+    @products = Product.in_bounds(params[:bounds])
     render json: @products
   end
 
@@ -10,8 +10,9 @@ class Api::ProductsController < ApplicationController
   end
 
   def create
-    @product = Product.new(post_params)
-
+    @product = Product.new(product_params)
+    img_urls = params[:product][:img_urls]
+    @product.img_urls = img_urls
     if @product.save
       render json: @product
     else
@@ -42,6 +43,6 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:title, :description)
+    params.require(:product).permit(:title, :description, :lat, :lng)
   end
 end

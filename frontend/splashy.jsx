@@ -11,7 +11,8 @@ var Search = require('./components/search'),
     Header = require('./components/layout/header'),
     Footer = require('./components/layout/footer'),
     LoginForm = require('./components/login_form'),
-    SignupForm = require('./components/signup_form');
+    SignupForm = require('./components/signup_form'),
+    ProductForm = require('./components/products/product_form');
 
 var App = React.createClass({
   render: function(){
@@ -32,6 +33,7 @@ var Rtr = (
   <Router history={hashHistory}>
     <Route path='/' component={App}>
       <IndexRoute component={Search} />
+        <Route path='products/new' component={ProductForm} />
     </Route>
   </Router>
 );
