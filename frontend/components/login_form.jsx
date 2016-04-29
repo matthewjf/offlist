@@ -33,6 +33,7 @@ var LoginForm = React.createClass({
 		e.preventDefault();
 		$('#login-modal').closeModal();
 		this.resetState();
+		UserActions.resetErrors([]);
 	},
 
 

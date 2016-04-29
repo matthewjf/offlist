@@ -1,7 +1,8 @@
 var React = require('react'),
     ApiUtil = require('../../util/api_util.js'),
     hashHistory = require('react-router').hashHistory,
-    NewProductMap = require('./new_product_map');
+    NewProductMap = require('./new_product_map'),
+    MapUtil = require('../../util/map_util');
 
 
 var cloudinary = require('cloudinary');
@@ -25,10 +26,13 @@ var cloudinaryWidgetOptions = {
 module.exports = React.createClass({
   blankAttrs: {
     title: '',
+    price: '',
     description: '',
     lat: '',
     lng: '',
-    img_urls: []
+    address: '',
+    img_urls: [],
+    googlePos: {}
   },
 
   getInitialState: function () {
@@ -39,22 +43,64 @@ module.exports = React.createClass({
     this.setState({title: e.target.value});
   },
 
+  setPrice: function(e){
+    this.setState({price: e.target.value});
+  },
+
   setDescription: function(e){
     this.setState({description: e.target.value});
   },
 
+  updateAddress: function(e){
+    this.setAddress(e.target.value);
+  },
 
-  setLatLng: function(lat, lng) {
-    this.setState({lat: lat, lng: lng});
+  setAddress: function(addr){
+    this.setState({address: addr});
+  },
+
+  lookupAddress: function(e){
+    MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
+  },
+
+  setLatLng: function(pos) {
+    this.setState({lat: pos.lat(), lng: pos.lng(), googlePos: pos});
     $(document).ready(function() {
       /* global Materialize (make linter happy) */
       Materialize.updateTextFields();
     });
   },
 
+  geoSuccess: function(result) {
+    this.setState({googlePos: result, lat: result.lat(), lng: result.lng()});
+    $(document).ready(function() {
+      Materialize.updateTextFields();
+    });
+  },
+
+  geoError: function(status){
+    if (this.state.address){
+      alert("Address lookup error: " + status);
+    } else {
+      this.setState({lat: '', lng: ''});
+    }
+    $(document).ready(function() {
+      Materialize.updateTextFields();
+    });
+  },
+
   createProduct: function (event) {
     event.preventDefault();
-    ApiUtil.createProduct(this.state);
+    var product = {
+      title: this.state.title,
+      price: this.state.price,
+      description: this.state.description,
+      lat: this.state.lat,
+      lng: this.state.lng,
+      address: this.state.address,
+      img_urls: this.state.img_urls
+    };
+    ApiUtil.createProduct(product);
   },
 
   setImageUrls: function(error, result) {
@@ -80,7 +126,7 @@ module.exports = React.createClass({
         <div id='sidebar'>
           <div className='sidebar-content'>
             <h3 className='center-align'>Product Form</h3>
-            <form className='col s12' onSubmit={this.createProduct}>
+            <form className='col s12 m10 l8 product-form' onSubmit={this.createProduct}>
 
               <div className='row'>
                 <div className='input-field col s12'>
@@ -97,6 +143,19 @@ module.exports = React.createClass({
 
               <div className='row'>
                 <div className='input-field col s12'>
+                  <input
+                    id='price'
+                    type='text'
+                    className='validate'
+                    value={this.state.price}
+                    onChange={this.setPrice}
+                  />
+                  <label for='price'>Price</label>
+                </div>
+              </div>
+
+              <div className='row'>
+                <div className='input-field col s12'>
                   <textarea
                     id='description'
                     type='text'
@@ -105,6 +164,20 @@ module.exports = React.createClass({
                     onChange={this.setDescription}
                   />
                   <label for='description'>Description</label>
+                </div>
+              </div>
+
+              <div className='row'>
+                <div className='input-field col s12'>
+                  <input
+                    id='address'
+                    type='text'
+                    className='validate'
+                    value={this.state.address}
+                    onChange={this.updateAddress}
+                    onBlur={this.lookupAddress}
+                  />
+                <label for='address'>Address</label>
                 </div>
               </div>
 
@@ -130,7 +203,7 @@ module.exports = React.createClass({
               </div>
               <div className='button-row'>
                 <div>
-                  <p className='right-align'>
+                  <div className='right-align'>
                     <button
                       className="waves-effect waves-light btn">
                       Create Product
@@ -138,7 +211,7 @@ module.exports = React.createClass({
                     <div className='upload_widget left'>
                       <a id='upload_widget_opener' />
                     </div>
-                  </p>
+                  </div>
                 </div>
               </div>
               <div className='thumbnails'></div>
@@ -146,7 +219,10 @@ module.exports = React.createClass({
           </div>
         </div>
 
-        <NewProductMap clickCB={this.setLatLng} />
+        <NewProductMap
+          googlePos={this.state.googlePos}
+          setLatLng={this.setLatLng}
+          setAddress={this.setAddress}/>
       </div>
     );
   }

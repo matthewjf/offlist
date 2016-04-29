@@ -52,12 +52,13 @@
 	    IndexRoute = __webpack_require__(166).IndexRoute,
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
-	var Search = __webpack_require__(225),
+	var ProductList = __webpack_require__(225),
 	    Header = __webpack_require__(259),
 	    Footer = __webpack_require__(265),
 	    LoginForm = __webpack_require__(266),
 	    SignupForm = __webpack_require__(267),
-	    ProductForm = __webpack_require__(268);
+	    ProductForm = __webpack_require__(268),
+	    ProductDetail = __webpack_require__(334);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -84,8 +85,10 @@
 	  React.createElement(
 	    Route,
 	    { path: '/', component: App },
-	    React.createElement(IndexRoute, { component: Search }),
-	    React.createElement(Route, { path: 'products/new', component: ProductForm })
+	    React.createElement(IndexRoute, { component: ProductList }),
+	    React.createElement(Route, { path: 'products/new', component: ProductForm }),
+	    React.createElement(Route, { path: 'products', component: ProductList }),
+	    React.createElement(Route, { path: 'products/:productId', component: ProductDetail })
 	  )
 	);
 	
@@ -32542,6 +32545,29 @@
 	    mark.setMap(map);
 	
 	    return mark;
+	  },
+	
+	  geocodeAddress: function (address, success, error) {
+	    var geocoder = new google.maps.Geocoder();
+	
+	    geocoder.geocode({ 'address': address }, function (results, status) {
+	      if (status === google.maps.GeocoderStatus.OK) {
+	        success(results[0].geometry.location);
+	      } else {
+	        error(status);
+	      }
+	    });
+	  },
+	
+	  geocodePosition: function (pos, success, error) {
+	    var geocoder = new google.maps.Geocoder();
+	    geocoder.geocode({ latLng: pos }, function (results, status) {
+	      if (status === google.maps.GeocoderStatus.OK) {
+	        success(results[0].formatted_address);
+	      } else {
+	        error(status);
+	      }
+	    });
 	  }
 	};
 
@@ -32601,7 +32627,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    ApiUtil = __webpack_require__(251),
 	    ProductStore = __webpack_require__(227),
 	    IndexItem = __webpack_require__(257),
 	    ClientActions = __webpack_require__(250);
@@ -32665,7 +32690,8 @@
 
 	var React = __webpack_require__(1),
 	    MarkerStore = __webpack_require__(254),
-	    TextTruncate = __webpack_require__(258);
+	    TextTruncate = __webpack_require__(258),
+	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	/* global google */
 	
@@ -32688,6 +32714,10 @@
 	    if (marker) marker.setIcon('https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi.png');
 	  },
 	
+	  openDetail: function () {
+	    hashHistory.push("/products/" + this.props.product.id);
+	  },
+	
 	  render: function () {
 	    var hoverTransp = this.state.isHovered ? 'hover' : '';
 	    var product = this.props.product;
@@ -32698,7 +32728,13 @@
 	      'li',
 	      { className: 'card product-item hoverable',
 	        onMouseEnter: this.onMouseEnter,
-	        onMouseLeave: this.onMouseLeave },
+	        onMouseLeave: this.onMouseLeave,
+	        onClick: this.openDetail },
+	      React.createElement(
+	        'div',
+	        { className: 'card-price right' },
+	        '$' + product.price
+	      ),
 	      React.createElement(
 	        'div',
 	        { className: 'card-image' },
@@ -32724,7 +32760,7 @@
 	          raf: true
 	        })
 	      ),
-	      React.createElement('div', { className: hoverTransp })
+	      React.createElement('div', { className: hoverTransp + ' waves-effect waves-light' })
 	    );
 	  }
 	});
@@ -33189,6 +33225,12 @@
 		},
 		logout: function () {
 			UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
+		},
+		resetErrors: function (errors) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.ERROR,
+				errors: errors
+			});
 		}
 	};
 	
@@ -33454,6 +33496,7 @@
 			e.preventDefault();
 			$('#login-modal').closeModal();
 			this.resetState();
+			UserActions.resetErrors([]);
 		},
 	
 		handleSubmit: function (e) {
@@ -33645,6 +33688,7 @@
 			e.preventDefault();
 			$('#signup-modal').closeModal();
 			this.resetState();
+			UserActions.resetErrors([]);
 		},
 	
 		handleSubmit: function (e) {
@@ -33798,7 +33842,8 @@
 	var React = __webpack_require__(1),
 	    ApiUtil = __webpack_require__(251),
 	    hashHistory = __webpack_require__(166).hashHistory,
-	    NewProductMap = __webpack_require__(269);
+	    NewProductMap = __webpack_require__(269),
+	    MapUtil = __webpack_require__(253);
 	
 	var cloudinary = __webpack_require__(270);
 	
@@ -33823,10 +33868,13 @@
 	
 	  blankAttrs: {
 	    title: '',
+	    price: '',
 	    description: '',
 	    lat: '',
 	    lng: '',
-	    img_urls: []
+	    address: '',
+	    img_urls: [],
+	    googlePos: {}
 	  },
 	
 	  getInitialState: function () {
@@ -33837,21 +33885,64 @@
 	    this.setState({ title: e.target.value });
 	  },
 	
+	  setPrice: function (e) {
+	    this.setState({ price: e.target.value });
+	  },
+	
 	  setDescription: function (e) {
 	    this.setState({ description: e.target.value });
 	  },
 	
-	  setLatLng: function (lat, lng) {
-	    this.setState({ lat: lat, lng: lng });
+	  updateAddress: function (e) {
+	    this.setAddress(e.target.value);
+	  },
+	
+	  setAddress: function (addr) {
+	    this.setState({ address: addr });
+	  },
+	
+	  lookupAddress: function (e) {
+	    MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
+	  },
+	
+	  setLatLng: function (pos) {
+	    this.setState({ lat: pos.lat(), lng: pos.lng(), googlePos: pos });
 	    $(document).ready(function () {
 	      /* global Materialize (make linter happy) */
 	      Materialize.updateTextFields();
 	    });
 	  },
 	
+	  geoSuccess: function (result) {
+	    this.setState({ googlePos: result, lat: result.lat(), lng: result.lng() });
+	    $(document).ready(function () {
+	      Materialize.updateTextFields();
+	    });
+	  },
+	
+	  geoError: function (status) {
+	    if (this.state.address) {
+	      alert("Address lookup error: " + status);
+	    } else {
+	      this.setState({ lat: '', lng: '' });
+	    }
+	    $(document).ready(function () {
+	      Materialize.updateTextFields();
+	    });
+	  },
+	
 	  createProduct: function (event) {
 	    event.preventDefault();
-	    ApiUtil.createProduct(this.state);
+	    var product = {
+	      title: this.state.title,
+	      price: this.state.price,
+	      description: this.state.description,
+	      lat: this.state.lat,
+	      lng: this.state.lng,
+	      address: this.state.address,
+	      img_urls: this.state.img_urls
+	    };
+	    ApiUtil.createProduct(product);
 	  },
 	
 	  setImageUrls: function (error, result) {
@@ -33887,7 +33978,7 @@
 	          ),
 	          React.createElement(
 	            'form',
-	            { className: 'col s12', onSubmit: this.createProduct },
+	            { className: 'col s12 m10 l8 product-form', onSubmit: this.createProduct },
 	            React.createElement(
 	              'div',
 	              { className: 'row' },
@@ -33914,6 +34005,26 @@
 	              React.createElement(
 	                'div',
 	                { className: 'input-field col s12' },
+	                React.createElement('input', {
+	                  id: 'price',
+	                  type: 'text',
+	                  className: 'validate',
+	                  value: this.state.price,
+	                  onChange: this.setPrice
+	                }),
+	                React.createElement(
+	                  'label',
+	                  { 'for': 'price' },
+	                  'Price'
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'div',
+	                { className: 'input-field col s12' },
 	                React.createElement('textarea', {
 	                  id: 'description',
 	                  type: 'text',
@@ -33925,6 +34036,27 @@
 	                  'label',
 	                  { 'for': 'description' },
 	                  'Description'
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'div',
+	                { className: 'input-field col s12' },
+	                React.createElement('input', {
+	                  id: 'address',
+	                  type: 'text',
+	                  className: 'validate',
+	                  value: this.state.address,
+	                  onChange: this.updateAddress,
+	                  onBlur: this.lookupAddress
+	                }),
+	                React.createElement(
+	                  'label',
+	                  { 'for': 'address' },
+	                  'Address'
 	                )
 	              )
 	            ),
@@ -33969,7 +34101,7 @@
 	                'div',
 	                null,
 	                React.createElement(
-	                  'p',
+	                  'div',
 	                  { className: 'right-align' },
 	                  React.createElement(
 	                    'button',
@@ -33989,7 +34121,10 @@
 	          )
 	        )
 	      ),
-	      React.createElement(NewProductMap, { clickCB: this.setLatLng })
+	      React.createElement(NewProductMap, {
+	        googlePos: this.state.googlePos,
+	        setLatLng: this.setLatLng,
+	        setAddress: this.setAddress })
 	    );
 	  }
 	});
@@ -33998,26 +34133,60 @@
 /* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	var React = __webpack_require__(1),
+	    MapUtil = __webpack_require__(253);
 	
 	/* global google */
+	/* global Materialize */
 	
 	module.exports = React.createClass({
-	  displayName: "exports",
+	  displayName: 'exports',
 	
-	  onChange: function () {},
+	  componentWillReceiveProps: function (newProps) {
+	    this.removeMarker();
+	    if (newProps.googlePos.lat) {
+	      this.placeMarker(newProps.googlePos, this.map);
+	      this.map.setCenter(newProps.googlePos); // needs work
+	    }
+	  },
 	
 	  setCoords: function (e) {
 	    alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
 	  },
 	
-	  placeMarker: function (latLng, map) {
+	  removeMarker: function () {
 	    if (this.marker) {
 	      this.marker.setMap(null);
 	    }
-	    this.marker = new google.maps.Marker({
+	  },
+	
+	  placeMarker: function (latLng, map) {
+	    var self = this;
+	    self.removeMarker();
+	    self.marker = new google.maps.Marker({
 	      position: latLng,
+	      draggable: true,
 	      map: map
+	    });
+	
+	    google.maps.event.addListener(self.marker, 'dragend', function () {
+	      var pos = self.marker.getPosition();
+	      MapUtil.geocodePosition(pos, self.geoSuccess, self.geoError);
+	      self.props.setLatLng(pos);
+	    });
+	  },
+	
+	  geoSuccess: function (result) {
+	    this.props.setAddress(result);
+	    $(document).ready(function () {
+	      Materialize.updateTextFields();
+	    });
+	  },
+	
+	  geoError: function (status) {
+	    this.props.setAddress('Unknown location: ' + status);
+	    $(document).ready(function () {
+	      Materialize.updateTextFields();
 	    });
 	  },
 	
@@ -34036,13 +34205,13 @@
 	    self.map = new google.maps.Map(mapDOMNode, mapOptions);
 	
 	    self.map.addListener('click', function (e) {
-	      self.placeMarker(e.latLng, self.map);
-	      self.props.clickCB(e.latLng.lat(), e.latLng.lng());
+	      MapUtil.geocodePosition(e.latLng, self.geoSuccess, self.geoError);
+	      self.props.setLatLng(e.latLng);
 	    });
 	  },
 	
 	  render: function () {
-	    return React.createElement("div", { id: "map", ref: "map" });
+	    return React.createElement('div', { id: 'map', ref: 'map' });
 	  }
 	});
 
@@ -60084,6 +60253,1965 @@
 	}).call(this);
 	
 	//# sourceMappingURL=uploader.js.map
+
+
+/***/ },
+/* 334 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    hashHistory = __webpack_require__(166).hashHistory,
+	    ProductStore = __webpack_require__(227),
+	    ClientActions = __webpack_require__(250);
+	
+	var Map = __webpack_require__(336),
+	    Seller = __webpack_require__(337),
+	    Carousel = __webpack_require__(338),
+	    Offer = __webpack_require__(340),
+	    Description = __webpack_require__(339);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    var productId = this.props.params.productId;
+	    var blankProduct = {
+	      title: '',
+	      description: '',
+	      price: '',
+	      img_urls: [],
+	      lat: '',
+	      lng: ''
+	    };
+	
+	    var product = ProductStore.find(productId) || blankProduct;
+	    return { product: product };
+	  },
+	
+	  componentDidMount: function () {
+	    this.productListener = ProductStore.addListener(this._productChanged);
+	    ClientActions.getProduct(this.props.params.productId);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.productListener.remove();
+	  },
+	
+	  _productChanged: function () {
+	    var productId = this.props.params.productId;
+	    var product = ProductStore.find(productId);
+	    this.setState({ product: product });
+	  },
+	
+	  render: function () {
+	    var product = this.state.product;
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'h1',
+	        { className: 'center-align' },
+	        product.title
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'row product-detail' },
+	        React.createElement(
+	          'div',
+	          { className: 'col s12 m8 detail-left' },
+	          React.createElement(
+	            'div',
+	            { className: 'card detail-content' },
+	            React.createElement(
+	              'div',
+	              { className: 'detail-image' },
+	              React.createElement(Carousel, { images: product.img_urls })
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'detail-content' },
+	              React.createElement(Description, { description: product.description })
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'col s12 m4 detail-right' },
+	          React.createElement(Offer, { price: product.price }),
+	          React.createElement(Map, { lat: product.lat, lng: product.lng })
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 335 */,
+/* 336 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  render: function () {
+	    return React.createElement('div', null);
+	  }
+	});
+
+/***/ },
+/* 337 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  render: function () {
+	    return;
+	  }
+	});
+
+/***/ },
+/* 338 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var Carousel = __webpack_require__(341);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [Carousel.ControllerMixin],
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({});
+	  },
+	
+	  render: function () {
+	    var images;
+	    if (this.props.images) {
+	      images = this.props.images.map(function (url) {
+	        return React.createElement('img', { key: url, src: url });
+	      });
+	    } else {
+	      images = '';
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'carousel-wrapper' },
+	      React.createElement(
+	        Carousel,
+	        null,
+	        images
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 339 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({});
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'detail-description' },
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Description'
+	      ),
+	      React.createElement(
+	        'p',
+	        null,
+	        this.props.description
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 340 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'offer card' },
+	      React.createElement(
+	        'div',
+	        { className: 'detail-offer valign-wrapper' },
+	        React.createElement(
+	          'span',
+	          { className: 'valign' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Ask price:  '
+	          ),
+	          '$' + this.props.price
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'waves-effect waves-light btn right' },
+	          'Offer'
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 341 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Carousel = __webpack_require__(342);
+	
+	module.exports = Carousel;
+
+
+/***/ },
+/* 342 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(32);
+	
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+	
+	var _kwReactTweenState = __webpack_require__(343);
+	
+	var _kwReactTweenState2 = _interopRequireDefault(_kwReactTweenState);
+	
+	var _decorators = __webpack_require__(344);
+	
+	var _decorators2 = _interopRequireDefault(_decorators);
+	
+	var _objectAssign = __webpack_require__(4);
+	
+	var _objectAssign2 = _interopRequireDefault(_objectAssign);
+	
+	var _exenv = __webpack_require__(345);
+	
+	var _exenv2 = _interopRequireDefault(_exenv);
+	
+	var addEvent = function addEvent(elem, type, eventHandle) {
+	  if (elem === null || typeof elem === 'undefined') {
+	    return;
+	  }
+	  if (elem.addEventListener) {
+	    elem.addEventListener(type, eventHandle, false);
+	  } else if (elem.attachEvent) {
+	    elem.attachEvent('on' + type, eventHandle);
+	  } else {
+	    elem['on' + type] = eventHandle;
+	  }
+	};
+	
+	var removeEvent = function removeEvent(elem, type, eventHandle) {
+	  if (elem === null || typeof elem === 'undefined') {
+	    return;
+	  }
+	  if (elem.removeEventListener) {
+	    elem.removeEventListener(type, eventHandle, false);
+	  } else if (elem.detachEvent) {
+	    elem.detachEvent('on' + type, eventHandle);
+	  } else {
+	    elem['on' + type] = null;
+	  }
+	};
+	
+	var Carousel = _react2['default'].createClass({
+	  displayName: 'Carousel',
+	
+	  mixins: [_kwReactTweenState2['default'].Mixin],
+	
+	  propTypes: {
+	    afterSlide: _react2['default'].PropTypes.func,
+	    beforeSlide: _react2['default'].PropTypes.func,
+	    cellAlign: _react2['default'].PropTypes.oneOf(['left', 'center', 'right']),
+	    cellSpacing: _react2['default'].PropTypes.number,
+	    data: _react2['default'].PropTypes.func,
+	    decorators: _react2['default'].PropTypes.arrayOf(_react2['default'].PropTypes.shape({
+	      component: _react2['default'].PropTypes.func,
+	      position: _react2['default'].PropTypes.oneOf(['TopLeft', 'TopCenter', 'TopRight', 'CenterLeft', 'CenterCenter', 'CenterRight', 'BottomLeft', 'BottomCenter', 'BottomRight']),
+	      style: _react2['default'].PropTypes.object
+	    })),
+	    dragging: _react2['default'].PropTypes.bool,
+	    easing: _react2['default'].PropTypes.string,
+	    edgeEasing: _react2['default'].PropTypes.string,
+	    framePadding: _react2['default'].PropTypes.string,
+	    initialSlideHeight: _react2['default'].PropTypes.number,
+	    initialSlideWidth: _react2['default'].PropTypes.number,
+	    slideIndex: _react2['default'].PropTypes.number,
+	    slidesToShow: _react2['default'].PropTypes.number,
+	    slidesToScroll: _react2['default'].PropTypes.oneOfType([_react2['default'].PropTypes.number, _react2['default'].PropTypes.oneOf(['auto'])]),
+	    slideWidth: _react2['default'].PropTypes.oneOfType([_react2['default'].PropTypes.string, _react2['default'].PropTypes.number]),
+	    speed: _react2['default'].PropTypes.number,
+	    vertical: _react2['default'].PropTypes.bool,
+	    width: _react2['default'].PropTypes.string
+	  },
+	
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      afterSlide: function afterSlide() {},
+	      beforeSlide: function beforeSlide() {},
+	      cellAlign: 'left',
+	      cellSpacing: 0,
+	      data: function data() {},
+	      decorators: _decorators2['default'],
+	      dragging: true,
+	      easing: 'easeOutCirc',
+	      edgeEasing: 'easeOutElastic',
+	      framePadding: '0px',
+	      slideIndex: 0,
+	      slidesToScroll: 1,
+	      slidesToShow: 1,
+	      slideWidth: 1,
+	      speed: 500,
+	      vertical: false,
+	      width: '100%'
+	    };
+	  },
+	
+	  getInitialState: function getInitialState() {
+	    return {
+	      currentSlide: this.props.slideIndex,
+	      dragging: false,
+	      frameWidth: 0,
+	      left: 0,
+	      slideCount: 0,
+	      slidesToScroll: this.props.slidesToScroll,
+	      slideWidth: 0,
+	      top: 0
+	    };
+	  },
+	
+	  componentWillMount: function componentWillMount() {
+	    this.setInitialDimensions();
+	  },
+	
+	  componentDidMount: function componentDidMount() {
+	    this.setDimensions();
+	    this.bindEvents();
+	    this.setExternalData();
+	  },
+	
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    this.setState({
+	      slideCount: nextProps.children.length
+	    });
+	    this.setDimensions();
+	    if (nextProps.slideIndex !== this.state.currentSlide) {
+	      this.goToSlide(nextProps.slideIndex);
+	    }
+	  },
+	
+	  componentWillUnmount: function componentWillUnmount() {
+	    this.unbindEvents();
+	  },
+	
+	  render: function render() {
+	    var self = this;
+	    var children = _react2['default'].Children.count(this.props.children) > 1 ? this.formatChildren(this.props.children) : this.props.children;
+	    return _react2['default'].createElement(
+	      'div',
+	      { className: ['slider', this.props.className || ''].join(' '), ref: 'slider', style: (0, _objectAssign2['default'])(this.getSliderStyles(), this.props.style || {}) },
+	      _react2['default'].createElement(
+	        'div',
+	        _extends({ className: 'slider-frame',
+	          ref: 'frame',
+	          style: this.getFrameStyles()
+	        }, this.getTouchEvents(), this.getMouseEvents(), {
+	          onClick: this.handleClick }),
+	        _react2['default'].createElement(
+	          'ul',
+	          { className: 'slider-list', ref: 'list', style: this.getListStyles() },
+	          children
+	        )
+	      ),
+	      this.props.decorators ? this.props.decorators.map(function (Decorator, index) {
+	        return _react2['default'].createElement(
+	          'div',
+	          {
+	            style: (0, _objectAssign2['default'])(self.getDecoratorStyles(Decorator.position), Decorator.style || {}),
+	            className: 'slider-decorator-' + index,
+	            key: index },
+	          _react2['default'].createElement(Decorator.component, {
+	            currentSlide: self.state.currentSlide,
+	            slideCount: self.state.slideCount,
+	            frameWidth: self.state.frameWidth,
+	            slideWidth: self.state.slideWidth,
+	            slidesToScroll: self.state.slidesToScroll,
+	            cellSpacing: self.props.cellSpacing,
+	            slidesToShow: self.props.slidesToShow,
+	            nextSlide: self.nextSlide,
+	            previousSlide: self.previousSlide,
+	            goToSlide: self.goToSlide })
+	        );
+	      }) : null,
+	      _react2['default'].createElement('style', { type: 'text/css', dangerouslySetInnerHTML: { __html: self.getStyleTagStyles() } })
+	    );
+	  },
+	
+	  // Touch Events
+	
+	  touchObject: {},
+	
+	  getTouchEvents: function getTouchEvents() {
+	    var self = this;
+	
+	    return {
+	      onTouchStart: function onTouchStart(e) {
+	        self.touchObject = {
+	          startX: e.touches[0].pageX,
+	          startY: e.touches[0].pageY
+	        };
+	      },
+	      onTouchMove: function onTouchMove(e) {
+	        var direction = self.swipeDirection(self.touchObject.startX, e.touches[0].pageX, self.touchObject.startY, e.touches[0].pageY);
+	
+	        if (direction !== 0) {
+	          e.preventDefault();
+	        }
+	
+	        var length = self.props.vertical ? Math.round(Math.sqrt(Math.pow(e.touches[0].pageY - self.touchObject.startY, 2))) : Math.round(Math.sqrt(Math.pow(e.touches[0].pageX - self.touchObject.startX, 2)));
+	
+	        self.touchObject = {
+	          startX: self.touchObject.startX,
+	          startY: self.touchObject.startY,
+	          endX: e.touches[0].pageX,
+	          endY: e.touches[0].pageY,
+	          length: length,
+	          direction: direction
+	        };
+	
+	        self.setState({
+	          left: self.props.vertical ? 0 : self.getTargetLeft(self.touchObject.length * self.touchObject.direction),
+	          top: self.props.vertical ? self.getTargetLeft(self.touchObject.length * self.touchObject.direction) : 0
+	        });
+	      },
+	      onTouchEnd: function onTouchEnd(e) {
+	        self.handleSwipe(e);
+	      },
+	      onTouchCancel: function onTouchCancel(e) {
+	        self.handleSwipe(e);
+	      }
+	    };
+	  },
+	
+	  clickSafe: true,
+	
+	  getMouseEvents: function getMouseEvents() {
+	    var self = this;
+	
+	    if (this.props.dragging === false) {
+	      return null;
+	    }
+	
+	    return {
+	      onMouseDown: function onMouseDown(e) {
+	        self.touchObject = {
+	          startX: e.clientX,
+	          startY: e.clientY
+	        };
+	
+	        self.setState({
+	          dragging: true
+	        });
+	      },
+	      onMouseMove: function onMouseMove(e) {
+	        if (!self.state.dragging) {
+	          return;
+	        }
+	
+	        var direction = self.swipeDirection(self.touchObject.startX, e.clientX, self.touchObject.startY, e.clientY);
+	
+	        if (direction !== 0) {
+	          e.preventDefault();
+	        }
+	
+	        var length = self.props.vertical ? Math.round(Math.sqrt(Math.pow(e.clientY - self.touchObject.startY, 2))) : Math.round(Math.sqrt(Math.pow(e.clientX - self.touchObject.startX, 2)));
+	
+	        self.touchObject = {
+	          startX: self.touchObject.startX,
+	          startY: self.touchObject.startY,
+	          endX: e.clientX,
+	          endY: e.clientY,
+	          length: length,
+	          direction: direction
+	        };
+	
+	        self.setState({
+	          left: self.props.vertical ? 0 : self.getTargetLeft(self.touchObject.length * self.touchObject.direction),
+	          top: self.props.vertical ? self.getTargetLeft(self.touchObject.length * self.touchObject.direction) : 0
+	        });
+	      },
+	      onMouseUp: function onMouseUp(e) {
+	        if (!self.state.dragging) {
+	          return;
+	        }
+	
+	        self.handleSwipe(e);
+	      },
+	      onMouseLeave: function onMouseLeave(e) {
+	        if (!self.state.dragging) {
+	          return;
+	        }
+	
+	        self.handleSwipe(e);
+	      }
+	    };
+	  },
+	
+	  handleClick: function handleClick(e) {
+	    if (this.clickSafe === true) {
+	      e.preventDefault();
+	      e.stopPropagation();
+	
+	      if (e.nativeEvent) {
+	        e.nativeEvent.stopPropagation();
+	      }
+	    }
+	  },
+	
+	  handleSwipe: function handleSwipe(e) {
+	    if (typeof this.touchObject.length !== 'undefined' && this.touchObject.length > 44) {
+	      this.clickSafe = true;
+	    } else {
+	      this.clickSafe = false;
+	    }
+	
+	    if (this.touchObject.length > this.state.slideWidth / this.props.slidesToShow / 5) {
+	      if (this.touchObject.direction === 1) {
+	        if (this.state.currentSlide >= _react2['default'].Children.count(this.props.children) - this.props.slidesToShow) {
+	          this.animateSlide(_kwReactTweenState2['default'].easingTypes[this.props.edgeEasing]);
+	        } else {
+	          this.nextSlide();
+	        }
+	      } else if (this.touchObject.direction === -1) {
+	        if (this.state.currentSlide <= 0) {
+	          this.animateSlide(_kwReactTweenState2['default'].easingTypes[this.props.edgeEasing]);
+	        } else {
+	          this.previousSlide();
+	        }
+	      }
+	    } else {
+	      this.goToSlide(this.state.currentSlide);
+	    }
+	
+	    this.touchObject = {};
+	
+	    this.setState({
+	      dragging: false
+	    });
+	  },
+	
+	  swipeDirection: function swipeDirection(x1, x2, y1, y2) {
+	
+	    var xDist, yDist, r, swipeAngle;
+	
+	    xDist = x1 - x2;
+	    yDist = y1 - y2;
+	    r = Math.atan2(yDist, xDist);
+	
+	    swipeAngle = Math.round(r * 180 / Math.PI);
+	    if (swipeAngle < 0) {
+	      swipeAngle = 360 - Math.abs(swipeAngle);
+	    }
+	    if (swipeAngle <= 45 && swipeAngle >= 0) {
+	      return 1;
+	    }
+	    if (swipeAngle <= 360 && swipeAngle >= 315) {
+	      return 1;
+	    }
+	    if (swipeAngle >= 135 && swipeAngle <= 225) {
+	      return -1;
+	    }
+	    if (this.props.vertical === true) {
+	      if (swipeAngle >= 35 && swipeAngle <= 135) {
+	        return 1;
+	      } else {
+	        return -1;
+	      }
+	    }
+	    return 0;
+	  },
+	
+	  // Action Methods
+	
+	  goToSlide: function goToSlide(index) {
+	    var self = this;
+	    if (index >= _react2['default'].Children.count(this.props.children) || index < 0) {
+	      return;
+	    }
+	
+	    this.props.beforeSlide(this.state.currentSlide, index);
+	
+	    this.setState({
+	      currentSlide: index
+	    }, function () {
+	      self.animateSlide();
+	      this.props.afterSlide(index);
+	      self.setExternalData();
+	    });
+	  },
+	
+	  nextSlide: function nextSlide() {
+	    var childrenCount = _react2['default'].Children.count(this.props.children);
+	    if (this.state.currentSlide >= childrenCount - this.props.slidesToShow) {
+	      return;
+	    }
+	
+	    this.goToSlide(Math.min(this.state.currentSlide + this.state.slidesToScroll, childrenCount - this.props.slidesToShow));
+	  },
+	
+	  previousSlide: function previousSlide() {
+	    if (this.state.currentSlide <= 0) {
+	      return;
+	    }
+	
+	    this.goToSlide(Math.max(0, this.state.currentSlide - this.state.slidesToScroll));
+	  },
+	
+	  // Animation
+	
+	  animateSlide: function animateSlide(easing, duration, endValue) {
+	    this.tweenState(this.props.vertical ? 'top' : 'left', {
+	      easing: easing || _kwReactTweenState2['default'].easingTypes[this.props.easing],
+	      duration: duration || this.props.speed,
+	      endValue: endValue || this.getTargetLeft()
+	    });
+	  },
+	
+	  getTargetLeft: function getTargetLeft(touchOffset) {
+	    var offset;
+	    switch (this.props.cellAlign) {
+	      case 'left':
+	        {
+	          offset = 0;
+	          offset -= this.props.cellSpacing * this.state.currentSlide;
+	          break;
+	        }
+	      case 'center':
+	        {
+	          offset = (this.state.frameWidth - this.state.slideWidth) / 2;
+	          offset -= this.props.cellSpacing * this.state.currentSlide;
+	          break;
+	        }
+	      case 'right':
+	        {
+	          offset = this.state.frameWidth - this.state.slideWidth;
+	          offset -= this.props.cellSpacing * this.state.currentSlide;
+	          break;
+	        }
+	    }
+	
+	    if (this.props.vertical) {
+	      offset = offset / 2;
+	    }
+	
+	    offset -= touchOffset || 0;
+	
+	    return (this.state.slideWidth * this.state.currentSlide - offset) * -1;
+	  },
+	
+	  // Bootstrapping
+	
+	  bindEvents: function bindEvents() {
+	    var self = this;
+	    if (_exenv2['default'].canUseDOM) {
+	      addEvent(window, 'resize', self.onResize);
+	      addEvent(document, 'readystatechange', self.onReadyStateChange);
+	    }
+	  },
+	
+	  onResize: function onResize() {
+	    this.setDimensions();
+	  },
+	
+	  onReadyStateChange: function onReadyStateChange() {
+	    this.setDimensions();
+	  },
+	
+	  unbindEvents: function unbindEvents() {
+	    var self = this;
+	    if (_exenv2['default'].canUseDOM) {
+	      removeEvent(window, 'resize', self.onResize);
+	      removeEvent(document, 'readystatechange', self.onReadyStateChange);
+	    }
+	  },
+	
+	  formatChildren: function formatChildren(children) {
+	    var self = this;
+	    return _react2['default'].Children.map(children, function (child, index) {
+	      return _react2['default'].createElement(
+	        'li',
+	        { className: 'slider-slide', style: self.getSlideStyles(), key: index },
+	        child
+	      );
+	    });
+	  },
+	
+	  setInitialDimensions: function setInitialDimensions() {
+	    var self = this,
+	        slideWidth,
+	        frameHeight,
+	        slideHeight;
+	
+	    slideWidth = this.props.vertical ? this.props.initialSlideHeight || 0 : this.props.initialSlideWidth || 0;
+	    slideHeight = this.props.initialSlideHeight ? this.props.initialSlideHeight * this.props.slidesToShow : 0;
+	
+	    frameHeight = slideHeight + this.props.cellSpacing / 2 * (this.props.slidesToShow - 1);
+	
+	    this.setState({
+	      frameWidth: this.props.vertical ? frameHeight : '100%',
+	      slideCount: _react2['default'].Children.count(this.props.children),
+	      slideWidth: slideWidth
+	    }, function () {
+	      self.setLeft();
+	      self.setExternalData();
+	    });
+	  },
+	
+	  setDimensions: function setDimensions() {
+	    var self = this,
+	        slideWidth,
+	        slidesToScroll,
+	        firstSlide,
+	        frame,
+	        frameWidth,
+	        frameHeight,
+	        slideHeight;
+	
+	    slidesToScroll = this.props.slidesToScroll;
+	    frame = this.refs.frame;
+	    firstSlide = frame.childNodes[0].childNodes[0];
+	    if (firstSlide) {
+	      firstSlide.style.height = 'auto';
+	      slideHeight = firstSlide.offsetHeight * this.props.slidesToShow;
+	    } else {
+	      slideHeight = 100;
+	    }
+	
+	    if (typeof this.props.slideWidth !== 'number') {
+	      slideWidth = parseInt(this.props.slideWidth);
+	    } else {
+	      if (this.props.vertical) {
+	        slideWidth = slideHeight / this.props.slidesToShow * this.props.slideWidth;
+	      } else {
+	        slideWidth = frame.offsetWidth / this.props.slidesToShow * this.props.slideWidth;
+	      }
+	    }
+	
+	    if (!this.props.vertical) {
+	      slideWidth -= this.props.cellSpacing * ((100 - 100 / this.props.slidesToShow) / 100);
+	    }
+	
+	    frameHeight = slideHeight + this.props.cellSpacing / 2 * (this.props.slidesToShow - 1);
+	    frameWidth = this.props.vertical ? frameHeight : frame.offsetWidth;
+	
+	    if (this.props.slidesToScroll === 'auto') {
+	      slidesToScroll = Math.floor(frameWidth / (slideWidth + this.props.cellSpacing));
+	    }
+	
+	    this.setState({
+	      frameWidth: frameWidth,
+	      slideWidth: slideWidth,
+	      slidesToScroll: slidesToScroll,
+	      left: this.props.vertical ? 0 : this.getTargetLeft(),
+	      top: this.props.vertical ? this.getTargetLeft() : 0
+	    }, function () {
+	      self.setLeft();
+	    });
+	  },
+	
+	  setLeft: function setLeft() {
+	    this.setState({
+	      left: this.props.vertical ? 0 : this.getTargetLeft(),
+	      top: this.props.vertical ? this.getTargetLeft() : 0
+	    });
+	  },
+	
+	  // Data
+	
+	  setExternalData: function setExternalData() {
+	    if (this.props.data) {
+	      this.props.data();
+	    }
+	  },
+	
+	  // Styles
+	
+	  getListStyles: function getListStyles() {
+	    var listWidth = this.state.slideWidth * _react2['default'].Children.count(this.props.children);
+	    var spacingOffset = this.props.cellSpacing * _react2['default'].Children.count(this.props.children);
+	    var transform = 'translate3d(' + this.getTweeningValue('left') + 'px, ' + this.getTweeningValue('top') + 'px, 0)';
+	    return {
+	      transform: transform,
+	      WebkitTransform: transform,
+	      msTransform: 'translate(' + this.getTweeningValue('left') + 'px, ' + this.getTweeningValue('top') + 'px)',
+	      position: 'relative',
+	      display: 'block',
+	      margin: this.props.vertical ? this.props.cellSpacing / 2 * -1 + 'px 0px' : '0px ' + this.props.cellSpacing / 2 * -1 + 'px',
+	      padding: 0,
+	      height: this.props.vertical ? listWidth + spacingOffset : 'auto',
+	      width: this.props.vertical ? 'auto' : listWidth + spacingOffset,
+	      cursor: this.state.dragging === true ? 'pointer' : 'inherit',
+	      boxSizing: 'border-box',
+	      MozBoxSizing: 'border-box'
+	    };
+	  },
+	
+	  getFrameStyles: function getFrameStyles() {
+	    return {
+	      position: 'relative',
+	      display: 'block',
+	      overflow: 'hidden',
+	      height: this.props.vertical ? this.state.frameWidth || 'initial' : 'auto',
+	      margin: this.props.framePadding,
+	      padding: 0,
+	      transform: 'translate3d(0, 0, 0)',
+	      WebkitTransform: 'translate3d(0, 0, 0)',
+	      msTransform: 'translate(0, 0)',
+	      boxSizing: 'border-box',
+	      MozBoxSizing: 'border-box'
+	    };
+	  },
+	
+	  getSlideStyles: function getSlideStyles() {
+	    return {
+	      display: this.props.vertical ? 'block' : 'inline-block',
+	      listStyleType: 'none',
+	      verticalAlign: 'top',
+	      width: this.props.vertical ? '100%' : this.state.slideWidth,
+	      height: 'auto',
+	      boxSizing: 'border-box',
+	      MozBoxSizing: 'border-box',
+	      marginLeft: this.props.vertical ? 'auto' : this.props.cellSpacing / 2,
+	      marginRight: this.props.vertical ? 'auto' : this.props.cellSpacing / 2,
+	      marginTop: this.props.vertical ? this.props.cellSpacing / 2 : 'auto',
+	      marginBottom: this.props.vertical ? this.props.cellSpacing / 2 : 'auto'
+	    };
+	  },
+	
+	  getSliderStyles: function getSliderStyles() {
+	    return {
+	      position: 'relative',
+	      display: 'block',
+	      width: this.props.width,
+	      height: 'auto',
+	      boxSizing: 'border-box',
+	      MozBoxSizing: 'border-box',
+	      visibility: this.state.slideWidth ? 'visible' : 'hidden'
+	    };
+	  },
+	
+	  getStyleTagStyles: function getStyleTagStyles() {
+	    return '.slider-slide > img {width: 100%; display: block;}';
+	  },
+	
+	  getDecoratorStyles: function getDecoratorStyles(position) {
+	    switch (position) {
+	      case 'TopLeft':
+	        {
+	          return {
+	            position: 'absolute',
+	            top: 0,
+	            left: 0
+	          };
+	        }
+	      case 'TopCenter':
+	        {
+	          return {
+	            position: 'absolute',
+	            top: 0,
+	            left: '50%',
+	            transform: 'translateX(-50%)',
+	            WebkitTransform: 'translateX(-50%)',
+	            msTransform: 'translateX(-50%)'
+	          };
+	        }
+	      case 'TopRight':
+	        {
+	          return {
+	            position: 'absolute',
+	            top: 0,
+	            right: 0
+	          };
+	        }
+	      case 'CenterLeft':
+	        {
+	          return {
+	            position: 'absolute',
+	            top: '50%',
+	            left: 0,
+	            transform: 'translateY(-50%)',
+	            WebkitTransform: 'translateY(-50%)',
+	            msTransform: 'translateY(-50%)'
+	          };
+	        }
+	      case 'CenterCenter':
+	        {
+	          return {
+	            position: 'absolute',
+	            top: '50%',
+	            left: '50%',
+	            transform: 'translate(-50%,-50%)',
+	            WebkitTransform: 'translate(-50%, -50%)',
+	            msTransform: 'translate(-50%, -50%)'
+	          };
+	        }
+	      case 'CenterRight':
+	        {
+	          return {
+	            position: 'absolute',
+	            top: '50%',
+	            right: 0,
+	            transform: 'translateY(-50%)',
+	            WebkitTransform: 'translateY(-50%)',
+	            msTransform: 'translateY(-50%)'
+	          };
+	        }
+	      case 'BottomLeft':
+	        {
+	          return {
+	            position: 'absolute',
+	            bottom: 0,
+	            left: 0
+	          };
+	        }
+	      case 'BottomCenter':
+	        {
+	          return {
+	            position: 'absolute',
+	            bottom: 0,
+	            left: '50%',
+	            transform: 'translateX(-50%)',
+	            WebkitTransform: 'translateX(-50%)',
+	            msTransform: 'translateX(-50%)'
+	          };
+	        }
+	      case 'BottomRight':
+	        {
+	          return {
+	            position: 'absolute',
+	            bottom: 0,
+	            right: 0
+	          };
+	        }
+	      default:
+	        {
+	          return {
+	            position: 'absolute',
+	            top: 0,
+	            left: 0
+	          };
+	        }
+	    }
+	  }
+	
+	});
+	
+	Carousel.ControllerMixin = {
+	  getInitialState: function getInitialState() {
+	    return {
+	      carousels: {}
+	    };
+	  },
+	  setCarouselData: function setCarouselData(carousel) {
+	    var data = this.state.carousels;
+	    data[carousel] = this.refs[carousel];
+	    this.setState({
+	      carousels: data
+	    });
+	  }
+	};
+	
+	exports['default'] = Carousel;
+	module.exports = exports['default'];
+
+/***/ },
+/* 343 */
+/***/ function(module, exports, __webpack_require__) {
+
+	(function webpackUniversalModuleDefinition(root, factory) {
+		if(true)
+			module.exports = factory();
+		else if(typeof define === 'function' && define.amd)
+			define([], factory);
+		else if(typeof exports === 'object')
+			exports["tweenState"] = factory();
+		else
+			root["tweenState"] = factory();
+	})(this, function() {
+	return /******/ (function(modules) { // webpackBootstrap
+	/******/ 	// The module cache
+	/******/ 	var installedModules = {};
+	/******/
+	/******/ 	// The require function
+	/******/ 	function __webpack_require__(moduleId) {
+	/******/
+	/******/ 		// Check if module is in cache
+	/******/ 		if(installedModules[moduleId])
+	/******/ 			return installedModules[moduleId].exports;
+	/******/
+	/******/ 		// Create a new module (and put it into the cache)
+	/******/ 		var module = installedModules[moduleId] = {
+	/******/ 			exports: {},
+	/******/ 			id: moduleId,
+	/******/ 			loaded: false
+	/******/ 		};
+	/******/
+	/******/ 		// Execute the module function
+	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+	/******/
+	/******/ 		// Flag the module as loaded
+	/******/ 		module.loaded = true;
+	/******/
+	/******/ 		// Return the exports of the module
+	/******/ 		return module.exports;
+	/******/ 	}
+	/******/
+	/******/
+	/******/ 	// expose the modules object (__webpack_modules__)
+	/******/ 	__webpack_require__.m = modules;
+	/******/
+	/******/ 	// expose the module cache
+	/******/ 	__webpack_require__.c = installedModules;
+	/******/
+	/******/ 	// __webpack_public_path__
+	/******/ 	__webpack_require__.p = "";
+	/******/
+	/******/ 	// Load entry module and return exports
+	/******/ 	return __webpack_require__(0);
+	/******/ })
+	/************************************************************************/
+	/******/ ({
+	
+	/***/ 0:
+	/*!*****************!*\
+	  !*** multi lib ***!
+	  \*****************/
+	/***/ function(module, exports, __webpack_require__) {
+	
+		module.exports = __webpack_require__(/*! ./index.js */169);
+	
+	
+	/***/ },
+	
+	/***/ 5:
+	/*!******************************!*\
+	  !*** ./~/process/browser.js ***!
+	  \******************************/
+	/***/ function(module, exports) {
+	
+		// shim for using process in browser
+		
+		var process = module.exports = {};
+		var queue = [];
+		var draining = false;
+		var currentQueue;
+		var queueIndex = -1;
+		
+		function cleanUpNextTick() {
+		    draining = false;
+		    if (currentQueue.length) {
+		        queue = currentQueue.concat(queue);
+		    } else {
+		        queueIndex = -1;
+		    }
+		    if (queue.length) {
+		        drainQueue();
+		    }
+		}
+		
+		function drainQueue() {
+		    if (draining) {
+		        return;
+		    }
+		    var timeout = setTimeout(cleanUpNextTick);
+		    draining = true;
+		
+		    var len = queue.length;
+		    while(len) {
+		        currentQueue = queue;
+		        queue = [];
+		        while (++queueIndex < len) {
+		            if (currentQueue) {
+		                currentQueue[queueIndex].run();
+		            }
+		        }
+		        queueIndex = -1;
+		        len = queue.length;
+		    }
+		    currentQueue = null;
+		    draining = false;
+		    clearTimeout(timeout);
+		}
+		
+		process.nextTick = function (fun) {
+		    var args = new Array(arguments.length - 1);
+		    if (arguments.length > 1) {
+		        for (var i = 1; i < arguments.length; i++) {
+		            args[i - 1] = arguments[i];
+		        }
+		    }
+		    queue.push(new Item(fun, args));
+		    if (queue.length === 1 && !draining) {
+		        setTimeout(drainQueue, 0);
+		    }
+		};
+		
+		// v8 likes predictible objects
+		function Item(fun, array) {
+		    this.fun = fun;
+		    this.array = array;
+		}
+		Item.prototype.run = function () {
+		    this.fun.apply(null, this.array);
+		};
+		process.title = 'browser';
+		process.browser = true;
+		process.env = {};
+		process.argv = [];
+		process.version = ''; // empty string to avoid regexp issues
+		process.versions = {};
+		
+		function noop() {}
+		
+		process.on = noop;
+		process.addListener = noop;
+		process.once = noop;
+		process.off = noop;
+		process.removeListener = noop;
+		process.removeAllListeners = noop;
+		process.emit = noop;
+		
+		process.binding = function (name) {
+		    throw new Error('process.binding is not supported');
+		};
+		
+		process.cwd = function () { return '/' };
+		process.chdir = function (dir) {
+		    throw new Error('process.chdir is not supported');
+		};
+		process.umask = function() { return 0; };
+	
+	
+	/***/ },
+	
+	/***/ 169:
+	/*!******************!*\
+	  !*** ./index.js ***!
+	  \******************/
+	/***/ function(module, exports, __webpack_require__) {
+	
+		'use strict';
+		
+		Object.defineProperty(exports, '__esModule', {
+		  value: true
+		});
+		
+		function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+		
+		var _tweenFunctions = __webpack_require__(/*! tween-functions */ 170);
+		
+		var _tweenFunctions2 = _interopRequireDefault(_tweenFunctions);
+		
+		var _raf = __webpack_require__(/*! raf */ 171);
+		
+		var _raf2 = _interopRequireDefault(_raf);
+		
+		// additive is the new iOS 8 default. In most cases it simulates a physics-
+		// looking overshoot behavior (especially with easeInOut. You can test that in
+		// the example
+		var DEFAULT_STACK_BEHAVIOR = 'ADDITIVE';
+		var DEFAULT_EASING = _tweenFunctions.easeInOutQuad;
+		var DEFAULT_DURATION = 300;
+		var DEFAULT_DELAY = 0;
+		
+		var stackBehavior = {
+		  ADDITIVE: 'ADDITIVE',
+		  DESTRUCTIVE: 'DESTRUCTIVE'
+		};
+		
+		var Mixin = {
+		  _rafID: null,
+		
+		  getInitialState: function getInitialState() {
+		    return {
+		      tweenQueue: []
+		    };
+		  },
+		
+		  componentWillUnmount: function componentWillUnmount() {
+		    _raf2['default'].cancel(this._rafID);
+		    this._rafID = -1;
+		  },
+		
+		  tweenState: function tweenState(path, _ref) {
+		    var _this = this;
+		
+		    var easing = _ref.easing;
+		    var duration = _ref.duration;
+		    var delay = _ref.delay;
+		    var beginValue = _ref.beginValue;
+		    var endValue = _ref.endValue;
+		    var onEnd = _ref.onEnd;
+		    var configSB = _ref.stackBehavior;
+		
+		    this.setState(function (state) {
+		      var cursor = state;
+		      var stateName = undefined;
+		      // see comment below on pash hash
+		      var pathHash = undefined;
+		      if (typeof path === 'string') {
+		        stateName = path;
+		        pathHash = path;
+		      } else {
+		        for (var i = 0; i < path.length - 1; i++) {
+		          cursor = cursor[path[i]];
+		        }
+		        stateName = path[path.length - 1];
+		        pathHash = path.join('|');
+		      }
+		      // see the reasoning for these defaults at the top of file
+		      var newConfig = {
+		        easing: easing || DEFAULT_EASING,
+		        duration: duration == null ? DEFAULT_DURATION : duration,
+		        delay: delay == null ? DEFAULT_DELAY : delay,
+		        beginValue: beginValue == null ? cursor[stateName] : beginValue,
+		        endValue: endValue,
+		        onEnd: onEnd,
+		        stackBehavior: configSB || DEFAULT_STACK_BEHAVIOR
+		      };
+		
+		      var newTweenQueue = state.tweenQueue;
+		      if (newConfig.stackBehavior === stackBehavior.DESTRUCTIVE) {
+		        newTweenQueue = state.tweenQueue.filter(function (item) {
+		          return item.pathHash !== pathHash;
+		        });
+		      }
+		
+		      // we store path hash, so that during value retrieval we can use hash
+		      // comparison to find the path. See the kind of shitty thing you have to
+		      // do when you don't have value comparison for collections?
+		      newTweenQueue.push({
+		        pathHash: pathHash,
+		        config: newConfig,
+		        initTime: Date.now() + newConfig.delay
+		      });
+		
+		      // sorry for mutating. For perf reasons we don't want to deep clone.
+		      // guys, can we please all start using persistent collections so that
+		      // we can stop worrying about nonesense like this
+		      cursor[stateName] = newConfig.endValue;
+		      if (newTweenQueue.length === 1) {
+		        _this._rafID = (0, _raf2['default'])(_this._rafCb);
+		      }
+		
+		      // this will also include the above mutated update
+		      return { tweenQueue: newTweenQueue };
+		    });
+		  },
+		
+		  getTweeningValue: function getTweeningValue(path) {
+		    var state = this.state;
+		
+		    var tweeningValue = undefined;
+		    var pathHash = undefined;
+		    if (typeof path === 'string') {
+		      tweeningValue = state[path];
+		      pathHash = path;
+		    } else {
+		      tweeningValue = state;
+		      for (var i = 0; i < path.length; i++) {
+		        tweeningValue = tweeningValue[path[i]];
+		      }
+		      pathHash = path.join('|');
+		    }
+		    var now = Date.now();
+		
+		    for (var i = 0; i < state.tweenQueue.length; i++) {
+		      var _state$tweenQueue$i = state.tweenQueue[i];
+		      var itemPathHash = _state$tweenQueue$i.pathHash;
+		      var initTime = _state$tweenQueue$i.initTime;
+		      var config = _state$tweenQueue$i.config;
+		
+		      if (itemPathHash !== pathHash) {
+		        continue;
+		      }
+		
+		      var progressTime = now - initTime > config.duration ? config.duration : Math.max(0, now - initTime);
+		      // `now - initTime` can be negative if initTime is scheduled in the
+		      // future by a delay. In this case we take 0
+		
+		      // if duration is 0, consider that as jumping to endValue directly. This
+		      // is needed because the easing functino might have undefined behavior for
+		      // duration = 0
+		      var easeValue = config.duration === 0 ? config.endValue : config.easing(progressTime, config.beginValue, config.endValue, config.duration);
+		
+		      // TODO: some funcs accept a 5th param
+		      var contrib = easeValue - config.endValue;
+		      tweeningValue += contrib;
+		    }
+		
+		    return tweeningValue;
+		  },
+		
+		  _rafCb: function _rafCb() {
+		    var state = this.state;
+		    if (state.tweenQueue.length === 0) {
+		      return;
+		    }
+		
+		    var now = Date.now();
+		    var newTweenQueue = [];
+		
+		    for (var i = 0; i < state.tweenQueue.length; i++) {
+		      var item = state.tweenQueue[i];
+		      var initTime = item.initTime;
+		      var config = item.config;
+		
+		      if (now - initTime < config.duration) {
+		        newTweenQueue.push(item);
+		      } else {
+		        config.onEnd && config.onEnd();
+		      }
+		    }
+		
+		    // onEnd might trigger a parent callback that removes this component
+		    // -1 means we've canceled it in componentWillUnmount
+		    if (this._rafID === -1) {
+		      return;
+		    }
+		
+		    this.setState({
+		      tweenQueue: newTweenQueue
+		    });
+		
+		    this._rafID = (0, _raf2['default'])(this._rafCb);
+		  }
+		};
+		
+		exports['default'] = {
+		  Mixin: Mixin,
+		  easingTypes: _tweenFunctions2['default'],
+		  stackBehavior: stackBehavior
+		};
+		module.exports = exports['default'];
+	
+	/***/ },
+	
+	/***/ 170:
+	/*!************************************!*\
+	  !*** ./~/tween-functions/index.js ***!
+	  \************************************/
+	/***/ function(module, exports) {
+	
+		'use strict';
+		
+		// t: current time, b: beginning value, _c: final value, d: total duration
+		var tweenFunctions = {
+		  linear: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * t / d + b;
+		  },
+		  easeInQuad: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * (t /= d) * t + b;
+		  },
+		  easeOutQuad: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return -c * (t /= d) * (t - 2) + b;
+		  },
+		  easeInOutQuad: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if ((t /= d / 2) < 1) {
+		      return c / 2 * t * t + b;
+		    } else {
+		      return -c / 2 * ((--t) * (t - 2) - 1) + b;
+		    }
+		  },
+		  easeInCubic: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * (t /= d) * t * t + b;
+		  },
+		  easeOutCubic: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * ((t = t / d - 1) * t * t + 1) + b;
+		  },
+		  easeInOutCubic: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if ((t /= d / 2) < 1) {
+		      return c / 2 * t * t * t + b;
+		    } else {
+		      return c / 2 * ((t -= 2) * t * t + 2) + b;
+		    }
+		  },
+		  easeInQuart: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * (t /= d) * t * t * t + b;
+		  },
+		  easeOutQuart: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+		  },
+		  easeInOutQuart: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if ((t /= d / 2) < 1) {
+		      return c / 2 * t * t * t * t + b;
+		    } else {
+		      return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+		    }
+		  },
+		  easeInQuint: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * (t /= d) * t * t * t * t + b;
+		  },
+		  easeOutQuint: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+		  },
+		  easeInOutQuint: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if ((t /= d / 2) < 1) {
+		      return c / 2 * t * t * t * t * t + b;
+		    } else {
+		      return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+		    }
+		  },
+		  easeInSine: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+		  },
+		  easeOutSine: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * Math.sin(t / d * (Math.PI / 2)) + b;
+		  },
+		  easeInOutSine: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+		  },
+		  easeInExpo: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return (t==0) ? b : c * Math.pow(2, 10 * (t/d - 1)) + b;
+		  },
+		  easeOutExpo: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+		  },
+		  easeInOutExpo: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if (t === 0) {
+		      return b;
+		    }
+		    if (t === d) {
+		      return b + c;
+		    }
+		    if ((t /= d / 2) < 1) {
+		      return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+		    } else {
+		      return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+		    }
+		  },
+		  easeInCirc: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+		  },
+		  easeOutCirc: function(t, b, _c, d) {
+		    var c = _c - b;
+		    return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+		  },
+		  easeInOutCirc: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if ((t /= d / 2) < 1) {
+		      return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+		    } else {
+		      return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
+		    }
+		  },
+		  easeInElastic: function(t, b, _c, d) {
+		    var c = _c - b;
+		    var a, p, s;
+		    s = 1.70158;
+		    p = 0;
+		    a = c;
+		    if (t === 0) {
+		      return b;
+		    } else if ((t /= d) === 1) {
+		      return b + c;
+		    }
+		    if (!p) {
+		      p = d * 0.3;
+		    }
+		    if (a < Math.abs(c)) {
+		      a = c;
+		      s = p / 4;
+		    } else {
+		      s = p / (2 * Math.PI) * Math.asin(c / a);
+		    }
+		    return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+		  },
+		  easeOutElastic: function(t, b, _c, d) {
+		    var c = _c - b;
+		    var a, p, s;
+		    s = 1.70158;
+		    p = 0;
+		    a = c;
+		    if (t === 0) {
+		      return b;
+		    } else if ((t /= d) === 1) {
+		      return b + c;
+		    }
+		    if (!p) {
+		      p = d * 0.3;
+		    }
+		    if (a < Math.abs(c)) {
+		      a = c;
+		      s = p / 4;
+		    } else {
+		      s = p / (2 * Math.PI) * Math.asin(c / a);
+		    }
+		    return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
+		  },
+		  easeInOutElastic: function(t, b, _c, d) {
+		    var c = _c - b;
+		    var a, p, s;
+		    s = 1.70158;
+		    p = 0;
+		    a = c;
+		    if (t === 0) {
+		      return b;
+		    } else if ((t /= d / 2) === 2) {
+		      return b + c;
+		    }
+		    if (!p) {
+		      p = d * (0.3 * 1.5);
+		    }
+		    if (a < Math.abs(c)) {
+		      a = c;
+		      s = p / 4;
+		    } else {
+		      s = p / (2 * Math.PI) * Math.asin(c / a);
+		    }
+		    if (t < 1) {
+		      return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+		    } else {
+		      return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p) * 0.5 + c + b;
+		    }
+		  },
+		  easeInBack: function(t, b, _c, d, s) {
+		    var c = _c - b;
+		    if (s === void 0) {
+		      s = 1.70158;
+		    }
+		    return c * (t /= d) * t * ((s + 1) * t - s) + b;
+		  },
+		  easeOutBack: function(t, b, _c, d, s) {
+		    var c = _c - b;
+		    if (s === void 0) {
+		      s = 1.70158;
+		    }
+		    return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+		  },
+		  easeInOutBack: function(t, b, _c, d, s) {
+		    var c = _c - b;
+		    if (s === void 0) {
+		      s = 1.70158;
+		    }
+		    if ((t /= d / 2) < 1) {
+		      return c / 2 * (t * t * (((s *= 1.525) + 1) * t - s)) + b;
+		    } else {
+		      return c / 2 * ((t -= 2) * t * (((s *= 1.525) + 1) * t + s) + 2) + b;
+		    }
+		  },
+		  easeInBounce: function(t, b, _c, d) {
+		    var c = _c - b;
+		    var v;
+		    v = tweenFunctions.easeOutBounce(d - t, 0, c, d);
+		    return c - v + b;
+		  },
+		  easeOutBounce: function(t, b, _c, d) {
+		    var c = _c - b;
+		    if ((t /= d) < 1 / 2.75) {
+		      return c * (7.5625 * t * t) + b;
+		    } else if (t < 2 / 2.75) {
+		      return c * (7.5625 * (t -= 1.5 / 2.75) * t + 0.75) + b;
+		    } else if (t < 2.5 / 2.75) {
+		      return c * (7.5625 * (t -= 2.25 / 2.75) * t + 0.9375) + b;
+		    } else {
+		      return c * (7.5625 * (t -= 2.625 / 2.75) * t + 0.984375) + b;
+		    }
+		  },
+		  easeInOutBounce: function(t, b, _c, d) {
+		    var c = _c - b;
+		    var v;
+		    if (t < d / 2) {
+		      v = tweenFunctions.easeInBounce(t * 2, 0, c, d);
+		      return v * 0.5 + b;
+		    } else {
+		      v = tweenFunctions.easeOutBounce(t * 2 - d, 0, c, d);
+		      return v * 0.5 + c * 0.5 + b;
+		    }
+		  }
+		};
+		
+		module.exports = tweenFunctions;
+	
+	
+	/***/ },
+	
+	/***/ 171:
+	/*!************************!*\
+	  !*** ./~/raf/index.js ***!
+	  \************************/
+	/***/ function(module, exports, __webpack_require__) {
+	
+		/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(/*! performance-now */ 172)
+		  , root = typeof window === 'undefined' ? global : window
+		  , vendors = ['moz', 'webkit']
+		  , suffix = 'AnimationFrame'
+		  , raf = root['request' + suffix]
+		  , caf = root['cancel' + suffix] || root['cancelRequest' + suffix]
+		
+		for(var i = 0; !raf && i < vendors.length; i++) {
+		  raf = root[vendors[i] + 'Request' + suffix]
+		  caf = root[vendors[i] + 'Cancel' + suffix]
+		      || root[vendors[i] + 'CancelRequest' + suffix]
+		}
+		
+		// Some versions of FF have rAF but not cAF
+		if(!raf || !caf) {
+		  var last = 0
+		    , id = 0
+		    , queue = []
+		    , frameDuration = 1000 / 60
+		
+		  raf = function(callback) {
+		    if(queue.length === 0) {
+		      var _now = now()
+		        , next = Math.max(0, frameDuration - (_now - last))
+		      last = next + _now
+		      setTimeout(function() {
+		        var cp = queue.slice(0)
+		        // Clear queue here to prevent
+		        // callbacks from appending listeners
+		        // to the current frame's queue
+		        queue.length = 0
+		        for(var i = 0; i < cp.length; i++) {
+		          if(!cp[i].cancelled) {
+		            try{
+		              cp[i].callback(last)
+		            } catch(e) {
+		              setTimeout(function() { throw e }, 0)
+		            }
+		          }
+		        }
+		      }, Math.round(next))
+		    }
+		    queue.push({
+		      handle: ++id,
+		      callback: callback,
+		      cancelled: false
+		    })
+		    return id
+		  }
+		
+		  caf = function(handle) {
+		    for(var i = 0; i < queue.length; i++) {
+		      if(queue[i].handle === handle) {
+		        queue[i].cancelled = true
+		      }
+		    }
+		  }
+		}
+		
+		module.exports = function(fn) {
+		  // Wrap in a new function to prevent
+		  // `cancel` potentially being assigned
+		  // to the native rAF function
+		  return raf.call(root, fn)
+		}
+		module.exports.cancel = function() {
+		  caf.apply(root, arguments)
+		}
+		module.exports.polyfill = function() {
+		  root.requestAnimationFrame = raf
+		  root.cancelAnimationFrame = caf
+		}
+		
+		/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+	
+	/***/ },
+	
+	/***/ 172:
+	/*!**************************************************!*\
+	  !*** ./~/performance-now/lib/performance-now.js ***!
+	  \**************************************************/
+	/***/ function(module, exports, __webpack_require__) {
+	
+		/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
+		(function() {
+		  var getNanoSeconds, hrtime, loadTime;
+		
+		  if ((typeof performance !== "undefined" && performance !== null) && performance.now) {
+		    module.exports = function() {
+		      return performance.now();
+		    };
+		  } else if ((typeof process !== "undefined" && process !== null) && process.hrtime) {
+		    module.exports = function() {
+		      return (getNanoSeconds() - loadTime) / 1e6;
+		    };
+		    hrtime = process.hrtime;
+		    getNanoSeconds = function() {
+		      var hr;
+		      hr = hrtime();
+		      return hr[0] * 1e9 + hr[1];
+		    };
+		    loadTime = getNanoSeconds();
+		  } else if (Date.now) {
+		    module.exports = function() {
+		      return Date.now() - loadTime;
+		    };
+		    loadTime = Date.now();
+		  } else {
+		    module.exports = function() {
+		      return new Date().getTime() - loadTime;
+		    };
+		    loadTime = new Date().getTime();
+		  }
+		
+		}).call(this);
+		
+		/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./~/process/browser.js */ 5)))
+	
+	/***/ }
+	
+	/******/ })
+	});
+	;
+	//# sourceMappingURL=index.js.map
+
+/***/ },
+/* 344 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var DefaultDecorators = [{
+	  component: _react2['default'].createClass({
+	    displayName: 'component',
+	
+	    render: function render() {
+	      return _react2['default'].createElement(
+	        'button',
+	        {
+	          style: this.getButtonStyles(this.props.currentSlide === 0),
+	          onClick: this.handleClick },
+	        'PREV'
+	      );
+	    },
+	    handleClick: function handleClick(e) {
+	      e.preventDefault();
+	      this.props.previousSlide();
+	    },
+	    getButtonStyles: function getButtonStyles(disabled) {
+	      return {
+	        border: 0,
+	        background: 'rgba(0,0,0,0.4)',
+	        color: 'white',
+	        padding: 10,
+	        outline: 0,
+	        opacity: disabled ? 0.3 : 1,
+	        cursor: 'pointer'
+	      };
+	    }
+	  }),
+	  position: 'CenterLeft'
+	}, {
+	  component: _react2['default'].createClass({
+	    displayName: 'component',
+	
+	    render: function render() {
+	      return _react2['default'].createElement(
+	        'button',
+	        {
+	          style: this.getButtonStyles(this.props.currentSlide + this.props.slidesToScroll >= this.props.slideCount),
+	          onClick: this.handleClick },
+	        'NEXT'
+	      );
+	    },
+	    handleClick: function handleClick(e) {
+	      e.preventDefault();
+	      this.props.nextSlide();
+	    },
+	    getButtonStyles: function getButtonStyles(disabled) {
+	      return {
+	        border: 0,
+	        background: 'rgba(0,0,0,0.4)',
+	        color: 'white',
+	        padding: 10,
+	        outline: 0,
+	        opacity: disabled ? 0.3 : 1,
+	        cursor: 'pointer'
+	      };
+	    }
+	  }),
+	  position: 'CenterRight'
+	}, {
+	  component: _react2['default'].createClass({
+	    displayName: 'component',
+	
+	    render: function render() {
+	      var self = this;
+	      var indexes = this.getIndexes(self.props.slideCount, self.props.slidesToScroll);
+	      return _react2['default'].createElement(
+	        'ul',
+	        { style: self.getListStyles() },
+	        indexes.map(function (index) {
+	          return _react2['default'].createElement(
+	            'li',
+	            { style: self.getListItemStyles(), key: index },
+	            _react2['default'].createElement(
+	              'button',
+	              {
+	                style: self.getButtonStyles(self.props.currentSlide === index),
+	                onClick: self.props.goToSlide.bind(null, index) },
+	              '•'
+	            )
+	          );
+	        })
+	      );
+	    },
+	    getIndexes: function getIndexes(count, inc) {
+	      var arr = [];
+	      for (var i = 0; i < count; i += inc) {
+	        arr.push(i);
+	      }
+	      return arr;
+	    },
+	    getListStyles: function getListStyles() {
+	      return {
+	        position: 'relative',
+	        margin: 0,
+	        top: -10,
+	        padding: 0
+	      };
+	    },
+	    getListItemStyles: function getListItemStyles() {
+	      return {
+	        listStyleType: 'none',
+	        display: 'inline-block'
+	      };
+	    },
+	    getButtonStyles: function getButtonStyles(active) {
+	      return {
+	        border: 0,
+	        background: 'transparent',
+	        color: 'black',
+	        cursor: 'pointer',
+	        padding: 10,
+	        outline: 0,
+	        fontSize: 24,
+	        opacity: active ? 1 : 0.5
+	      };
+	    }
+	  }),
+	  position: 'BottomCenter'
+	}];
+	
+	exports['default'] = DefaultDecorators;
+	module.exports = exports['default'];
+
+/***/ },
+/* 345 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	  Copyright (c) 2015 Jed Watson.
+	  Based on code that is Copyright 2013-2015, Facebook, Inc.
+	  All rights reserved.
+	*/
+	/* global define */
+	
+	(function () {
+		'use strict';
+	
+		var canUseDOM = !!(
+			typeof window !== 'undefined' &&
+			window.document &&
+			window.document.createElement
+		);
+	
+		var ExecutionEnvironment = {
+	
+			canUseDOM: canUseDOM,
+	
+			canUseWorkers: typeof Worker !== 'undefined',
+	
+			canUseEventListeners:
+				canUseDOM && !!(window.addEventListener || window.attachEvent),
+	
+			canUseViewport: canUseDOM && !!window.screen
+	
+		};
+	
+		if (true) {
+			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return ExecutionEnvironment;
+			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else if (typeof module !== 'undefined' && module.exports) {
+			module.exports = ExecutionEnvironment;
+		} else {
+			window.ExecutionEnvironment = ExecutionEnvironment;
+		}
+	
+	}());
 
 
 /***/ }

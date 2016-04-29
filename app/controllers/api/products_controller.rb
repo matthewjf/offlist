@@ -43,6 +43,6 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:title, :description, :lat, :lng)
+    params.require(:product).permit(:title, :description, :lat, :lng, :price)
   end
 end

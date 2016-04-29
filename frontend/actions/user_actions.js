@@ -47,6 +47,12 @@ var UserActions = {
 	},
 	logout: function(){
 		UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
+	},
+	resetErrors: function(errors) {
+		AppDispatcher.dispatch({
+			actionType: UserConstants.ERROR,
+			errors: errors
+		});
 	}
 };
 

@@ -40,5 +40,31 @@ module.exports = {
     mark.setMap(map);
 
     return mark;
+  },
+
+  geocodeAddress: function(address, success, error) {
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        success(results[0].geometry.location);
+      } else {
+        error(status);
+      }
+    });
+  },
+
+  geocodePosition: function(pos, success, error) {
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode (
+      { latLng: pos },
+      function(results, status) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          success(results[0].formatted_address);
+        } else {
+          error(status);
+        }
+      }
+    );
   }
 };

@@ -12,19 +12,24 @@ img_urls = [
 ]
 
 User.create(
-  username: 'guest',
+  username: 'demo',
   password: 'password'
 )
 
 10.times do |i|
   lat = 37.7 + (rand()/10)
   lng = -122.4 - (rand()/10)
+  img_urls = []
+  (rand(3) + 1).times do |i|
+    img_urls.push('https://unsplash.it/800/600?image=' + rand(1050).to_s)
+  end
 
   Product.create(
-    title: Faker::Hipster.word,
-    description: Faker::Hipster.paragraph,
-    img_urls: ['https://unsplash.it/500/500/?random'],
+    title: Faker::Hipster.word.capitalize,
+    description: Faker::Hipster.paragraphs(3, true).join("\n"),
+    img_urls: img_urls,
     lat: lat,
-    lng: lng    
+    lng: lng,
+    price: rand(1000) + 1
   )
 end

@@ -17,7 +17,7 @@ UserStore.__onDispatch = function (payload) {
       UserStore.setErrors(payload.errors);
       break;
   }
-  UserStore.__emitChange();  
+  UserStore.__emitChange();
 };
 
 UserStore.login = function(user){
@@ -31,7 +31,7 @@ UserStore.logout = function(){
 };
 
 UserStore.currentUser = function(){
-  if (_currentUser) {  
+  if (_currentUser) {
   	return $.extend({}, _currentUser);
   }
 };

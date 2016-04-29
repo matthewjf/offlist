@@ -1,5 +1,4 @@
 var React = require('react'),
-    ApiUtil = require('../../util/api_util.js'),
     ProductStore = require('../../stores/product_store'),
     IndexItem = require('./index_item'),
     ClientActions = require('../../actions/client_actions');

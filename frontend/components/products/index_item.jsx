@@ -1,6 +1,7 @@
 var React = require('react'),
     MarkerStore = require('../../stores/marker_store'),
-    TextTruncate = require('react-text-truncate');
+    TextTruncate = require('react-text-truncate'),
+    hashHistory = require('react-router').hashHistory;
 
 /* global google */
 
@@ -23,6 +24,10 @@ module.exports = React.createClass({
       marker.setIcon('https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi.png');
   },
 
+  openDetail: function(){
+    hashHistory.push("/products/" + this.props.product.id);
+  },
+
   render: function() {
     var hoverTransp = (this.state.isHovered ? 'hover' : '');
     var product = this.props.product;
@@ -33,10 +38,15 @@ module.exports = React.createClass({
 
     <li className='card product-item hoverable'
         onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}>
+        onMouseLeave={this.onMouseLeave}
+        onClick={this.openDetail}>
+        <div className='card-price right'>
+          {'$' + product.price}
+        </div>
       <div className='card-image'>
           <img src={productUrl} />
       </div>
+
       <div className='card-content'>
         <span className='card-title grey-text text-darken-3'>
           {product.title}
@@ -51,7 +61,7 @@ module.exports = React.createClass({
           raf={true}
           />
       </div>
-      <div className={hoverTransp}></div>
+      <div className={hoverTransp + ' waves-effect waves-light'}></div>
 
     </li>
   );

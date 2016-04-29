@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160427214959) do
+ActiveRecord::Schema.define(version: 20160428183424) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20160427214959) do
     t.json     "img_urls"
     t.float    "lat",                        null: false
     t.float    "lng",                        null: false
+    t.integer  "price",                      null: false
   end
 
   create_table "users", force: :cascade do |t|

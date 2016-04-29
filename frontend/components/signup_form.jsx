@@ -33,6 +33,7 @@ var SignupForm = React.createClass({
 		e.preventDefault();
 		$('#signup-modal').closeModal();
 		this.resetState();
+		UserActions.resetErrors([]);
 	},
 
 	handleSubmit: function(e){

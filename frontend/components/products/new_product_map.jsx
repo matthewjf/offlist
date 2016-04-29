@@ -1,20 +1,53 @@
-var React = require('react');
+var React = require('react'),
+    MapUtil = require('../../util/map_util');
 
 /* global google */
+/* global Materialize */
 
 module.exports = React.createClass({
-  onChange: function(){
+  componentWillReceiveProps: function(newProps){
+    this.removeMarker();
+    if (newProps.googlePos.lat) {
+      this.placeMarker(newProps.googlePos, this.map);
+      this.map.setCenter(newProps.googlePos); // needs work
+    }
   },
 
   setCoords: function(e) {
     alert("Latitude: " + e.latLng.lat() + "\r\nLongitude: " + e.latLng.lng());
   },
 
-  placeMarker: function(latLng, map) {
+  removeMarker: function(){
     if (this.marker) {this.marker.setMap(null);}
-    this.marker = new google.maps.Marker({
+  },
+
+  placeMarker: function(latLng, map) {
+    var self = this;
+    self.removeMarker();
+    self.marker = new google.maps.Marker({
       position: latLng,
+      draggable: true,
       map: map
+    });
+
+    google.maps.event.addListener(self.marker, 'dragend', function(){
+      var pos = self.marker.getPosition();
+      MapUtil.geocodePosition(pos, self.geoSuccess, self.geoError);
+      self.props.setLatLng(pos);
+    });
+  },
+
+  geoSuccess: function(result) {
+    this.props.setAddress(result);
+    $(document).ready(function() {
+      Materialize.updateTextFields();
+    });
+  },
+
+  geoError: function(status){
+    this.props.setAddress('Unknown location: ' + status);
+    $(document).ready(function() {
+      Materialize.updateTextFields();
     });
   },
 
@@ -33,8 +66,8 @@ module.exports = React.createClass({
     self.map = new google.maps.Map(mapDOMNode, mapOptions);
 
     self.map.addListener('click', function(e) {
-      self.placeMarker(e.latLng, self.map);
-      self.props.clickCB(e.latLng.lat(), e.latLng.lng());
+      MapUtil.geocodePosition(e.latLng, self.geoSuccess, self.geoError);
+      self.props.setLatLng(e.latLng);
     });
   },
 
