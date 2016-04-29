@@ -23,12 +23,12 @@ module.exports = React.createClass({
   render: function(){
     var username = (this.state.currentUser ? this.state.currentUser.username : '');
     return(
-      <div className='user-detail'>
+      <div className='user-detail container'>
         <div className="row">
-          <div className="col s12 m10 l8">
+          <div className="col s12">
             <ul className="tabs">
-              <li className="tab col s4"><a href="#products">Products</a></li>
-              <li className="tab col s4"><a href="#offers">Offers</a></li>
+              <li className="tab col s3"><a href="#products">Products</a></li>
+              <li className="tab col s3"><a href="#offers">Offers</a></li>
             </ul>
           </div>
           <div id="products" className="col s12"><UserProducts /></div>

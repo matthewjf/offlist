@@ -7,11 +7,11 @@
 Splashy is a web application inspired by Etsy that will be built using Ruby on Rails and React.js.  It's a site for people selling locally made products, locally.  By the end of Week 9, this app will, at a minimum, satisfy the following criteria:
 
 - [x] New account creation, login, and guest/demo login
-- [ ] Smooth, bug-free navigation
+- [x] Smooth, bug-free navigation
 - [ ] Adequate seed data to demonstrate the site's features
 - [ ] The minimally necessary features for an Etsy-inspired site: product browsing and search, product creation and saving
 - [x] Hosting on Heroku
-- [ ] CSS styling that is satisfactorily visually appealing
+- [x] CSS styling that is satisfactorily visually appealing
 - [ ] A production README, replacing this README
 
 ## Product Goals and Priorities
@@ -22,7 +22,7 @@ Splashy will allow users to do the following:
 progress. Put an x between the brackets for a checkmark: [x] -->
 
 - [x] Create an account (MVP)
-- [ ] Log in / Log out, including as a Guest/Demo User (MVP)
+- [x] Log in / Log out, including as a Guest/Demo User (MVP)
 - [ ] Browse and search for products (MVP)
 - [ ] Create, read, edit, and delete products (MVP)
 
@@ -74,10 +74,8 @@ user interface.
 - implement each product component, building out the flux loop as needed.
   - [x] `ProductIndex`
   - [x] `ProductIndexItem`
-  - [ ] `ProductForm`
-  - [ ] `ProductDetail`
-- [ ] save Products to the DB when the form loses focus or is left idle
-  after editing.
+  - [x] `ProductForm`
+  - [x] `ProductDetail`
 
 ### Phase 4: Start Styling (1 day)
 
@@ -91,13 +89,13 @@ user interface.
 
 **Objective:** Products will be sold offline by location (similar to craigslist)
 
-- [ ] Update product model
+- [x] Update product model
 - build out API, Flux loop, and components for:
-  - [ ] Map
-  - [ ] Map markers
-  - [ ] View products by location
-  - [ ] Filter search results by map location
-  - [ ] Default map location on new search includes all results
+  - [x] Map
+  - [x] Map markers
+  - [x] View products by location
+  - [x] Filter search results by map location
+  - [x] Default map location on new search includes all results
 - Use CSS to style new views
 
 ### Phase 6: Search (1 day)

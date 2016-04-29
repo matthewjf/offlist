@@ -62544,19 +62544,19 @@
 	    var username = this.state.currentUser ? this.state.currentUser.username : '';
 	    return React.createElement(
 	      "div",
-	      { className: "user-detail" },
+	      { className: "user-detail container" },
 	      React.createElement(
 	        "div",
 	        { className: "row" },
 	        React.createElement(
 	          "div",
-	          { className: "col s12 m10 l8" },
+	          { className: "col s12" },
 	          React.createElement(
 	            "ul",
 	            { className: "tabs" },
 	            React.createElement(
 	              "li",
-	              { className: "tab col s4" },
+	              { className: "tab col s3" },
 	              React.createElement(
 	                "a",
 	                { href: "#products" },
@@ -62565,7 +62565,7 @@
 	            ),
 	            React.createElement(
 	              "li",
-	              { className: "tab col s4" },
+	              { className: "tab col s3" },
 	              React.createElement(
 	                "a",
 	                { href: "#offers" },
