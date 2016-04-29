@@ -12,7 +12,10 @@
 #
 
 class Product < ActiveRecord::Base
-  validates :title, :description, :img_urls, presence: true
+  default_scope -> { order(created_at: :desc) }
+
+  validates :title, :description, :img_urls, :user, presence: true
+  belongs_to :user
   def self.in_bounds(bounds)
     lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]
     lng = [bounds["northEast"]["lng"], bounds["southWest"]["lng"]]

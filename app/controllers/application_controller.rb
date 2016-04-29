@@ -16,4 +16,11 @@ class ApplicationController < ActionController::Base
     current_user.reset_session_token!
     @current_user = nil
   end
+
+  def require_current_user
+    render json: {status: 401, errors: {}} unless current_user
+  end
+
+  def require_correct_user
+  end
 end

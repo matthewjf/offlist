@@ -4,6 +4,7 @@
   max-width: 1200px;
   .card {
     margin: 2rem 0;
+    white-space: pre-wrap;
   }
   .card-image {
     padding-bottom: 0;
@@ -34,7 +35,6 @@
   .detail-offer, .seller.card, .address {
     padding: 1rem;
     vertical-align: middle;
-    white-space: nowrap;
     justify-content: space-between;
   }
 }

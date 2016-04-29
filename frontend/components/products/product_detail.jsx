@@ -24,7 +24,8 @@ module.exports = React.createClass({
       price: '',
       img_urls: [],
       lat: '',
-      lng: ''
+      lng: '',
+      seller: {username: ''}
     };
     return blank;
   },
@@ -71,6 +72,7 @@ module.exports = React.createClass({
 
   render: function () {
     var product = this.state.product || this.blankProduct();
+    var seller = product.seller ? product.seller : {username: '', id: null };
 
     return (
       <div>
@@ -83,12 +85,12 @@ module.exports = React.createClass({
               <div className='detail-content'>
                 <Description
                   description={product.description}
-                  title={product.title}/>
+                  title={product.title} created={product.created_at} />
               </div>
             </div>
           </div>
           <div className='col s12 m5 l4 detail-right'>
-            <Seller />
+            <Seller seller={seller} />
             <Offer price={product.price}/>
             <div className='card'>
               <div className='card-image'>

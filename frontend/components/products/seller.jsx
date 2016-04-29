@@ -8,6 +8,7 @@ module.exports = React.createClass({
           <span className='seller'>
             <b>Seller:  </b>
           </span>
+          <a className='right-align' href='#'>{this.props.seller.username}</a>
         </div>
       </div>
     );

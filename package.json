@@ -32,6 +32,7 @@
     "react-dom": "^15.0.1",
     "react-router": "^2.3.0",
     "react-text-truncate": "^0.6.0",
+    "react-timeago": "^3.0.0",
     "webpack": "^1.13.0"
   }
 }

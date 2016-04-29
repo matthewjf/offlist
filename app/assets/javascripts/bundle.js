@@ -58,7 +58,8 @@
 	    LoginForm = __webpack_require__(266),
 	    SignupForm = __webpack_require__(267),
 	    ProductForm = __webpack_require__(268),
-	    ProductDetail = __webpack_require__(334);
+	    ProductDetail = __webpack_require__(334),
+	    UserDetail = __webpack_require__(345);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -88,7 +89,9 @@
 	    React.createElement(IndexRoute, { component: ProductList }),
 	    React.createElement(Route, { path: 'products/new', component: ProductForm }),
 	    React.createElement(Route, { path: 'products', component: ProductList }),
-	    React.createElement(Route, { path: 'products/:productId', component: ProductDetail })
+	    React.createElement(Route, { path: 'products/:productId', component: ProductDetail }),
+	    React.createElement(Route, { path: 'user/:userId', component: UserDetail }),
+	    React.createElement(Route, { path: 'user', component: UserDetail })
 	  )
 	);
 	
@@ -32474,6 +32477,7 @@
 	      }
 	    });
 	  }
+	
 	};
 
 /***/ },
@@ -32491,6 +32495,7 @@
 	    });
 	  },
 	  receiveProduct: function (product) {
+	    debugger;
 	    Dispatcher.dispatch({
 	      actionType: ProductConstants.CREATE_PRODUCT,
 	      product: product
@@ -60265,11 +60270,11 @@
 	    ClientActions = __webpack_require__(250),
 	    MapUtil = __webpack_require__(253);
 	
-	var Map = __webpack_require__(336),
-	    Seller = __webpack_require__(337),
-	    Carousel = __webpack_require__(338),
-	    Offer = __webpack_require__(340),
-	    Description = __webpack_require__(339);
+	var Map = __webpack_require__(335),
+	    Seller = __webpack_require__(336),
+	    Carousel = __webpack_require__(337),
+	    Offer = __webpack_require__(343),
+	    Description = __webpack_require__(344);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -60287,7 +60292,8 @@
 	      price: '',
 	      img_urls: [],
 	      lat: '',
-	      lng: ''
+	      lng: '',
+	      seller: { username: '' }
 	    };
 	    return blank;
 	  },
@@ -60330,6 +60336,7 @@
 	
 	  render: function () {
 	    var product = this.state.product || this.blankProduct();
+	    var seller = product.seller ? product.seller : { username: '', id: null };
 	
 	    return React.createElement(
 	      'div',
@@ -60353,14 +60360,14 @@
 	              { className: 'detail-content' },
 	              React.createElement(Description, {
 	                description: product.description,
-	                title: product.title })
+	                title: product.title, created: product.created_at })
 	            )
 	          )
 	        ),
 	        React.createElement(
 	          'div',
 	          { className: 'col s12 m5 l4 detail-right' },
-	          React.createElement(Seller, null),
+	          React.createElement(Seller, { seller: seller }),
 	          React.createElement(Offer, { price: product.price }),
 	          React.createElement(
 	            'div',
@@ -60383,8 +60390,7 @@
 	});
 
 /***/ },
-/* 335 */,
-/* 336 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
@@ -60409,9 +60415,7 @@
 	      zoomControlOptions: {
 	        position: google.maps.ControlPosition.TOP_RIGHT
 	      },
-	      streetViewControl: false,
-	      draggable: false,
-	      clickable: false
+	      streetViewControl: false
 	    };
 	    this.map = new google.maps.Map(map, mapOptions);
 	  },
@@ -60448,7 +60452,7 @@
 	});
 
 /***/ },
-/* 337 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -60471,6 +60475,11 @@
 	            null,
 	            'Seller:  '
 	          )
+	        ),
+	        React.createElement(
+	          'a',
+	          { className: 'right-align', href: '#' },
+	          this.props.seller.username
 	        )
 	      )
 	    );
@@ -60478,11 +60487,11 @@
 	});
 
 /***/ },
-/* 338 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var Carousel = __webpack_require__(341);
+	var Carousel = __webpack_require__(338);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -60516,85 +60525,18 @@
 	});
 
 /***/ },
-/* 339 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  componentWillReceiveProps: function () {
-	    this.setState({});
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'detail-description' },
-	      React.createElement(
-	        'span',
-	        { className: 'card-title grey-text text-darken-4' },
-	        this.props.title
-	      ),
-	      React.createElement(
-	        'p',
-	        null,
-	        this.props.description
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 340 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'offer card' },
-	      React.createElement(
-	        'div',
-	        { className: 'detail-offer valign-wrapper' },
-	        React.createElement(
-	          'span',
-	          { className: 'valign' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Ask price:  '
-	          ),
-	          '$' + this.props.price
-	        ),
-	        React.createElement(
-	          'button',
-	          { className: 'waves-effect waves-light btn right' },
-	          'Offer'
-	        )
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 341 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Carousel = __webpack_require__(342);
+	var Carousel = __webpack_require__(339);
 	
 	module.exports = Carousel;
 
 
 /***/ },
-/* 342 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60615,11 +60557,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _kwReactTweenState = __webpack_require__(343);
+	var _kwReactTweenState = __webpack_require__(340);
 	
 	var _kwReactTweenState2 = _interopRequireDefault(_kwReactTweenState);
 	
-	var _decorators = __webpack_require__(344);
+	var _decorators = __webpack_require__(341);
 	
 	var _decorators2 = _interopRequireDefault(_decorators);
 	
@@ -60627,7 +60569,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _exenv = __webpack_require__(345);
+	var _exenv = __webpack_require__(342);
 	
 	var _exenv2 = _interopRequireDefault(_exenv);
 	
@@ -61368,7 +61310,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 343 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function webpackUniversalModuleDefinition(root, factory) {
@@ -62131,7 +62073,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 344 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62272,7 +62214,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 345 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -62316,6 +62258,261 @@
 	
 	}());
 
+
+/***/ },
+/* 343 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'offer card' },
+	      React.createElement(
+	        'div',
+	        { className: 'detail-offer valign-wrapper' },
+	        React.createElement(
+	          'span',
+	          { className: 'valign' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Ask price:  '
+	          ),
+	          '$' + this.props.price
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'waves-effect waves-light btn right' },
+	          'Offer'
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 344 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var TimeAgo = __webpack_require__(346).default;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  componentWillReceiveProps: function () {
+	    debugger;
+	    this.setState({});
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'detail-description' },
+	      React.createElement(
+	        'div',
+	        { className: 'right' },
+	        React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created })
+	      ),
+	      React.createElement(
+	        'span',
+	        { className: 'card-title grey-text text-darken-4' },
+	        this.props.title
+	      ),
+	      React.createElement(
+	        'p',
+	        null,
+	        this.props.description
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 345 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  render: function () {
+	    return React.createElement('div', null);
+	  }
+	});
+
+/***/ },
+/* 346 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// Just some simple constants for readability
+	var MINUTE = 60;
+	var HOUR = MINUTE * 60;
+	var DAY = HOUR * 24;
+	var WEEK = DAY * 7;
+	var MONTH = DAY * 30;
+	var YEAR = DAY * 365;
+	
+	var TimeAgo = function (_Component) {
+	  _inherits(TimeAgo, _Component);
+	
+	  function TimeAgo() {
+	    var _Object$getPrototypeO;
+	
+	    var _temp, _this, _ret;
+	
+	    _classCallCheck(this, TimeAgo);
+	
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+	
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(TimeAgo)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.isStillMounted = false, _this.tick = function (refresh) {
+	      if (!_this.isStillMounted || !_this.props.live) {
+	        return;
+	      }
+	
+	      var then = new Date(_this.props.date).valueOf();
+	      var now = Date.now();
+	      var seconds = Math.round(Math.abs(now - then) / 1000);
+	
+	      var unboundPeriod = seconds < MINUTE ? 1000 : seconds < HOUR ? 1000 * MINUTE : seconds < DAY ? 1000 * HOUR : 0;
+	      var period = Math.min(Math.max(unboundPeriod, _this.props.minPeriod * 1000), _this.props.maxPeriod * 1000);
+	
+	      if (period) {
+	        _this.timeoutId = setTimeout(_this.tick, period);
+	      }
+	
+	      if (!refresh) {
+	        _this.forceUpdate();
+	      }
+	    }, _temp), _possibleConstructorReturn(_this, _ret);
+	  }
+	
+	  _createClass(TimeAgo, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.isStillMounted = true;
+	      if (this.props.live) {
+	        this.tick(true);
+	      }
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(lastProps) {
+	      if (this.props.live !== lastProps.live || this.props.date !== lastProps.date) {
+	        if (!this.props.live && this.timeoutId) {
+	          clearTimeout(this.timeoutId);
+	        }
+	        this.tick();
+	      }
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.isStillMounted = false;
+	      if (this.timeoutId) {
+	        clearTimeout(this.timeoutId);
+	        this.timeoutId = undefined;
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var then = new Date(this.props.date).valueOf();
+	      var now = Date.now();
+	      var seconds = Math.round(Math.abs(now - then) / 1000);
+	      var suffix = then < now ? 'ago' : 'from now';
+	
+	      var _ref = seconds < MINUTE ? [Math.round(seconds), 'second'] : seconds < HOUR ? [Math.round(seconds / MINUTE), 'minute'] : seconds < DAY ? [Math.round(seconds / HOUR), 'hour'] : seconds < WEEK ? [Math.round(seconds / DAY), 'day'] : seconds < MONTH ? [Math.round(seconds / WEEK), 'week'] : seconds < YEAR ? [Math.round(seconds / MONTH), 'month'] : [Math.round(seconds / YEAR), 'year'];
+	
+	      var _ref2 = _slicedToArray(_ref, 2);
+	
+	      var value = _ref2[0];
+	      var unit = _ref2[1];
+	
+	
+	      var props = Object.assign({}, this.props);
+	      props.title = props.title || typeof props.date === 'string' ? props.date : new Date(props.date).toISOString().substr(0, 16).replace('T', ' ');
+	
+	      if (props.component === 'time') {
+	        props.dateTime = new Date(props.date).toISOString();
+	      }
+	
+	      delete props.date;
+	      delete props.formatter;
+	      delete props.component;
+	
+	      var Komponent = this.props.component;
+	      return _react2.default.createElement(
+	        Komponent,
+	        props,
+	        this.props.formatter(value, unit, suffix, then)
+	      );
+	    }
+	  }]);
+	
+	  return TimeAgo;
+	}(_react.Component);
+	
+	TimeAgo.displayName = 'TimeAgo';
+	TimeAgo.propTypes = {
+	  /** If the component should update itself over time */
+	  live: _react.PropTypes.bool.isRequired,
+	  /** minimum amount of time in seceonds between re-renders */
+	  minPeriod: _react.PropTypes.number.isRequired,
+	  /** Maximum time between re-renders in seconds. The component should update at least once every `x` seconds */
+	  maxPeriod: _react.PropTypes.number.isRequired,
+	  /** The container to render the string into. You could use a string like `span` or a custom component */
+	  component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]).isRequired,
+	  /** A function to decide how to format the date.
+	   * If you use this, `react-timeago` is basically acting like a glorified `setInterval`.
+	   */
+	  formatter: _react.PropTypes.func.isRequired,
+	  /** The Date to display. An actual Date object or something that can be fed to new Date */
+	  date: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number, _react.PropTypes.instanceOf(Date)]).isRequired
+	};
+	TimeAgo.defaultProps = {
+	  live: true,
+	  component: 'time',
+	  minPeriod: 0,
+	  maxPeriod: Infinity,
+	  formatter: function formatter(value, unit, suffix) {
+	    if (value !== 1) {
+	      unit += 's';
+	    }
+	    return value + ' ' + unit + ' ' + suffix;
+	  }
+	};
+	exports.default = TimeAgo;
 
 /***/ }
 /******/ ]);

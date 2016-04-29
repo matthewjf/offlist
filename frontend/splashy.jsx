@@ -13,7 +13,8 @@ var ProductList = require('./components/search'),
     LoginForm = require('./components/login_form'),
     SignupForm = require('./components/signup_form'),
     ProductForm = require('./components/products/product_form'),
-    ProductDetail = require('./components/products/product_detail');
+    ProductDetail = require('./components/products/product_detail'),
+    UserDetail = require('./components/user_detail');
 
 var App = React.createClass({
   render: function(){
@@ -37,6 +38,8 @@ var Rtr = (
       <Route path='products/new' component={ProductForm} />
       <Route path='products' component={ProductList} />
       <Route path='products/:productId' component={ProductDetail} />
+      <Route path='user/:userId' component={UserDetail} />
+      <Route path='user' component={UserDetail} />
     </Route>
   </Router>
 );

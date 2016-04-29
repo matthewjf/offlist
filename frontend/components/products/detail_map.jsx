@@ -19,8 +19,6 @@ module.exports = React.createClass({
         position: google.maps.ControlPosition.TOP_RIGHT
       },
       streetViewControl: false,
-      draggable: false,
-      clickable: false
     };
     this.map = new google.maps.Map(map, mapOptions);
   },

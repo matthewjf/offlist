@@ -6,7 +6,7 @@ var _products = {};
 
 var resetProducts = function (products) {
   _products = {};
-
+  
   products.forEach(function (product) {
     _products[product.id] = product;
   });
