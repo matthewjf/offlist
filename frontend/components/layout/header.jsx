@@ -1,6 +1,7 @@
-var React = require('react');
-var UserActions = require("../../actions/user_actions");
-var CurrentUserState = require("../../mixins/current_user_state");
+var React = require('react'),
+		UserActions = require("../../actions/user_actions"),
+		CurrentUserState = require("../../mixins/current_user_state"),
+    hashHistory = require('react-router').hashHistory;
 
 module.exports = React.createClass({
 	mixins: [CurrentUserState],
@@ -18,11 +19,17 @@ module.exports = React.createClass({
 		$('#signup-modal').openModal();
 	},
 
+	goToAccount: function(){
+		hashHistory.push('account');
+	},
+
   notLoggedIn: function(){
     if (this.state.currentUser) {
 			return (
         <ul className="right hide-on-med-and-down">
-          <li><a>{this.state.currentUser.username}</a></li>
+					<li><a onClick={this.goToAccount}>
+						{this.state.currentUser.username}
+					</a></li>
           <li><a onClick={this.logout}>Log Out</a></li>
         </ul>
       );
@@ -47,7 +54,9 @@ module.exports = React.createClass({
     if (this.state.currentUser) {
 			return (
         <ul id="nav-mobile" className="side-nav">
-          <li><a>{this.state.currentUser.username}</a></li>
+          <li><a onClick={this.goToAccount}>
+						{this.state.currentUser.username}
+					</a></li>
           <li><a onClick={this.logout}>Log Out</a></li>
         </ul>
       );

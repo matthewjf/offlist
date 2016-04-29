@@ -3,16 +3,22 @@ var TimeAgo = require('react-timeago').default;
 
 module.exports = React.createClass({
   componentWillReceiveProps: function(){
-    debugger;
     this.setState({});
   },
 
   render: function(){
+    var time;
+    if (this.props.created)
+      time = <TimeAgo className='grey-text' date={this.props.created} />;
+    else
+      time = <span/>;
+
     return(
       <div className='detail-description'>
         <div className='right'>
-          <TimeAgo className='grey-text' date={this.props.created} />
+          {time}
         </div>
+
         <span className="card-title grey-text text-darken-4">
           {this.props.title}
         </span>

@@ -14,7 +14,8 @@ var ProductList = require('./components/search'),
     SignupForm = require('./components/signup_form'),
     ProductForm = require('./components/products/product_form'),
     ProductDetail = require('./components/products/product_detail'),
-    UserDetail = require('./components/user_detail');
+    UserDetail = require('./components/users/user_detail'),
+    SellerDetail = require('./components/users/seller_detail');
 
 var App = React.createClass({
   render: function(){
@@ -38,8 +39,8 @@ var Rtr = (
       <Route path='products/new' component={ProductForm} />
       <Route path='products' component={ProductList} />
       <Route path='products/:productId' component={ProductDetail} />
-      <Route path='user/:userId' component={UserDetail} />
-      <Route path='user' component={UserDetail} />
+      <Route path='users/:userId' component={SellerDetail} />
+      <Route path='account' component={UserDetail} />
     </Route>
   </Router>
 );

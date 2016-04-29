@@ -59,7 +59,8 @@
 	    SignupForm = __webpack_require__(267),
 	    ProductForm = __webpack_require__(268),
 	    ProductDetail = __webpack_require__(334),
-	    UserDetail = __webpack_require__(345);
+	    UserDetail = __webpack_require__(347),
+	    SellerDetail = __webpack_require__(348);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -90,8 +91,8 @@
 	    React.createElement(Route, { path: 'products/new', component: ProductForm }),
 	    React.createElement(Route, { path: 'products', component: ProductList }),
 	    React.createElement(Route, { path: 'products/:productId', component: ProductDetail }),
-	    React.createElement(Route, { path: 'user/:userId', component: UserDetail }),
-	    React.createElement(Route, { path: 'user', component: UserDetail })
+	    React.createElement(Route, { path: 'users/:userId', component: SellerDetail }),
+	    React.createElement(Route, { path: 'account', component: UserDetail })
 	  )
 	);
 	
@@ -32495,7 +32496,6 @@
 	    });
 	  },
 	  receiveProduct: function (product) {
-	    debugger;
 	    Dispatcher.dispatch({
 	      actionType: ProductConstants.CREATE_PRODUCT,
 	      product: product
@@ -33019,9 +33019,10 @@
 /* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
-	var UserActions = __webpack_require__(260);
-	var CurrentUserState = __webpack_require__(264);
+	var React = __webpack_require__(1),
+	    UserActions = __webpack_require__(260),
+	    CurrentUserState = __webpack_require__(264),
+	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	module.exports = React.createClass({
 	  displayName: "exports",
@@ -33041,6 +33042,10 @@
 	    $('#signup-modal').openModal();
 	  },
 	
+	  goToAccount: function () {
+	    hashHistory.push('account');
+	  },
+	
 	  notLoggedIn: function () {
 	    if (this.state.currentUser) {
 	      return React.createElement(
@@ -33051,7 +33056,7 @@
 	          null,
 	          React.createElement(
 	            "a",
-	            null,
+	            { onClick: this.goToAccount },
 	            this.state.currentUser.username
 	          )
 	        ),
@@ -33100,7 +33105,7 @@
 	          null,
 	          React.createElement(
 	            "a",
-	            null,
+	            { onClick: this.goToAccount },
 	            this.state.currentUser.username
 	          )
 	        ),
@@ -60455,10 +60460,15 @@
 /* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	var React = __webpack_require__(1),
+	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
+	
+	  sellerClick: function () {
+	    hashHistory.push("/users/" + this.props.seller.id);
+	  },
 	
 	  render: function () {
 	    return React.createElement(
@@ -60478,7 +60488,7 @@
 	        ),
 	        React.createElement(
 	          'a',
-	          { className: 'right-align', href: '#' },
+	          { className: 'seller-link right-align', onClick: this.sellerClick },
 	          this.props.seller.username
 	        )
 	      )
@@ -62306,18 +62316,20 @@
 	  displayName: 'exports',
 	
 	  componentWillReceiveProps: function () {
-	    debugger;
 	    this.setState({});
 	  },
 	
 	  render: function () {
+	    var time;
+	    if (this.props.created) time = React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created });else time = React.createElement('span', null);
+	
 	    return React.createElement(
 	      'div',
 	      { className: 'detail-description' },
 	      React.createElement(
 	        'div',
 	        { className: 'right' },
-	        React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created })
+	        time
 	      ),
 	      React.createElement(
 	        'span',
@@ -62334,20 +62346,7 @@
 	});
 
 /***/ },
-/* 345 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  render: function () {
-	    return React.createElement('div', null);
-	  }
-	});
-
-/***/ },
+/* 345 */,
 /* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -62513,6 +62512,134 @@
 	  }
 	};
 	exports.default = TimeAgo;
+
+/***/ },
+/* 347 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(260),
+	    CurrentUserState = __webpack_require__(264),
+	    UserStore = __webpack_require__(263),
+	    UserProducts = __webpack_require__(349),
+	    UserOffers = __webpack_require__(350);
+	
+	module.exports = React.createClass({
+	  displayName: "exports",
+	
+	  mixins: [CurrentUserState],
+	
+	  componentDidMount: function () {
+	    $(document).ready(function () {
+	      $('ul.tabs').tabs();
+	    });
+	  },
+	
+	  componentWillReceiveProps: function () {
+	    UserActions.fetchCurrentUser();
+	  },
+	
+	  render: function () {
+	    var username = this.state.currentUser ? this.state.currentUser.username : '';
+	    return React.createElement(
+	      "div",
+	      { className: "user-detail" },
+	      React.createElement(
+	        "div",
+	        { className: "row" },
+	        React.createElement(
+	          "div",
+	          { className: "col s12 m10 l8" },
+	          React.createElement(
+	            "ul",
+	            { className: "tabs" },
+	            React.createElement(
+	              "li",
+	              { className: "tab col s4" },
+	              React.createElement(
+	                "a",
+	                { href: "#products" },
+	                "Products"
+	              )
+	            ),
+	            React.createElement(
+	              "li",
+	              { className: "tab col s4" },
+	              React.createElement(
+	                "a",
+	                { href: "#offers" },
+	                "Offers"
+	              )
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          "div",
+	          { id: "products", className: "col s12" },
+	          React.createElement(UserProducts, null)
+	        ),
+	        React.createElement("div", { id: "offers", className: "col s12" })
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 348 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(260),
+	    CurrentUserState = __webpack_require__(264),
+	    UserStore = __webpack_require__(263);
+	
+	module.exports = React.createClass({
+	  displayName: "exports",
+	
+	  render: function () {
+	    return React.createElement("div", null);
+	  }
+	});
+
+/***/ },
+/* 349 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(260),
+	    CurrentUserState = __webpack_require__(264),
+	    UserStore = __webpack_require__(263);
+	
+	module.exports = React.createClass({
+	  displayName: "exports",
+	
+	  mixins: [CurrentUserState],
+	  render: function () {
+	    return React.createElement("div", null);
+	  }
+	});
+
+/***/ },
+/* 350 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(260),
+	    CurrentUserState = __webpack_require__(264),
+	    UserStore = __webpack_require__(263);
+	
+	module.exports = React.createClass({
+	  displayName: "exports",
+	
+	  mixins: [CurrentUserState],
+	  render: function () {
+	    return React.createElement("div", null);
+	  }
+	});
 
 /***/ }
 /******/ ]);
