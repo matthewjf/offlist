@@ -20,8 +20,8 @@ User.create(
   lat = 37.7 + (rand()/10)
   lng = -122.4 - (rand()/10)
   img_urls = []
-  (rand(3) + 1).times do |i|
-    img_urls.push('https://unsplash.it/800/600?image=' + rand(1050).to_s)
+  (rand(3) + 2).times do |i|
+    img_urls.push('https://unsplash.it/800/450?image=' + rand(1050).to_s)
   end
 
   Product.create(

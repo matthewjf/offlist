@@ -9,7 +9,7 @@ module.exports = React.createClass({
     this.removeMarker();
     if (newProps.googlePos.lat) {
       this.placeMarker(newProps.googlePos, this.map);
-      this.map.setCenter(newProps.googlePos); // needs work
+      this.map.panTo(newProps.googlePos); // needs work
     }
   },
 

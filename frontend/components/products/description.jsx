@@ -8,7 +8,9 @@ module.exports = React.createClass({
   render: function(){
     return(
       <div className='detail-description'>
-        <h5>Description</h5>
+        <span className="card-title grey-text text-darken-4">
+          {this.props.title}
+        </span>
         <p>
           {this.props.description}
         </p>

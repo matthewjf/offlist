@@ -25562,7 +25562,7 @@
 	  },
 	
 	  render: function () {
-	    return React.createElement('div', { id: 'map', ref: 'map' });
+	    return React.createElement('div', { id: 'map', ref: 'map', className: 'index' });
 	  }
 	});
 
@@ -32491,7 +32491,6 @@
 	    });
 	  },
 	  receiveProduct: function (product) {
-	
 	    Dispatcher.dispatch({
 	      actionType: ProductConstants.CREATE_PRODUCT,
 	      product: product
@@ -32503,8 +32502,9 @@
 
 /***/ },
 /* 253 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var ReactDOM = __webpack_require__(32);
 	/* global google */
 	
 	module.exports = {
@@ -34146,7 +34146,7 @@
 	    this.removeMarker();
 	    if (newProps.googlePos.lat) {
 	      this.placeMarker(newProps.googlePos, this.map);
-	      this.map.setCenter(newProps.googlePos); // needs work
+	      this.map.panTo(newProps.googlePos); // needs work
 	    }
 	  },
 	
@@ -60262,7 +60262,8 @@
 	var React = __webpack_require__(1),
 	    hashHistory = __webpack_require__(166).hashHistory,
 	    ProductStore = __webpack_require__(227),
-	    ClientActions = __webpack_require__(250);
+	    ClientActions = __webpack_require__(250),
+	    MapUtil = __webpack_require__(253);
 	
 	var Map = __webpack_require__(336),
 	    Seller = __webpack_require__(337),
@@ -60275,7 +60276,12 @@
 	
 	  getInitialState: function () {
 	    var productId = this.props.params.productId;
-	    var blankProduct = {
+	    var product = ProductStore.find(productId) || this.blankProduct();
+	    return { product: product };
+	  },
+	
+	  blankProduct: function () {
+	    var blank = {
 	      title: '',
 	      description: '',
 	      price: '',
@@ -60283,42 +60289,57 @@
 	      lat: '',
 	      lng: ''
 	    };
-	
-	    var product = ProductStore.find(productId) || blankProduct;
-	    return { product: product };
+	    return blank;
 	  },
 	
 	  componentDidMount: function () {
 	    this.productListener = ProductStore.addListener(this._productChanged);
 	    ClientActions.getProduct(this.props.params.productId);
+	    this.setState({ address: '' });
 	  },
 	
 	  componentWillUnmount: function () {
 	    this.productListener.remove();
 	  },
 	
+	  componentWillReceiveProps: function (newProps) {
+	    ClientActions.getProduct(newProps.params.productId);
+	  },
+	
 	  _productChanged: function () {
 	    var productId = this.props.params.productId;
 	    var product = ProductStore.find(productId);
-	    this.setState({ product: product });
+	    if (product) {
+	      this.setState({ product: product, _: '' });
+	      MapUtil.geocodePosition({ lat: product.lat, lng: product.lng }, this.setAddress, this.addressError);
+	    }
+	  },
+	
+	  getProduct: function (id) {
+	    var product = ProductStore.find(id) || this.blankProduct();
+	    return { product: product };
+	  },
+	
+	  setAddress: function (address) {
+	    this.setState({ address: address });
+	  },
+	
+	  addressError: function (status) {
+	    alert('something went wrong: ' + status);
 	  },
 	
 	  render: function () {
-	    var product = this.state.product;
+	    var product = this.state.product || this.blankProduct();
+	
 	    return React.createElement(
 	      'div',
 	      null,
-	      React.createElement(
-	        'h1',
-	        { className: 'center-align' },
-	        product.title
-	      ),
 	      React.createElement(
 	        'div',
 	        { className: 'row product-detail' },
 	        React.createElement(
 	          'div',
-	          { className: 'col s12 m8 detail-left' },
+	          { className: 'col s12 m7 l8 detail-left' },
 	          React.createElement(
 	            'div',
 	            { className: 'card detail-content' },
@@ -60330,15 +60351,31 @@
 	            React.createElement(
 	              'div',
 	              { className: 'detail-content' },
-	              React.createElement(Description, { description: product.description })
+	              React.createElement(Description, {
+	                description: product.description,
+	                title: product.title })
 	            )
 	          )
 	        ),
 	        React.createElement(
 	          'div',
-	          { className: 'col s12 m4 detail-right' },
+	          { className: 'col s12 m5 l4 detail-right' },
+	          React.createElement(Seller, null),
 	          React.createElement(Offer, { price: product.price }),
-	          React.createElement(Map, { lat: product.lat, lng: product.lng })
+	          React.createElement(
+	            'div',
+	            { className: 'card' },
+	            React.createElement(
+	              'div',
+	              { className: 'card-image' },
+	              React.createElement(Map, { lat: product.lat, lng: product.lng })
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'address' },
+	              this.state.address
+	            )
+	          )
 	        )
 	      )
 	    );
@@ -60350,13 +60387,63 @@
 /* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
-	
+	var React = __webpack_require__(1),
+	    ReactDOM = __webpack_require__(32),
+	    ProductStore = __webpack_require__(227),
+	    ClientActions = __webpack_require__(250),
+	    MapUtil = __webpack_require__(253),
+	    MarkerStore = __webpack_require__(254);
+	/* global google */
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
+	  createMap: function () {
+	    var map = ReactDOM.findDOMNode(this.refs.map);
+	    if (!isNaN(this.props.lat) && !isNaN(this.props.lng)) {
+	      var loc = new google.maps.LatLng(this.props.lat, this.props.lng);
+	    }
+	    var mapOptions = {
+	      center: loc || { lat: 37.7758, lng: -122.435 },
+	      zoom: 13,
+	      zoomControl: true,
+	      zoomControlOptions: {
+	        position: google.maps.ControlPosition.TOP_RIGHT
+	      },
+	      streetViewControl: false,
+	      draggable: false,
+	      clickable: false
+	    };
+	    this.map = new google.maps.Map(map, mapOptions);
+	  },
+	
+	  setMarker: function (latLng) {
+	    if (this.marker) this.marker.setMap(null);
+	
+	    var marker = new google.maps.Marker({
+	      zoom: 10,
+	      position: latLng,
+	      draggable: false,
+	      clickable: false
+	    });
+	
+	    marker.setMap(this.map);
+	    this.marker = marker;
+	  },
+	
+	  componentDidMount: function () {
+	    this.createMap();
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    if (!isNaN(newProps.lat) && !isNaN(newProps.lng)) {
+	      var loc = new google.maps.LatLng(newProps.lat, newProps.lng);
+	      this.map.setCenter(loc);
+	      this.setMarker(loc);
+	    }
+	  },
+	
 	  render: function () {
-	    return React.createElement('div', null);
+	    return React.createElement('div', { id: 'map', ref: 'map' });
 	  }
 	});
 
@@ -60370,7 +60457,23 @@
 	  displayName: 'exports',
 	
 	  render: function () {
-	    return;
+	    return React.createElement(
+	      'div',
+	      { className: 'seller card' },
+	      React.createElement(
+	        'div',
+	        { className: 'detail-seller valign-wrapper' },
+	        React.createElement(
+	          'span',
+	          { className: 'seller' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Seller:  '
+	          )
+	        )
+	      )
+	    );
 	  }
 	});
 
@@ -60430,9 +60533,9 @@
 	      'div',
 	      { className: 'detail-description' },
 	      React.createElement(
-	        'h5',
-	        null,
-	        'Description'
+	        'span',
+	        { className: 'card-title grey-text text-darken-4' },
+	        this.props.title
 	      ),
 	      React.createElement(
 	        'p',

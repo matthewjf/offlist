@@ -9,7 +9,6 @@ var ServerActions = {
     });
   },
   receiveProduct: function(product){
-
     Dispatcher.dispatch({
       actionType: ProductConstants.CREATE_PRODUCT,
       product: product

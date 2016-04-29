@@ -1,3 +1,4 @@
+var ReactDOM = require('react-dom');
 /* global google */
 
 module.exports = {
