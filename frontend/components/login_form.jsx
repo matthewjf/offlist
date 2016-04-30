@@ -53,6 +53,7 @@ var LoginForm = React.createClass({
 		var passwordArr = 'password'.split('');
 		$('#userlabel').addClass("active");
 		document.getElementById("username").focus();
+		this.disableButtons(true);
 		this.demoLogin(usernameArr, passwordArr);
 	},
 
@@ -60,6 +61,7 @@ var LoginForm = React.createClass({
 		var self = this;
 		if (usernameArr.length === 0 && passwordArr.length === 0) {
 			self.handleSubmit();
+			self.disableButtons(false);
 		} else {
 			if (usernameArr.length === 0) {
 				$('#password-label').addClass("active");
@@ -72,6 +74,11 @@ var LoginForm = React.createClass({
 				self.demoLogin(usernameArr, passwordArr);
 			}, 150);
 		}
+	},
+
+	disableButtons: function(val) {
+    $('.btn').prop("disabled", val);
+		$('.btn-flat').prop("disabled", val);
 	},
 
 	logout: function(e){
@@ -142,7 +149,7 @@ var LoginForm = React.createClass({
 							onClick={this.toggleForm} >Sign Up
 						</button>
 						<button
-							className='waves-effect waves-ripple btn grey darken-1 left'
+							className='waves-effect waves-light btn grey darken-1 left'
 							onClick={this.demoSubmit}>demo
 						</button>
 					</p>

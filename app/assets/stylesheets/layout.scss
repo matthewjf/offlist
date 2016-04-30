@@ -1,4 +1,4 @@
-$primary-color: #f45434;
+$primary-color: #F57C00;
 
 /* fonts */
 html {
@@ -59,4 +59,10 @@ footer.page-footer {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.split-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

@@ -25,10 +25,12 @@ module.exports = React.createClass({
     var username = (this.state.currentUser ? this.state.currentUser.username : '');
     return(
       <div className='user-detail container'>
-        <h4 className="center-align grey-text text-darken-1">Your Account</h4>
+        <div className='grey lighten-5 tab-background'>
+          <div className="tab-divider divider"></div>
+        </div>
         <div className="row">
           <div className="col s12">
-            <ul className="tabs">
+            <ul className="tabs grey lighten-5">
               <li className="tab col s3"><a href="#products">Products</a></li>
               <li className="tab col s3"><a href="#offers">Offers</a></li>
             </ul>

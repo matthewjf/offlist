@@ -1,9 +1,71 @@
 .user-detail {
-  margin-top: 1rem;
-}
+  margin-top: 0.5rem;
+  .tab-background {
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    top: 64px;
+    width: 100vw;
+    height: calc(48px + 0.5rem);
+    border-bottom: 1px solid #e0e0e0;
+    .tab-divider {
+      position: relative;
+      z-index: 0;
+      top: calc(47px + 0.5rem);
+    }
+  }
 
-.user-detail > .row {
-  overflow-x: hidden;
+  .tabs {
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .split-row {
+    margin: 0.5rem 0;
+  }
+
+  .account-products > .split-row {
+    margin: 1rem 0;
+  }
+
+  .account-product {
+    display: flex;
+    flex-direction: row;
+
+    .title {
+      display: inline;
+      margin-right: 1rem;
+    }
+
+    .product-image {
+      margin-right: 1rem;
+      flex: 0 0 30%;
+      width: 30%;
+      max-height: 200px;
+      overflow: hidden;
+      .slider {
+        max-height: 100%;
+        max-width: 100%;
+        img {
+          overflow: hidden;
+        }
+      }
+    }
+    .product-content {
+      margin-right: 1rem;
+      flex: 0 0 50%;
+    }
+    .product-manage {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      align-content: flex-start;
+      flex: 0 1 20%;
+      flex-wrap: wrap;
+      .btn {
+        margin: 0.5rem;
+      }
+    }
+  }
 }
 
 .user-detail > .row > .col {

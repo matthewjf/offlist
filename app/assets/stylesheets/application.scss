@@ -15,13 +15,14 @@
  */
 
  @import "materialize/components/color";
- $primary-color: #f45434;
- $secondary-color: #f45434;
+ $primary-color: #F57C00;
+ $secondary-color: #F57C00;
+ // $primary-color: #EF6C00;
+ // $secondary-color: #EF6C00;
  @import 'materialize';
 
  @import 'layout';
  @import 'products';
- @import 'test';
  @import 'modal';
  @import 'product_detail';
  @import 'user_detail';

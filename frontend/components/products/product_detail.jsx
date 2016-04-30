@@ -6,7 +6,7 @@ var React = require('react'),
 
 var Map = require('./detail_map'),
     Seller = require('./seller'),
-    Carousel = require('./carousel'),
+    Carousel = require('../carousel'),
     Offer = require('./offer'),
     Description = require('./description');
 

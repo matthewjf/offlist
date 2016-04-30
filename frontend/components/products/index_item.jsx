@@ -1,6 +1,6 @@
 var React = require('react'),
     MarkerStore = require('../../stores/marker_store'),
-    TextTruncate = require('react-text-truncate'),
+    Dotdotdot = require('react-dotdotdot'),
     hashHistory = require('react-router').hashHistory;
 
 /* global google */
@@ -53,13 +53,7 @@ module.exports = React.createClass({
         </span>
       </div>
       <div className='truncated description'>
-        <TextTruncate
-          line={1}
-          truncateText="…"
-          text={product.description}
-          showTitle={true}
-          raf={true}
-          />
+        <Dotdotdot clamp={1}>{product.description}</Dotdotdot>
       </div>
       <div className={hoverTransp + ' waves-effect waves-light'}></div>
 

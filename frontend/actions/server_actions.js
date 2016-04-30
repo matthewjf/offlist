@@ -13,6 +13,12 @@ var ServerActions = {
       actionType: ProductConstants.CREATE_PRODUCT,
       product: product
     });
+  },
+  removeProduct: function(product) {
+    Dispatcher.dispatch({
+      actionType: ProductConstants.PRODUCT_REMOVED,
+      product: product
+    });
   }
 };
 

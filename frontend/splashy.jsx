@@ -39,6 +39,7 @@ var Rtr = (
       <Route path='products/new' component={ProductForm} />
       <Route path='products' component={ProductList} />
       <Route path='products/:productId' component={ProductDetail} />
+      <Route path='products/:productId/edit' component={ProductForm} />
       <Route path='users/:userId' component={SellerDetail} />
       <Route path='account' component={UserDetail} />
     </Route>

@@ -114,10 +114,16 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function() {
+    console.log(this.props.params['productId']);
+
     var self = this;
     $('#upload_widget_opener').cloudinary_upload_widget(
       cloudinaryWidgetOptions,
       function(error, result) {self.setImageUrls(error, result);});
+  },
+
+  componentWillReceiveProps: function(newProps) {
+    console.log(newProps.params['productId']);
   },
 
   render: function () {

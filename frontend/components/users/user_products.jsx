@@ -1,12 +1,12 @@
 var React = require('react');
 
 var UserActions = require("../../actions/user_actions"),
-    CurrentUserState = require("../../mixins/current_user_state"),
     UserStore = require('../../stores/user_store'),
-    ProductStore = require('../../stores/product_store');
+    ProductStore = require('../../stores/product_store'),
+    hashHistory = require('react-router').hashHistory,
+    ProductItem = require('./user_product_item');
 
 module.exports = React.createClass({
-  mixins: [CurrentUserState],
   getInitialState: function(){
     return {products: []};
   },
@@ -23,28 +23,29 @@ module.exports = React.createClass({
     this.productListener.remove();
   },
 
-  buildProducts: function(){
-    return this.state.products.map;
+  newProduct: function() {
+    hashHistory.push('products/new');
+  },
+
+  productItems: function(){
+    return this.state.products.map(function(product){
+      return  <ProductItem key={product.id} product={product} />;
+    });
   },
 
   render: function() {
-    var testtext = this.state.products ? this.state.products.length : 0;
-    return <ul id='staggered'>
-      <h1>{testtext}</h1>
-      <li className="section">
-        <h5>Section 1</h5>
-        <p>Stuff</p>
-      </li>
-      <div className="divider"></div>
-      <li className="section">
-        <h5>Section 2</h5>
-        <p>Stuff</p>
-      </li>
-      <div className="divider"></div>
-      <li className="section">
-        <h5>Section 3</h5>
-        <p>Stuff</p>
-      </li>
-    </ul>;
+    var numProducts = this.state.products ? this.state.products.length : 0;
+    return <div className='account-products'>
+            <div className='split-row'>
+              <div className='num-products grey-text'>{numProducts} products</div>
+              <button
+                className='btn waves-effect waves-light' onClick={this.newProduct}>
+                Add Product
+              </button>
+            </div>
+            <ul className='collection'>
+              {this.productItems()}
+            </ul>
+          </div>;
   }
 });

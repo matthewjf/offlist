@@ -91,6 +91,7 @@
 	    React.createElement(Route, { path: 'products/new', component: ProductForm }),
 	    React.createElement(Route, { path: 'products', component: ProductList }),
 	    React.createElement(Route, { path: 'products/:productId', component: ProductDetail }),
+	    React.createElement(Route, { path: 'products/:productId/edit', component: ProductForm }),
 	    React.createElement(Route, { path: 'users/:userId', component: SellerDetail }),
 	    React.createElement(Route, { path: 'account', component: UserDetail })
 	  )
@@ -25562,7 +25563,11 @@
 	    };
 	    this.map = new google.maps.Map(map, mapOptions);
 	    ProductStore.addListener(this.onChange);
-	    this.map.addListener('idle', this.getProducts);
+	    this.mapListener = this.map.addListener('idle', this.getProducts);
+	  },
+	
+	  componentWillUnmount: function () {
+	    google.maps.event.removeListener(this.mapListener);
 	  },
 	
 	  render: function () {
@@ -32500,6 +32505,12 @@
 	      actionType: ProductConstants.CREATE_PRODUCT,
 	      product: product
 	    });
+	  },
+	  removeProduct: function (product) {
+	    Dispatcher.dispatch({
+	      actionType: ProductConstants.PRODUCT_REMOVED,
+	      product: product
+	    });
 	  }
 	};
 	
@@ -32695,7 +32706,7 @@
 
 	var React = __webpack_require__(1),
 	    MarkerStore = __webpack_require__(254),
-	    TextTruncate = __webpack_require__(258),
+	    Dotdotdot = __webpack_require__(353),
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	/* global google */
@@ -32757,13 +32768,11 @@
 	      React.createElement(
 	        'div',
 	        { className: 'truncated description' },
-	        React.createElement(TextTruncate, {
-	          line: 1,
-	          truncateText: '…',
-	          text: product.description,
-	          showTitle: true,
-	          raf: true
-	        })
+	        React.createElement(
+	          Dotdotdot,
+	          { clamp: 1 },
+	          product.description
+	        )
 	      ),
 	      React.createElement('div', { className: hoverTransp + ' waves-effect waves-light' })
 	    );
@@ -32771,251 +32780,7 @@
 	});
 
 /***/ },
-/* 258 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
-	    if (true) {
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	    } else if (typeof exports !== "undefined") {
-	        factory(module, exports, require('react'));
-	    } else {
-	        var mod = {
-	            exports: {}
-	        };
-	        factory(mod, mod.exports, global.react);
-	        global.TextTruncate = mod.exports;
-	    }
-	})(this, function (module, exports, _react) {
-	    'use strict';
-	
-	    Object.defineProperty(exports, "__esModule", {
-	        value: true
-	    });
-	
-	    var _react2 = _interopRequireDefault(_react);
-	
-	    function _interopRequireDefault(obj) {
-	        return obj && obj.__esModule ? obj : {
-	            default: obj
-	        };
-	    }
-	
-	    function _classCallCheck(instance, Constructor) {
-	        if (!(instance instanceof Constructor)) {
-	            throw new TypeError("Cannot call a class as a function");
-	        }
-	    }
-	
-	    var _createClass = function () {
-	        function defineProperties(target, props) {
-	            for (var i = 0; i < props.length; i++) {
-	                var descriptor = props[i];
-	                descriptor.enumerable = descriptor.enumerable || false;
-	                descriptor.configurable = true;
-	                if ("value" in descriptor) descriptor.writable = true;
-	                Object.defineProperty(target, descriptor.key, descriptor);
-	            }
-	        }
-	
-	        return function (Constructor, protoProps, staticProps) {
-	            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	            if (staticProps) defineProperties(Constructor, staticProps);
-	            return Constructor;
-	        };
-	    }();
-	
-	    function _possibleConstructorReturn(self, call) {
-	        if (!self) {
-	            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-	        }
-	
-	        return call && (typeof call === "object" || typeof call === "function") ? call : self;
-	    }
-	
-	    function _inherits(subClass, superClass) {
-	        if (typeof superClass !== "function" && superClass !== null) {
-	            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-	        }
-	
-	        subClass.prototype = Object.create(superClass && superClass.prototype, {
-	            constructor: {
-	                value: subClass,
-	                enumerable: false,
-	                writable: true,
-	                configurable: true
-	            }
-	        });
-	        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-	    }
-	
-	    var TextTruncate = function (_Component) {
-	        _inherits(TextTruncate, _Component);
-	
-	        function TextTruncate() {
-	            var _Object$getPrototypeO;
-	
-	            var _temp, _this, _ret;
-	
-	            _classCallCheck(this, TextTruncate);
-	
-	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	                args[_key] = arguments[_key];
-	            }
-	
-	            return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(TextTruncate)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.animationStep = function (timeStamp) {
-	                if (timeStamp - _this.lastTime < 150) {
-	                    _this.loopId = window.requestAnimationFrame(_this.animationStep);
-	                    return;
-	                }
-	
-	                _this.lastTime = timeStamp;
-	                _this.onResize();
-	                _this.loopId = window.requestAnimationFrame(_this.animationStep);
-	            }, _this.onResize = function () {
-	                _this.forceUpdate();
-	            }, _temp), _possibleConstructorReturn(_this, _ret);
-	        }
-	
-	        _createClass(TextTruncate, [{
-	            key: 'componentDidMount',
-	            value: function componentDidMount() {
-	                var canvas = document.createElement('canvas');
-	                var docFragment = document.createDocumentFragment();
-	                var style = window.getComputedStyle(this.refs.scope);
-	                var font = [style['font-weight'], style['font-style'], style['font-size'], style['font-family']].join(' ');
-	                docFragment.appendChild(canvas);
-	                this.canvas = canvas.getContext('2d');
-	                this.canvas.font = font;
-	                this.forceUpdate();
-	
-	                if (this.props.raf) {
-	                    this.loopId = window.requestAnimationFrame(this.animationStep);
-	                } else {
-	                    window.addEventListener('resize', this.onResize);
-	                }
-	            }
-	        }, {
-	            key: 'componentWillUnmount',
-	            value: function componentWillUnmount() {
-	                if (this.props.raf) {
-	                    window.cancelAnimationFrame(this.loopId);
-	                } else {
-	                    window.removeEventListener('resize', this.onResize);
-	                }
-	            }
-	        }, {
-	            key: 'measureWidth',
-	            value: function measureWidth(text) {
-	                return this.canvas.measureText(text).width;
-	            }
-	        }, {
-	            key: 'getRenderText',
-	            value: function getRenderText() {
-	                var textWidth = this.measureWidth(this.props.text);
-	                var scopeWidth = this.refs.scope.getBoundingClientRect().width;
-	                if (scopeWidth >= textWidth) {
-	                    return this.props.text;
-	                } else {
-	                    var currentPos = 1;
-	                    var maxTextLength = this.props.text.length;
-	                    var text = '';
-	                    var splitPos = 0;
-	                    var startPos = 0;
-	                    var line = this.props.line;
-	                    var width = 0;
-	                    var lastIsEng = false;
-	                    while (line--) {
-	                        var ext = line ? '' : this.props.truncateText;
-	                        while (currentPos <= maxTextLength) {
-	                            text = this.props.text.substr(startPos, currentPos);
-	                            width = this.measureWidth(text + ext);
-	                            if (width < scopeWidth) {
-	                                splitPos = this.props.text.indexOf(' ', currentPos + 1);
-	                                if (splitPos === -1) {
-	                                    currentPos += 1;
-	                                    lastIsEng = false;
-	                                } else {
-	                                    lastIsEng = true;
-	                                    currentPos = splitPos;
-	                                }
-	                            } else {
-	                                do {
-	                                    currentPos--;
-	                                    text = this.props.text.substr(startPos, currentPos);
-	                                    if (text[text.length - 1] === ' ') {
-	                                        text = this.props.text.substr(startPos, currentPos - 1);
-	                                    }
-	                                    if (lastIsEng) {
-	                                        currentPos = text.lastIndexOf(' ');
-	                                        text = this.props.text.substr(startPos, currentPos);
-	                                    }
-	                                    width = this.measureWidth(text + ext);
-	                                } while (width >= scopeWidth);
-	                                startPos += currentPos;
-	                                break;
-	                            }
-	                        }
-	
-	                        if (currentPos >= maxTextLength) {
-	                            startPos = maxTextLength;
-	                            break;
-	                        }
-	                    }
-	                    return startPos === maxTextLength ? this.props.text : this.props.text.substr(0, startPos) + this.props.truncateText;
-	                }
-	            }
-	        }, {
-	            key: 'render',
-	            value: function render() {
-	                var text = '';
-	                if (this.refs.scope) {
-	                    text = this.getRenderText();
-	                }
-	
-	                var attrs = {};
-	                if (this.props.showTitle) {
-	                    attrs.title = this.props.text;
-	                }
-	
-	                return _react2.default.createElement(
-	                    'div',
-	                    { ref: 'scope', style: { overflow: 'hidden' } },
-	                    _react2.default.createElement(
-	                        'div',
-	                        attrs,
-	                        text
-	                    ),
-	                    this.props.text === text ? null : this.props.textTruncateChild
-	                );
-	            }
-	        }]);
-	
-	        return TextTruncate;
-	    }(_react.Component);
-	
-	    TextTruncate.propTypes = {
-	        text: _react2.default.PropTypes.string,
-	        truncateText: _react2.default.PropTypes.string,
-	        line: _react2.default.PropTypes.number,
-	        showTitle: _react2.default.PropTypes.bool,
-	        textTruncateChild: _react2.default.PropTypes.node,
-	        raf: _react2.default.PropTypes.bool
-	    };
-	    TextTruncate.defaultProps = {
-	        text: '',
-	        truncateText: '…',
-	        line: 1,
-	        showTitle: true,
-	        raf: true
-	    };
-	    exports.default = TextTruncate;
-	    ;
-	    module.exports = exports['default'];
-	});
-
-
-/***/ },
+/* 258 */,
 /* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -33551,6 +33316,7 @@
 			var passwordArr = 'password'.split('');
 			$('#userlabel').addClass("active");
 			document.getElementById("username").focus();
+			this.disableButtons(true);
 			this.demoLogin(usernameArr, passwordArr);
 		},
 	
@@ -33558,6 +33324,7 @@
 			var self = this;
 			if (usernameArr.length === 0 && passwordArr.length === 0) {
 				self.handleSubmit();
+				self.disableButtons(false);
 			} else {
 				if (usernameArr.length === 0) {
 					$('#password-label').addClass("active");
@@ -33570,6 +33337,11 @@
 					self.demoLogin(usernameArr, passwordArr);
 				}, 150);
 			}
+		},
+	
+		disableButtons: function (val) {
+			$('.btn').prop("disabled", val);
+			$('.btn-flat').prop("disabled", val);
 		},
 	
 		logout: function (e) {
@@ -33675,7 +33447,7 @@
 					React.createElement(
 						"button",
 						{
-							className: "waves-effect waves-ripple btn grey darken-1 left",
+							className: "waves-effect waves-light btn grey darken-1 left",
 							onClick: this.demoSubmit },
 						"demo"
 					)
@@ -34022,10 +33794,16 @@
 	  },
 	
 	  componentDidMount: function () {
+	    console.log(this.props.params['productId']);
+	
 	    var self = this;
 	    $('#upload_widget_opener').cloudinary_upload_widget(cloudinaryWidgetOptions, function (error, result) {
 	      self.setImageUrls(error, result);
 	    });
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    console.log(newProps.params['productId']);
 	  },
 	
 	  render: function () {
@@ -60329,7 +60107,7 @@
 	
 	var Map = __webpack_require__(335),
 	    Seller = __webpack_require__(336),
-	    Carousel = __webpack_require__(337),
+	    Carousel = __webpack_require__(352),
 	    Offer = __webpack_require__(343),
 	    Description = __webpack_require__(344);
 	
@@ -60528,20 +60306,28 @@
 	      { className: 'seller card' },
 	      React.createElement(
 	        'div',
-	        { className: 'detail-seller valign-wrapper' },
+	        { className: 'detail-seller valign-wrapper split-row' },
 	        React.createElement(
-	          'span',
-	          { className: 'seller' },
+	          'div',
+	          null,
 	          React.createElement(
-	            'b',
-	            null,
-	            'Seller:  '
+	            'span',
+	            { className: 'seller' },
+	            React.createElement(
+	              'b',
+	              null,
+	              'Seller:  '
+	            )
 	          )
 	        ),
 	        React.createElement(
-	          'a',
-	          { className: 'seller-link right-align', onClick: this.sellerClick },
-	          this.props.seller.username
+	          'div',
+	          null,
+	          React.createElement(
+	            'a',
+	            { className: 'seller-link right-align', onClick: this.sellerClick },
+	            this.props.seller.username
+	          )
 	        )
 	      )
 	    );
@@ -60549,44 +60335,7 @@
 	});
 
 /***/ },
-/* 337 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var Carousel = __webpack_require__(338);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  mixins: [Carousel.ControllerMixin],
-	
-	  componentWillReceiveProps: function () {
-	    this.setState({});
-	  },
-	
-	  render: function () {
-	    var images;
-	    if (this.props.images) {
-	      images = this.props.images.map(function (url) {
-	        return React.createElement('img', { key: url, src: url });
-	      });
-	    } else {
-	      images = '';
-	    }
-	
-	    return React.createElement(
-	      'div',
-	      { className: 'carousel-wrapper' },
-	      React.createElement(
-	        Carousel,
-	        null,
-	        images
-	      )
-	    );
-	  }
-	});
-
-/***/ },
+/* 337 */,
 /* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -62600,9 +62349,9 @@
 	      "div",
 	      { className: "user-detail container" },
 	      React.createElement(
-	        "h4",
-	        { className: "center-align grey-text text-darken-1" },
-	        "Your Account"
+	        "div",
+	        { className: "grey lighten-5 tab-background" },
+	        React.createElement("div", { className: "tab-divider divider" })
 	      ),
 	      React.createElement(
 	        "div",
@@ -62612,7 +62361,7 @@
 	          { className: "col s12" },
 	          React.createElement(
 	            "ul",
-	            { className: "tabs" },
+	            { className: "tabs grey lighten-5" },
 	            React.createElement(
 	              "li",
 	              { className: "tab col s3" },
@@ -62673,14 +62422,14 @@
 	var React = __webpack_require__(1);
 	
 	var UserActions = __webpack_require__(260),
-	    CurrentUserState = __webpack_require__(264),
 	    UserStore = __webpack_require__(263),
-	    ProductStore = __webpack_require__(227);
+	    ProductStore = __webpack_require__(227),
+	    hashHistory = __webpack_require__(166).hashHistory,
+	    ProductItem = __webpack_require__(351);
 	
 	module.exports = React.createClass({
-	  displayName: "exports",
+	  displayName: 'exports',
 	
-	  mixins: [CurrentUserState],
 	  getInitialState: function () {
 	    return { products: [] };
 	  },
@@ -62697,63 +62446,41 @@
 	    this.productListener.remove();
 	  },
 	
-	  buildProducts: function () {
-	    return this.state.products.map;
+	  newProduct: function () {
+	    hashHistory.push('products/new');
+	  },
+	
+	  productItems: function () {
+	    return this.state.products.map(function (product) {
+	      return React.createElement(ProductItem, { key: product.id, product: product });
+	    });
 	  },
 	
 	  render: function () {
-	    var testtext = this.state.products ? this.state.products.length : 0;
+	    var numProducts = this.state.products ? this.state.products.length : 0;
 	    return React.createElement(
-	      "ul",
-	      { id: "staggered" },
+	      'div',
+	      { className: 'account-products' },
 	      React.createElement(
-	        "h1",
-	        null,
-	        testtext
-	      ),
-	      React.createElement(
-	        "li",
-	        { className: "section" },
+	        'div',
+	        { className: 'split-row' },
 	        React.createElement(
-	          "h5",
-	          null,
-	          "Section 1"
+	          'div',
+	          { className: 'num-products grey-text' },
+	          numProducts,
+	          ' products'
 	        ),
 	        React.createElement(
-	          "p",
-	          null,
-	          "Stuff"
+	          'button',
+	          {
+	            className: 'btn waves-effect waves-light', onClick: this.newProduct },
+	          'Add Product'
 	        )
 	      ),
-	      React.createElement("div", { className: "divider" }),
 	      React.createElement(
-	        "li",
-	        { className: "section" },
-	        React.createElement(
-	          "h5",
-	          null,
-	          "Section 2"
-	        ),
-	        React.createElement(
-	          "p",
-	          null,
-	          "Stuff"
-	        )
-	      ),
-	      React.createElement("div", { className: "divider" }),
-	      React.createElement(
-	        "li",
-	        { className: "section" },
-	        React.createElement(
-	          "h5",
-	          null,
-	          "Section 3"
-	        ),
-	        React.createElement(
-	          "p",
-	          null,
-	          "Stuff"
-	        )
+	        'ul',
+	        { className: 'collection' },
+	        this.productItems()
 	      )
 	    );
 	  }
@@ -62824,6 +62551,488 @@
 	    );
 	  }
 	});
+
+/***/ },
+/* 351 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(353),
+	    TimeAgo = __webpack_require__(346).default,
+	    Carousel = __webpack_require__(352),
+	    ClientActions = __webpack_require__(250);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  productLink: function () {
+	    hashHistory.push('products/' + this.props.product.id);
+	  },
+	
+	  deleteProduct: function (e) {
+	    e.preventDefault();
+	    ClientActions.deleteProduct(this.props.product.id);
+	  },
+	
+	  editProduct: function (e) {
+	    e.preventDefault();
+	    hashHistory.push('products/' + this.props.product.id + '/edit');
+	  },
+	
+	  render: function () {
+	    var product = this.props.product;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'account-product grey lighten-5 collection-item' },
+	      React.createElement(
+	        'div',
+	        { className: 'product-image' },
+	        React.createElement(Carousel, { images: product.img_urls })
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'product-content' },
+	        React.createElement(
+	          'h5',
+	          { className: 'title' },
+	          product.title
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'split-row' },
+	          React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	              'span',
+	              { className: 'grey-text' },
+	              ' posted '
+	            ),
+	            React.createElement(TimeAgo, { className: 'grey-text', date: product.created_at })
+	          ),
+	          React.createElement(
+	            'div',
+	            null,
+	            '$' + product.price
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'section' },
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 2 },
+	            product.description
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'product-manage' },
+	        React.createElement(
+	          'button',
+	          {
+	            className: 'btn light-blue darken-1 waves-effect waves-light',
+	            type: 'submit',
+	            name: 'action',
+	            onClick: this.editProduct },
+	          'edit'
+	        ),
+	        React.createElement(
+	          'button',
+	          {
+	            className: 'btn red darken-1 waves-effect waves-light',
+	            type: 'submit',
+	            name: 'action',
+	            onClick: this.deleteProduct },
+	          'delete'
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 352 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var Carousel = __webpack_require__(338);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [Carousel.ControllerMixin],
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({});
+	  },
+	
+	  render: function () {
+	    var images;
+	    if (this.props.images) {
+	      images = this.props.images.map(function (url) {
+	        return React.createElement('img', { key: url, src: url });
+	      });
+	    } else {
+	      images = '';
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'carousel-wrapper' },
+	      React.createElement(
+	        Carousel,
+	        null,
+	        images
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 353 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(32);
+	var clamp = __webpack_require__(354);
+	var PropTypes = React.PropTypes;
+	/**
+	 * multuline text-overflow: ellipsis
+	 */
+	function Dotdotdot() {
+	  if(!(this instanceof Dotdotdot)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
+	
+	Dotdotdot.prototype = Object.create(React.Component.prototype);
+	Dotdotdot.prototype.componentDidMount = function() {
+	  this.dotdotdot(ReactDOM.findDOMNode(this.refs.container));
+	};
+	Dotdotdot.prototype.componentDidUpdate = function() {
+	  this.dotdotdot(ReactDOM.findDOMNode(this.refs.container));
+	};
+	
+	Dotdotdot.prototype.dotdotdot = function(container) {
+	  if (this.props.clamp) {
+	    if (container.length) {
+	      throw new Error('Please provide exacly one child to dotdotdot');
+	    }
+	
+	    clamp(container, {
+	      clamp: this.props.clamp,
+	      truncationChar: this.props.truncationChar
+	    });
+	  }
+	};
+	
+	Dotdotdot.prototype.render = function() {
+	  return React.createElement(
+	    "div",
+	    { ref: "container", className: this.props.className },
+	    this.props.children
+	  );
+	};
+	
+	// Statics:
+	Dotdotdot.propTypes = {
+	  children: PropTypes.node,
+	  clamp: PropTypes.oneOfType([
+	    PropTypes.string,
+	    PropTypes.number,
+	    PropTypes.bool
+	  ]).isRequired,
+	  truncationChar: PropTypes.string,
+	  className: PropTypes.string
+	};
+	
+	Dotdotdot.defaultProps = {
+	  truncationChar: '\u2026'
+	};
+	
+	module.exports = Dotdotdot;
+
+
+/***/ },
+/* 354 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * Clamp.js 0.7.0
+	 *
+	 * Copyright 2011-2013, Joseph Schmitt http://joe.sh
+	 * Released under the WTFPL license
+	 * http://sam.zoy.org/wtfpl/
+	 */
+	
+	(function(root, factory) {
+	  if (true) {
+	    // AMD
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports === 'object') {
+	    // Node, CommonJS-like
+	    module.exports = factory();
+	  } else {
+	    // Browser globals
+	    root.$clamp = factory();
+	  }
+	}(this, function() {
+	  /**
+	   * Clamps a text node.
+	   * @param {HTMLElement} element. Element containing the text node to clamp.
+	   * @param {Object} options. Options to pass to the clamper.
+	   */
+	  function clamp(element, options) {
+	    options = options || {};
+	
+	    var self = this,
+	      win = window,
+	      opt = {
+	        clamp: options.clamp || 2,
+	        useNativeClamp: typeof(options.useNativeClamp) != 'undefined' ? options.useNativeClamp : true,
+	        splitOnChars: options.splitOnChars || ['.', '-', '–', '—', ' '], //Split on sentences (periods), hypens, en-dashes, em-dashes, and words (spaces).
+	        animate: options.animate || false,
+	        truncationChar: options.truncationChar || '…',
+	        truncationHTML: options.truncationHTML
+	      },
+	
+	      sty = element.style,
+	      originalText = element.innerHTML,
+	
+	      supportsNativeClamp = typeof(element.style.webkitLineClamp) != 'undefined',
+	      clampValue = opt.clamp,
+	      isCSSValue = clampValue.indexOf && (clampValue.indexOf('px') > -1 || clampValue.indexOf('em') > -1),
+	      truncationHTMLContainer;
+	
+	    if (opt.truncationHTML) {
+	      truncationHTMLContainer = document.createElement('span');
+	      truncationHTMLContainer.innerHTML = opt.truncationHTML;
+	    }
+	
+	
+	    // UTILITY FUNCTIONS __________________________________________________________
+	
+	    /**
+	     * Return the current style for an element.
+	     * @param {HTMLElement} elem The element to compute.
+	     * @param {string} prop The style property.
+	     * @returns {number}
+	     */
+	    function computeStyle(elem, prop) {
+	      if (!win.getComputedStyle) {
+	        win.getComputedStyle = function(el, pseudo) {
+	          this.el = el;
+	          this.getPropertyValue = function(prop) {
+	            var re = /(\-([a-z]){1})/g;
+	            if (prop == 'float') prop = 'styleFloat';
+	            if (re.test(prop)) {
+	              prop = prop.replace(re, function() {
+	                return arguments[2].toUpperCase();
+	              });
+	            }
+	            return el.currentStyle && el.currentStyle[prop] ? el.currentStyle[prop] : null;
+	          };
+	          return this;
+	        };
+	      }
+	
+	      return win.getComputedStyle(elem, null).getPropertyValue(prop);
+	    }
+	
+	    /**
+	     * Returns the maximum number of lines of text that should be rendered based
+	     * on the current height of the element and the line-height of the text.
+	     */
+	    function getMaxLines(height) {
+	      var availHeight = height || element.clientHeight,
+	        lineHeight = getLineHeight(element);
+	
+	      return Math.max(Math.floor(availHeight / lineHeight), 0);
+	    }
+	
+	    /**
+	     * Returns the maximum height a given element should have based on the line-
+	     * height of the text and the given clamp value.
+	     */
+	    function getMaxHeight(clmp) {
+	      var lineHeight = getLineHeight(element);
+	      return lineHeight * clmp;
+	    }
+	
+	    /**
+	     * Returns the line-height of an element as an integer.
+	     */
+	    function getLineHeight(elem) {
+	      var lh = computeStyle(elem, 'line-height');
+	      if (lh == 'normal') {
+	        // Normal line heights vary from browser to browser. The spec recommends
+	        // a value between 1.0 and 1.2 of the font size. Using 1.1 to split the diff.
+	        lh = parseInt(computeStyle(elem, 'font-size')) * 1.2;
+	      }
+	      return parseInt(lh);
+	    }
+	
+	
+	    // MEAT AND POTATOES (MMMM, POTATOES...) ______________________________________
+	    var splitOnChars = opt.splitOnChars.slice(0),
+	      splitChar = splitOnChars[0],
+	      chunks,
+	      lastChunk;
+	
+	    /**
+	     * Gets an element's last child. That may be another node or a node's contents.
+	     */
+	    function getLastChild(elem) {
+	      //Current element has children, need to go deeper and get last child as a text node
+	      if (elem.lastChild.children && elem.lastChild.children.length > 0) {
+	        return getLastChild(Array.prototype.slice.call(elem.children).pop());
+	      }
+	      //This is the absolute last child, a text node, but something's wrong with it. Remove it and keep trying
+	      else if (!elem.lastChild || !elem.lastChild.nodeValue || elem.lastChild.nodeValue === '' || elem.lastChild.nodeValue == opt.truncationChar) {
+	        elem.lastChild.parentNode.removeChild(elem.lastChild);
+	        return getLastChild(element);
+	      }
+	      //This is the last child we want, return it
+	      else {
+	        return elem.lastChild;
+	      }
+	    }
+	
+	    /**
+	     * Removes one character at a time from the text until its width or
+	     * height is beneath the passed-in max param.
+	     */
+	    function truncate(target, maxHeight) {
+	      if (!maxHeight) {
+	        return;
+	      }
+	
+	      /**
+	       * Resets global variables.
+	       */
+	      function reset() {
+	        splitOnChars = opt.splitOnChars.slice(0);
+	        splitChar = splitOnChars[0];
+	        chunks = null;
+	        lastChunk = null;
+	      }
+	
+	      var nodeValue = target.nodeValue.replace(opt.truncationChar, '');
+	
+	      //Grab the next chunks
+	      if (!chunks) {
+	        //If there are more characters to try, grab the next one
+	        if (splitOnChars.length > 0) {
+	          splitChar = splitOnChars.shift();
+	        }
+	        //No characters to chunk by. Go character-by-character
+	        else {
+	          splitChar = '';
+	        }
+	
+	        chunks = nodeValue.split(splitChar);
+	      }
+	
+	      //If there are chunks left to remove, remove the last one and see if
+	      // the nodeValue fits.
+	      if (chunks.length > 1) {
+	        // console.log('chunks', chunks);
+	        lastChunk = chunks.pop();
+	        // console.log('lastChunk', lastChunk);
+	        applyEllipsis(target, chunks.join(splitChar));
+	      }
+	      //No more chunks can be removed using this character
+	      else {
+	        chunks = null;
+	      }
+	
+	      //Insert the custom HTML before the truncation character
+	      if (truncationHTMLContainer) {
+	        target.nodeValue = target.nodeValue.replace(opt.truncationChar, '');
+	        element.innerHTML = target.nodeValue + ' ' + truncationHTMLContainer.innerHTML + opt.truncationChar;
+	      }
+	
+	      //Search produced valid chunks
+	      if (chunks) {
+	        //It fits
+	        if (element.clientHeight <= maxHeight) {
+	          //There's still more characters to try splitting on, not quite done yet
+	          if (splitOnChars.length >= 0 && splitChar !== '') {
+	            applyEllipsis(target, chunks.join(splitChar) + splitChar + lastChunk);
+	            chunks = null;
+	          }
+	          //Finished!
+	          else {
+	            return element.innerHTML;
+	          }
+	        }
+	      }
+	      //No valid chunks produced
+	      else {
+	        //No valid chunks even when splitting by letter, time to move
+	        //on to the next node
+	        if (splitChar === '') {
+	          applyEllipsis(target, '');
+	          target = getLastChild(element);
+	
+	          reset();
+	        }
+	      }
+	
+	      //If you get here it means still too big, let's keep truncating
+	      if (opt.animate) {
+	        setTimeout(function() {
+	          truncate(target, maxHeight);
+	        }, opt.animate === true ? 10 : opt.animate);
+	      } else {
+	        return truncate(target, maxHeight);
+	      }
+	    }
+	
+	    function applyEllipsis(elem, str) {
+	      elem.nodeValue = str + opt.truncationChar;
+	    }
+	
+	
+	    // CONSTRUCTOR ________________________________________________________________
+	
+	    if (clampValue == 'auto') {
+	      clampValue = getMaxLines();
+	    } else if (isCSSValue) {
+	      clampValue = getMaxLines(parseInt(clampValue));
+	    }
+	
+	    var clampedText;
+	    if (supportsNativeClamp && opt.useNativeClamp) {
+	      sty.overflow = 'hidden';
+	      sty.textOverflow = 'ellipsis';
+	      sty.webkitBoxOrient = 'vertical';
+	      sty.display = '-webkit-box';
+	      sty.webkitLineClamp = clampValue;
+	
+	      if (isCSSValue) {
+	        sty.height = opt.clamp + 'px';
+	      }
+	    } else {
+	      var height = getMaxHeight(clampValue);
+	      if (height <= element.clientHeight) {
+	        clampedText = truncate(getLastChild(element), height);
+	      }
+	    }
+	
+	    return {
+	      'original': originalText,
+	      'clamped': clampedText
+	    };
+	  }
+	
+	  return clamp;
+	}));
+
 
 /***/ }
 /******/ ]);

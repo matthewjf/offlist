@@ -61,7 +61,11 @@ module.exports = React.createClass({
     };
     this.map = new google.maps.Map(map, mapOptions);
     ProductStore.addListener(this.onChange);
-    this.map.addListener('idle',this.getProducts);
+    this.mapListener = this.map.addListener('idle',this.getProducts);
+  },
+
+  componentWillUnmount: function() {
+    google.maps.event.removeListener(this.mapListener);
   },
 
   render: function () {
