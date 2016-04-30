@@ -80,9 +80,8 @@ var SignupForm = React.createClass({
 									type="text"
 									value={this.state.username}
 									onChange={this.setUsername}
-									id='username'
-									className='validate' />
-								<label for='username'>
+									id='username' />
+								<label htmlFor='username'>
 									Username
 								</label>
 							</div>
@@ -94,9 +93,8 @@ var SignupForm = React.createClass({
 									id='password'
 									type="password"
 									value={this.state.password}
-									onChange={this.setPassword}
-									className='validate' />
-								<label for='password'>
+									onChange={this.setPassword} />
+								<label htmlFor='password'>
 									Password
 								</label>
 							</div>

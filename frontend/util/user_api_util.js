@@ -18,10 +18,12 @@ var UserApiUtil = {
 			error: error
 		});
 	},
-	fetchCurrentUser: function(success, error){
+	fetchCurrentUser: function(success, error, opts){
+		var data = opts || {};
 		$.ajax({
 			url: '/api/session',
 			method: 'get',
+			data: data,
 			success: success,
 			error: error
 		});

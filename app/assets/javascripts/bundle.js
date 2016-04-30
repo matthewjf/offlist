@@ -33186,15 +33186,21 @@
 /* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var UserConstants = __webpack_require__(261);
-	var UserApiUtil = __webpack_require__(262);
-	var UserStore = __webpack_require__(263);
-	var AppDispatcher = __webpack_require__(246);
+	var UserConstants = __webpack_require__(261),
+	    UserApiUtil = __webpack_require__(262),
+	    UserStore = __webpack_require__(263),
+	    AppDispatcher = __webpack_require__(246),
+	    ServerActions = __webpack_require__(252);
 	
 	var UserActions = {
 		fetchCurrentUser: function () {
 			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUser, UserActions.handleError);
 		},
+	
+		fetchCurrentUserWithProducts: function () {
+			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUserWithProducts, UserActions.handleError, { includeProducts: true });
+		},
+	
 		signup: function (user) {
 			UserApiUtil.post({
 				url: "/api/user",
@@ -33203,6 +33209,7 @@
 				error: UserActions.handleError
 			});
 		},
+	
 		login: function (user) {
 			UserApiUtil.post({
 				url: "/api/session",
@@ -33211,23 +33218,39 @@
 				error: UserActions.handleError
 			});
 		},
+	
 		guestLogin: function () {
 			UserActions.login({ username: "guest", password: "password" });
 		},
-		receiveCurrentUser: function (user) {
+	
+		receiveCurrentUser: function (data) {
 			AppDispatcher.dispatch({
 				actionType: UserConstants.LOGIN,
-				user: user
+				user: { username: data.username }
 			});
 			$('#signup-modal').closeModal();
 			$('#login-modal').closeModal();
 		},
+	
+		receiveCurrentUserWithProducts: function (data) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.LOGIN,
+				user: { username: data.username }
+			});
+			$('#signup-modal').closeModal();
+			$('#login-modal').closeModal();
+	
+			// do other stuff with products
+			ServerActions.receiveAll(data.products);
+		},
+	
 		handleError: function (error) {
 			AppDispatcher.dispatch({
 				actionType: UserConstants.ERROR,
 				errors: error.responseJSON.errors
 			});
 		},
+	
 		removeCurrentUser: function () {
 			AppDispatcher.dispatch({
 				actionType: UserConstants.LOGOUT
@@ -33236,6 +33259,7 @@
 		logout: function () {
 			UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
 		},
+	
 		resetErrors: function (errors) {
 			AppDispatcher.dispatch({
 				actionType: UserConstants.ERROR,
@@ -33282,10 +33306,12 @@
 				error: error
 			});
 		},
-		fetchCurrentUser: function (success, error) {
+		fetchCurrentUser: function (success, error, opts) {
+			var data = opts || {};
 			$.ajax({
 				url: '/api/session',
 				method: 'get',
+				data: data,
 				success: success,
 				error: error
 			});
@@ -33510,12 +33536,40 @@
 		},
 	
 		handleSubmit: function (e) {
-			e.preventDefault();
+			if (e) e.preventDefault();
 			UserActions['login']({
 				username: this.state.username,
 				password: this.state.password
 			});
 			this.resetState();
+		},
+	
+		demoSubmit: function (event) {
+			event.preventDefault();
+			this.setState({ username: '', password: '' });
+			var usernameArr = 'demo'.split('');
+			var passwordArr = 'password'.split('');
+			$('#userlabel').addClass("active");
+			document.getElementById("username").focus();
+			this.demoLogin(usernameArr, passwordArr);
+		},
+	
+		demoLogin: function (usernameArr, passwordArr) {
+			var self = this;
+			if (usernameArr.length === 0 && passwordArr.length === 0) {
+				self.handleSubmit();
+			} else {
+				if (usernameArr.length === 0) {
+					$('#password-label').addClass("active");
+					document.getElementById("password").focus();
+					self.setState({ password: self.state.password + passwordArr.shift() });
+				} else {
+					self.setState({ username: self.state.username + usernameArr.shift() });
+				}
+				setTimeout(function () {
+					self.demoLogin(usernameArr, passwordArr);
+				}, 150);
+			}
 		},
 	
 		logout: function (e) {
@@ -33565,11 +33619,10 @@
 								type: "text",
 								value: this.state.username,
 								onChange: this.setUsername,
-								id: "username",
-								className: "validate" }),
+								id: "username" }),
 							React.createElement(
 								"label",
-								{ "for": "username" },
+								{ id: "username-label", htmlFor: "username" },
 								"Username"
 							)
 						)
@@ -33584,11 +33637,10 @@
 								id: "password",
 								type: "password",
 								value: this.state.password,
-								onChange: this.setPassword,
-								className: "validate" }),
+								onChange: this.setPassword }),
 							React.createElement(
 								"label",
-								{ "for": "password" },
+								{ id: "password-label", htmlFor: "password" },
 								"Password"
 							)
 						)
@@ -33619,6 +33671,13 @@
 							className: "waves-effect btn-flat left",
 							onClick: this.toggleForm },
 						"Sign Up"
+					),
+					React.createElement(
+						"button",
+						{
+							className: "waves-effect waves-ripple btn grey darken-1 left",
+							onClick: this.demoSubmit },
+						"demo"
 					)
 				)
 			);
@@ -33756,11 +33815,10 @@
 								type: "text",
 								value: this.state.username,
 								onChange: this.setUsername,
-								id: "username",
-								className: "validate" }),
+								id: "username" }),
 							React.createElement(
 								"label",
-								{ "for": "username" },
+								{ htmlFor: "username" },
 								"Username"
 							)
 						)
@@ -33775,11 +33833,10 @@
 								id: "password",
 								type: "password",
 								value: this.state.password,
-								onChange: this.setPassword,
-								className: "validate" }),
+								onChange: this.setPassword }),
 							React.createElement(
 								"label",
-								{ "for": "password" },
+								{ htmlFor: "password" },
 								"Password"
 							)
 						)
@@ -33998,13 +34055,12 @@
 	                React.createElement('input', {
 	                  id: 'title',
 	                  type: 'text',
-	                  className: 'validate',
 	                  value: this.state.title,
 	                  onChange: this.setTitle
 	                }),
 	                React.createElement(
 	                  'label',
-	                  { 'for': 'title' },
+	                  { htmlFor: 'title' },
 	                  'Title'
 	                )
 	              )
@@ -34018,13 +34074,12 @@
 	                React.createElement('input', {
 	                  id: 'price',
 	                  type: 'text',
-	                  className: 'validate',
 	                  value: this.state.price,
 	                  onChange: this.setPrice
 	                }),
 	                React.createElement(
 	                  'label',
-	                  { 'for': 'price' },
+	                  { htmlFor: 'price' },
 	                  'Price'
 	                )
 	              )
@@ -34038,13 +34093,13 @@
 	                React.createElement('textarea', {
 	                  id: 'description',
 	                  type: 'text',
-	                  className: 'materialize-textarea validate',
+	                  className: 'materialize-textarea',
 	                  value: this.state.description,
 	                  onChange: this.setDescription
 	                }),
 	                React.createElement(
 	                  'label',
-	                  { 'for': 'description' },
+	                  { htmlFor: 'description' },
 	                  'Description'
 	                )
 	              )
@@ -34058,14 +34113,13 @@
 	                React.createElement('input', {
 	                  id: 'address',
 	                  type: 'text',
-	                  className: 'validate',
 	                  value: this.state.address,
 	                  onChange: this.updateAddress,
 	                  onBlur: this.lookupAddress
 	                }),
 	                React.createElement(
 	                  'label',
-	                  { 'for': 'address' },
+	                  { htmlFor: 'address' },
 	                  'Address'
 	                )
 	              )
@@ -34078,13 +34132,12 @@
 	                { className: 'input-field col s6' },
 	                React.createElement(
 	                  'label',
-	                  { 'for': 'latitude' },
+	                  { htmlFor: 'latitude' },
 	                  'Latitude'
 	                ),
 	                React.createElement('input', { disabled: true,
 	                  id: 'latitude',
 	                  type: 'text',
-	                  className: 'validate',
 	                  value: this.state.lat
 	                })
 	              ),
@@ -34093,13 +34146,12 @@
 	                { className: 'input-field col s6' },
 	                React.createElement(
 	                  'label',
-	                  { 'for': 'longitude' },
+	                  { htmlFor: 'longitude' },
 	                  'Longitude'
 	                ),
 	                React.createElement('input', { disabled: true,
 	                  id: 'longitude',
 	                  type: 'text',
-	                  className: 'validate',
 	                  value: this.state.lng
 	                })
 	              )
@@ -62524,6 +62576,7 @@
 	    UserStore = __webpack_require__(263),
 	    UserProducts = __webpack_require__(349),
 	    UserOffers = __webpack_require__(350);
+	/* global Materialize */
 	
 	module.exports = React.createClass({
 	  displayName: "exports",
@@ -62531,13 +62584,14 @@
 	  mixins: [CurrentUserState],
 	
 	  componentDidMount: function () {
+	    UserActions.fetchCurrentUserWithProducts();
 	    $(document).ready(function () {
 	      $('ul.tabs').tabs();
 	    });
 	  },
 	
 	  componentWillReceiveProps: function () {
-	    UserActions.fetchCurrentUser();
+	    UserActions.fetchCurrentUserWithProducts();
 	  },
 	
 	  render: function () {
@@ -62545,6 +62599,11 @@
 	    return React.createElement(
 	      "div",
 	      { className: "user-detail container" },
+	      React.createElement(
+	        "h4",
+	        { className: "center-align grey-text text-darken-1" },
+	        "Your Account"
+	      ),
 	      React.createElement(
 	        "div",
 	        { className: "row" },
@@ -62579,7 +62638,11 @@
 	          { id: "products", className: "col s12" },
 	          React.createElement(UserProducts, null)
 	        ),
-	        React.createElement("div", { id: "offers", className: "col s12" })
+	        React.createElement(
+	          "div",
+	          { id: "offers", className: "col s12" },
+	          React.createElement(UserOffers, null)
+	        )
 	      )
 	    );
 	  }
@@ -62611,14 +62674,88 @@
 	
 	var UserActions = __webpack_require__(260),
 	    CurrentUserState = __webpack_require__(264),
-	    UserStore = __webpack_require__(263);
+	    UserStore = __webpack_require__(263),
+	    ProductStore = __webpack_require__(227);
 	
 	module.exports = React.createClass({
 	  displayName: "exports",
 	
 	  mixins: [CurrentUserState],
+	  getInitialState: function () {
+	    return { products: [] };
+	  },
+	
+	  getProducts: function () {
+	    this.setState({ products: ProductStore.all() });
+	  },
+	
+	  componentDidMount: function () {
+	    this.productListener = ProductStore.addListener(this.getProducts);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.productListener.remove();
+	  },
+	
+	  buildProducts: function () {
+	    return this.state.products.map;
+	  },
+	
 	  render: function () {
-	    return React.createElement("div", null);
+	    var testtext = this.state.products ? this.state.products.length : 0;
+	    return React.createElement(
+	      "ul",
+	      { id: "staggered" },
+	      React.createElement(
+	        "h1",
+	        null,
+	        testtext
+	      ),
+	      React.createElement(
+	        "li",
+	        { className: "section" },
+	        React.createElement(
+	          "h5",
+	          null,
+	          "Section 1"
+	        ),
+	        React.createElement(
+	          "p",
+	          null,
+	          "Stuff"
+	        )
+	      ),
+	      React.createElement("div", { className: "divider" }),
+	      React.createElement(
+	        "li",
+	        { className: "section" },
+	        React.createElement(
+	          "h5",
+	          null,
+	          "Section 2"
+	        ),
+	        React.createElement(
+	          "p",
+	          null,
+	          "Stuff"
+	        )
+	      ),
+	      React.createElement("div", { className: "divider" }),
+	      React.createElement(
+	        "li",
+	        { className: "section" },
+	        React.createElement(
+	          "h5",
+	          null,
+	          "Section 3"
+	        ),
+	        React.createElement(
+	          "p",
+	          null,
+	          "Stuff"
+	        )
+	      )
+	    );
 	  }
 	});
 
@@ -62637,7 +62774,54 @@
 	
 	  mixins: [CurrentUserState],
 	  render: function () {
-	    return React.createElement("div", null);
+	    return React.createElement(
+	      "ul",
+	      { id: "staggered" },
+	      React.createElement(
+	        "li",
+	        { className: "section" },
+	        React.createElement(
+	          "h5",
+	          null,
+	          "Section 1"
+	        ),
+	        React.createElement(
+	          "p",
+	          null,
+	          "Stuff"
+	        )
+	      ),
+	      React.createElement("div", { className: "divider" }),
+	      React.createElement(
+	        "li",
+	        { className: "section" },
+	        React.createElement(
+	          "h5",
+	          null,
+	          "Section 2"
+	        ),
+	        React.createElement(
+	          "p",
+	          null,
+	          "Stuff"
+	        )
+	      ),
+	      React.createElement("div", { className: "divider" }),
+	      React.createElement(
+	        "li",
+	        { className: "section" },
+	        React.createElement(
+	          "h5",
+	          null,
+	          "Section 3"
+	        ),
+	        React.createElement(
+	          "p",
+	          null,
+	          "Stuff"
+	        )
+	      )
+	    );
 	  }
 	});
 

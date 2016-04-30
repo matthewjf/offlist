@@ -1,12 +1,25 @@
-var UserConstants = require('../constants/user_constants');
-var UserApiUtil = require('../util/user_api_util');
-var UserStore = require('../stores/user_store');
-var AppDispatcher = require('../dispatcher/dispatcher');
+var UserConstants = require('../constants/user_constants'),
+		UserApiUtil = require('../util/user_api_util'),
+		UserStore = require('../stores/user_store'),
+		AppDispatcher = require('../dispatcher/dispatcher'),
+		ServerActions = require('./server_actions');
 
 var UserActions = {
 	fetchCurrentUser: function(){
-		UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUser, UserActions.handleError);
+		UserApiUtil.fetchCurrentUser(
+			UserActions.receiveCurrentUser,
+			UserActions.handleError
+		);
 	},
+
+	fetchCurrentUserWithProducts: function(){
+		UserApiUtil.fetchCurrentUser(
+			UserActions.receiveCurrentUserWithProducts,
+			UserActions.handleError,
+			{includeProducts: true}
+		);
+	},
+
 	signup: function(user){
 		UserApiUtil.post({
 			url: "/api/user",
@@ -15,6 +28,7 @@ var UserActions = {
 			error: UserActions.handleError
 		});
 	},
+
 	login: function(user){
 		UserApiUtil.post({
 			url: "/api/session",
@@ -23,23 +37,40 @@ var UserActions = {
 			error: UserActions.handleError
 		});
 	},
+
 	guestLogin: function(){
 		UserActions.login({username: "guest", password: "password"});
 	},
-	receiveCurrentUser: function(user){
+
+	receiveCurrentUser: function(data){
 		AppDispatcher.dispatch({
 			actionType: UserConstants.LOGIN,
-			user: user
+			user: {username: data.username}
 		});
 		$('#signup-modal').closeModal();
 		$('#login-modal').closeModal();
 	},
+
+	receiveCurrentUserWithProducts: function(data){
+		AppDispatcher.dispatch({
+			actionType: UserConstants.LOGIN,
+			user: {username: data.username}
+		});
+		$('#signup-modal').closeModal();
+		$('#login-modal').closeModal();
+
+		// do other stuff with products
+		ServerActions.receiveAll(data.products);
+	},
+
+
 	handleError: function(error) {
 		AppDispatcher.dispatch({
 			actionType: UserConstants.ERROR,
 			errors: error.responseJSON.errors
 		});
 	},
+
 	removeCurrentUser: function(){
 		AppDispatcher.dispatch({
 			actionType: UserConstants.LOGOUT,
@@ -48,6 +79,7 @@ var UserActions = {
 	logout: function(){
 		UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
 	},
+
 	resetErrors: function(errors) {
 		AppDispatcher.dispatch({
 			actionType: UserConstants.ERROR,

@@ -7,6 +7,21 @@ var UserActions = require("../../actions/user_actions"),
 module.exports = React.createClass({
   mixins: [CurrentUserState],
   render: function(){
-    return <div></div>;
+    return <ul id='staggered'>
+      <li className="section">
+        <h5>Section 1</h5>
+        <p>Stuff</p>
+      </li>
+      <div className="divider"></div>
+      <li className="section">
+        <h5>Section 2</h5>
+        <p>Stuff</p>
+      </li>
+      <div className="divider"></div>
+      <li className="section">
+        <h5>Section 3</h5>
+        <p>Stuff</p>
+      </li>
+    </ul>;
   }
 });

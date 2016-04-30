@@ -133,11 +133,10 @@ module.exports = React.createClass({
                   <input
                     id='title'
                     type='text'
-                    className='validate'
                     value={this.state.title}
                     onChange={this.setTitle}
                   />
-                  <label for='title'>Title</label>
+                  <label htmlFor='title'>Title</label>
                 </div>
               </div>
 
@@ -146,11 +145,10 @@ module.exports = React.createClass({
                   <input
                     id='price'
                     type='text'
-                    className='validate'
                     value={this.state.price}
                     onChange={this.setPrice}
                   />
-                  <label for='price'>Price</label>
+                <label htmlFor='price'>Price</label>
                 </div>
               </div>
 
@@ -159,11 +157,11 @@ module.exports = React.createClass({
                   <textarea
                     id='description'
                     type='text'
-                    className='materialize-textarea validate'
+                    className='materialize-textarea'
                     value={this.state.description}
                     onChange={this.setDescription}
                   />
-                  <label for='description'>Description</label>
+                <label htmlFor='description'>Description</label>
                 </div>
               </div>
 
@@ -172,31 +170,28 @@ module.exports = React.createClass({
                   <input
                     id='address'
                     type='text'
-                    className='validate'
                     value={this.state.address}
                     onChange={this.updateAddress}
                     onBlur={this.lookupAddress}
                   />
-                <label for='address'>Address</label>
+                <label htmlFor='address'>Address</label>
                 </div>
               </div>
 
               <div className='row'>
                 <div className='input-field col s6'>
-                  <label for='latitude'>Latitude</label>
+                  <label htmlFor='latitude'>Latitude</label>
                   <input disabled
                     id='latitude'
                     type='text'
-                    className='validate'
                     value={this.state.lat}
                   />
                 </div>
                 <div className='input-field col s6'>
-                  <label for='longitude'>Longitude</label>
+                  <label htmlFor='longitude'>Longitude</label>
                   <input disabled
                     id='longitude'
                     type='text'
-                    className='validate'
                     value={this.state.lng}
                   />
                 </div>

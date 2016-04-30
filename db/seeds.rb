@@ -10,11 +10,11 @@ User.create(
   )
 end
 
-10.times do |i|
+User.all.each do |user|
   lat = 37.7 + (rand()/10)
   lng = -122.4 - (rand()/10)
   img_urls = []
-  (rand(3) + 2).times do |i|
+  (rand(3) + 2).times do
     img_urls.push('https://unsplash.it/800/450?image=' + rand(300).to_s)
   end
 
@@ -25,6 +25,6 @@ end
     lat: lat,
     lng: lng,
     price: rand(1000) + 1,
-    user_id: rand(10)
+    user_id: user.id
   )
 end

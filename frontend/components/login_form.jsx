@@ -26,7 +26,6 @@ var LoginForm = React.createClass({
 		setTimeout(function(){
 			$('#signup-modal').openModal();
 		}, 300);
-
 	},
 
 	closeModal: function(e){
@@ -38,12 +37,41 @@ var LoginForm = React.createClass({
 
 
 	handleSubmit: function(e){
-		e.preventDefault();
+		if (e)
+			e.preventDefault();
 		UserActions['login']({
 			username: this.state.username,
 			password: this.state.password
 		});
 		this.resetState();
+	},
+
+	demoSubmit: function(event) {
+		event.preventDefault();
+		this.setState({username: '', password: ''});
+		var usernameArr = 'demo'.split('');
+		var passwordArr = 'password'.split('');
+		$('#userlabel').addClass("active");
+		document.getElementById("username").focus();
+		this.demoLogin(usernameArr, passwordArr);
+	},
+
+	demoLogin: function(usernameArr, passwordArr) {
+		var self = this;
+		if (usernameArr.length === 0 && passwordArr.length === 0) {
+			self.handleSubmit();
+		} else {
+			if (usernameArr.length === 0) {
+				$('#password-label').addClass("active");
+				document.getElementById("password").focus();
+				self.setState({password: self.state.password + passwordArr.shift()});
+			} else {
+				self.setState({username: self.state.username + usernameArr.shift()});
+			}
+			setTimeout(function(){
+				self.demoLogin(usernameArr, passwordArr);
+			}, 150);
+		}
 	},
 
 	logout: function(e){
@@ -82,9 +110,8 @@ var LoginForm = React.createClass({
 									type="text"
 									value={this.state.username}
 									onChange={this.setUsername}
-									id='username'
-									className='validate' />
-								<label for='username'>Username</label>
+									id='username' />
+								<label id='username-label' htmlFor='username'>Username</label>
 							</div>
 						</div>
 
@@ -94,9 +121,8 @@ var LoginForm = React.createClass({
 									id='password'
 									type="password"
 									value={this.state.password}
-									onChange={this.setPassword}
-									className='validate' />
-									<label for='password'>Password</label>
+									onChange={this.setPassword} />
+								<label id='password-label' htmlFor='password'>Password</label>
 							</div>
 						</div>
 					</section>
@@ -114,6 +140,10 @@ var LoginForm = React.createClass({
 						<button
 							className='waves-effect btn-flat left'
 							onClick={this.toggleForm} >Sign Up
+						</button>
+						<button
+							className='waves-effect waves-ripple btn grey darken-1 left'
+							onClick={this.demoSubmit}>demo
 						</button>
 					</p>
 				</form>

@@ -24,6 +24,7 @@ class Api::SessionsController < ApplicationController
   def show
     if current_user
       @user = current_user
+      @products = @user.products if params[:includeProducts] == 'true'
       render "api/users/show"
     else
       @errors = nil
