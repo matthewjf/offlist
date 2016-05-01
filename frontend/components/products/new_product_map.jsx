@@ -7,7 +7,7 @@ var React = require('react'),
 module.exports = React.createClass({
   componentWillReceiveProps: function(newProps){
     this.removeMarker();
-    if (newProps.googlePos.lat) {
+    if (newProps.googlePos.lat() !== 0 || newProps.googlePos.lng() !== 0) {
       this.placeMarker(newProps.googlePos, this.map);
       this.map.panTo(newProps.googlePos); // needs work
     }

@@ -33725,8 +33725,7 @@
 	    lat: '',
 	    lng: '',
 	    address: '',
-	    img_urls: [],
-	    googlePos: {}
+	    img_urls: []
 	  },
 	
 	  getInitialState: function () {
@@ -33751,10 +33750,15 @@
 	
 	  setAddress: function (addr) {
 	    this.setState({ address: addr });
+	    if (!addr) this.setState({ lat: '', lng: '' });
 	  },
 	
 	  lookupAddress: function (e) {
-	    MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
+	    if (this.state.address) MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
+	  },
+	
+	  googlePos: function () {
+	    return new google.maps.LatLng(this.state.lat, this.state.lng);
 	  },
 	
 	  lookupPosition: function () {
@@ -33774,11 +33778,11 @@
 	      });
 	    };
 	
-	    MapUtil.geocodePosition(this.state.googlePos, success, error);
+	    MapUtil.geocodePosition(this.googlePos(), success, error);
 	  },
 	
 	  setLatLng: function (pos) {
-	    this.setState({ lat: pos.lat(), lng: pos.lng(), googlePos: pos });
+	    this.setState({ lat: pos.lat(), lng: pos.lng() });
 	    $(document).ready(function () {
 	      /* global Materialize (make linter happy) */
 	      Materialize.updateTextFields();
@@ -33786,7 +33790,7 @@
 	  },
 	
 	  geoSuccess: function (result) {
-	    this.setState({ googlePos: result, lat: result.lat(), lng: result.lng() });
+	    this.setState({ lat: result.lat(), lng: result.lng() });
 	    $(document).ready(function () {
 	      Materialize.updateTextFields();
 	    });
@@ -34034,7 +34038,7 @@
 	        )
 	      ),
 	      React.createElement(NewProductMap, {
-	        googlePos: this.state.googlePos,
+	        googlePos: this.googlePos(),
 	        setLatLng: this.setLatLng,
 	        setAddress: this.setAddress })
 	    );
@@ -34056,7 +34060,7 @@
 	
 	  componentWillReceiveProps: function (newProps) {
 	    this.removeMarker();
-	    if (newProps.googlePos.lat) {
+	    if (newProps.googlePos.lat() !== 0 || newProps.googlePos.lng() !== 0) {
 	      this.placeMarker(newProps.googlePos, this.map);
 	      this.map.panTo(newProps.googlePos); // needs work
 	    }

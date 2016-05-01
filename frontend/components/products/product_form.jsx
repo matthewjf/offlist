@@ -33,8 +33,7 @@ module.exports = React.createClass({
     lat: '',
     lng: '',
     address: '',
-    img_urls: [],
-    googlePos: {}
+    img_urls: []
   },
 
   getInitialState: function () {
@@ -59,10 +58,17 @@ module.exports = React.createClass({
 
   setAddress: function(addr){
     this.setState({address: addr});
+    if (!addr)
+      this.setState({lat: '', lng: ''});
   },
 
   lookupAddress: function(e){
+    if (this.state.address)
     MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
+  },
+
+  googlePos: function() {
+      return new google.maps.LatLng(this.state.lat, this.state.lng);
   },
 
   lookupPosition: function() {
@@ -82,11 +88,11 @@ module.exports = React.createClass({
       });
     };
 
-    MapUtil.geocodePosition(this.state.googlePos, success, error);
+    MapUtil.geocodePosition(this.googlePos(), success, error);
   },
 
   setLatLng: function(pos) {
-    this.setState({lat: pos.lat(), lng: pos.lng(), googlePos: pos});
+    this.setState({lat: pos.lat(), lng: pos.lng()});
     $(document).ready(function() {
       /* global Materialize (make linter happy) */
       Materialize.updateTextFields();
@@ -94,7 +100,7 @@ module.exports = React.createClass({
   },
 
   geoSuccess: function(result) {
-    this.setState({googlePos: result, lat: result.lat(), lng: result.lng()});
+    this.setState({lat: result.lat(), lng: result.lng()});
     $(document).ready(function() {
       Materialize.updateTextFields();
     });
@@ -282,7 +288,7 @@ module.exports = React.createClass({
         </div>
 
         <NewProductMap
-          googlePos={this.state.googlePos}
+          googlePos={this.googlePos()}
           setLatLng={this.setLatLng}
           setAddress={this.setAddress}/>
       </div>
