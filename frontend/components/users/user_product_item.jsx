@@ -5,6 +5,8 @@ var hashHistory = require('react-router').hashHistory,
     Carousel = require('../carousel'),
     ClientActions = require('../../actions/client_actions');
 
+/* global Materialize */
+
 module.exports = React.createClass({
   productLink: function() {
     hashHistory.push('products/' + this.props.product.id);
@@ -12,7 +14,11 @@ module.exports = React.createClass({
 
   deleteProduct: function(e) {
     e.preventDefault();
-    ClientActions.deleteProduct(this.props.product.id);
+    ClientActions.deleteProduct(this.props.product.id, this.deleteSuccess);
+  },
+
+  deleteSuccess: function() {
+    Materialize.toast('Product removed!', 4000, 'red-text');
   },
 
   editProduct: function(e) {
@@ -23,11 +29,11 @@ module.exports = React.createClass({
   render: function() {
     var product = this.props.product;
 
-    return <li className="account-product grey lighten-5 collection-item">
-              <div className='product-image'>
+    return <li className="account-product grey lighten-5 collection-item row">
+              <div className='product-image col s12 m4 l3'>
                 <Carousel images={product.img_urls} />
               </div>
-              <div className='product-content'>
+              <div className='product-content col s12 m5 l7'>
                 <Dotdotdot clamp={1} >
                   <h5 className='title'>{product.title}</h5>
                 </Dotdotdot>
@@ -44,7 +50,8 @@ module.exports = React.createClass({
                   </Dotdotdot>
                 </div>
               </div>
-              <div className='product-manage'>
+              <div className='product-manage col m3 s12 l2'>
+                <div className='btn-row'>
                 <button
                   className="btn light-blue darken-1 waves-effect waves-light"
                   type="submit"
@@ -57,8 +64,9 @@ module.exports = React.createClass({
                   type="submit"
                   name="action"
                   onClick={this.deleteProduct}>
-                    delete
+                    remove
                 </button>
+                </div>
               </div>
             </li>;
   }

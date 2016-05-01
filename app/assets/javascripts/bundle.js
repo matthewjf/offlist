@@ -25562,12 +25562,13 @@
 	      streetViewControl: false
 	    };
 	    this.map = new google.maps.Map(map, mapOptions);
-	    ProductStore.addListener(this.onChange);
+	    this.productListener = ProductStore.addListener(this.onChange);
 	    this.mapListener = this.map.addListener('idle', this.getProducts);
 	  },
 	
 	  componentWillUnmount: function () {
 	    google.maps.event.removeListener(this.mapListener);
+	    this.productListener.remove();
 	  },
 	
 	  render: function () {
@@ -32413,16 +32414,16 @@
 	    ApiUtil.getProduct(id);
 	  },
 	
-	  createProduct: function (data) {
-	    ApiUtil.createProduct(data);
+	  createProduct: function (data, successCB) {
+	    ApiUtil.createProduct(data, successCB);
 	  },
 	
-	  editProduct: function (data) {
-	    ApiUtil.updateProduct(data);
+	  editProduct: function (data, successCB) {
+	    ApiUtil.updateProduct(data, successCB);
 	  },
 	
-	  deleteProduct: function (id) {
-	    ApiUtil.deleteProduct(id);
+	  deleteProduct: function (id, successCB) {
+	    ApiUtil.deleteProduct(id, successCB);
 	  }
 	};
 
@@ -32452,34 +32453,37 @@
 	    });
 	  },
 	
-	  createProduct: function (data) {
+	  createProduct: function (data, successCB) {
 	    $.ajax({
 	      url: "api/products",
 	      type: "POST",
 	      data: { product: data },
 	      success: function (product) {
 	        ServerActions.receiveProduct(product);
+	        if (successCB) successCB(product.id);
 	      }
 	    });
 	  },
 	
-	  updateProduct: function (data) {
+	  updateProduct: function (data, successCB) {
 	    $.ajax({
 	      url: "api/products/" + data.id,
 	      type: "PATCH",
-	      data: { product: { title: data.title, body: data.body } },
+	      data: { product: data },
 	      success: function (product) {
 	        ServerActions.receiveProduct(product);
+	        if (successCB) successCB(product.id);
 	      }
 	    });
 	  },
 	
-	  deleteProduct: function (id) {
+	  deleteProduct: function (id, successCB) {
 	    $.ajax({
 	      url: "api/products/" + id,
 	      type: "DELETE",
 	      success: function (product) {
 	        ServerActions.removeProduct(product);
+	        if (successCB) successCB(product.id);
 	      }
 	    });
 	  }
@@ -32811,6 +32815,10 @@
 	    hashHistory.push('account');
 	  },
 	
+	  home: function () {
+	    hashHistory.push('/');
+	  },
+	
 	  notLoggedIn: function () {
 	    if (this.state.currentUser) {
 	      return React.createElement(
@@ -32921,7 +32929,7 @@
 	          { className: "nav-wrapper container" },
 	          React.createElement(
 	            "a",
-	            { id: "logo-container", href: "", className: "brand-logo" },
+	            { id: "logo-container", onClick: this.home, className: "brand-logo" },
 	            React.createElement("img", { id: "logo", src: "/logo.png" }),
 	            "splashy"
 	          ),
@@ -33155,10 +33163,13 @@
 			};
 		},
 		componentDidMount: function () {
-			UserStore.addListener(this.updateUser);
+			this.userListener = UserStore.addListener(this.updateUser);
 			if (typeof UserStore.currentUser() === 'undefined') {
 				UserActions.fetchCurrentUser();
 			}
+		},
+		componentWillUnmount: function () {
+			this.userListener.remove();
 		},
 		updateUser: function () {
 			this.setState({
@@ -33800,10 +33811,20 @@
 	      description: this.state.description,
 	      lat: this.state.lat,
 	      lng: this.state.lng,
-	      address: this.state.address,
 	      img_urls: this.state.img_urls
 	    };
-	    ApiUtil.createProduct(product);
+	    if (this.props.params.productId) {
+	      product.id = this.props.params.productId;
+	      ApiUtil.updateProduct(product, this.submitSuccess);
+	    } else {
+	      ApiUtil.createProduct(product, this.submitSuccess, 'created');
+	    }
+	  },
+	
+	  submitSuccess: function (id) {
+	    var resultText = this.props.params.productId ? 'updated' : 'created';
+	    hashHistory.push('account');
+	    Materialize.toast('Product ' + resultText + '!', 4000, 'green-text');
 	  },
 	
 	  setImageUrls: function (error, result) {
@@ -33817,16 +33838,20 @@
 	
 	  componentDidMount: function () {
 	    var self = this;
-	    this.editForm();
+	    this.productListener = ProductStore.addListener(this._productChanged);
+	    this.editForm(this.props);
 	    $('#upload_widget_opener').cloudinary_upload_widget(cloudinaryWidgetOptions, function (error, result) {
 	      self.setImageUrls(error, result);
 	    });
 	  },
 	
-	  editForm: function () {
-	    if (this.props.params['productId']) {
-	      this.productListener = ProductStore.addListener(this._productChanged);
-	      ClientActions.getProduct(this.props.params.productId);
+	  componentWillUnmount: function () {
+	    this.productListener.remove();
+	  },
+	
+	  editForm: function (props) {
+	    if (props.params['productId']) {
+	      ClientActions.getProduct(props.params.productId);
 	    }
 	  },
 	
@@ -33838,14 +33863,17 @@
 	      Object.keys(product).forEach(function (key) {
 	        self.setState(product);
 	      });
-	      self.setState({ googlePos: new google.maps.LatLng(product.lat, product.lng) });
+	      /* global google */
+	      self.setState({
+	        googlePos: new google.maps.LatLng(product.lat, product.lng)
+	      });
 	      self.lookupPosition();
 	      Materialize.updateTextFields();
 	    }
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    this.editForm();
+	    this.editForm(newProps);
 	  },
 	
 	  render: function () {
@@ -34053,7 +34081,7 @@
 	      map: map
 	    });
 	
-	    google.maps.event.addListener(self.marker, 'dragend', function () {
+	    this.dragListener = google.maps.event.addListener(self.marker, 'dragend', function () {
 	      var pos = self.marker.getPosition();
 	      MapUtil.geocodePosition(pos, self.geoSuccess, self.geoError);
 	      self.props.setLatLng(pos);
@@ -34088,10 +34116,17 @@
 	    };
 	    self.map = new google.maps.Map(mapDOMNode, mapOptions);
 	
-	    self.map.addListener('click', function (e) {
+	    self.mapListener = self.map.addListener('click', function (e) {
 	      MapUtil.geocodePosition(e.latLng, self.geoSuccess, self.geoError);
 	      self.props.setLatLng(e.latLng);
 	    });
+	  },
+	
+	  componentWillUnmount: function () {
+	    google.maps.event.removeListener(this.dragListener);
+	    google.maps.event.removeListener(this.mapListener);
+	    this.mapListener.remove();
+	    this.map = null;
 	  },
 	
 	  render: function () {
@@ -60325,6 +60360,8 @@
 	    }
 	  },
 	
+	  componentWillUnmount: function () {},
+	
 	  render: function () {
 	    return React.createElement('div', { id: 'map', ref: 'map' });
 	  }
@@ -62610,6 +62647,8 @@
 	    Carousel = __webpack_require__(352),
 	    ClientActions = __webpack_require__(250);
 	
+	/* global Materialize */
+	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
@@ -62619,7 +62658,11 @@
 	
 	  deleteProduct: function (e) {
 	    e.preventDefault();
-	    ClientActions.deleteProduct(this.props.product.id);
+	    ClientActions.deleteProduct(this.props.product.id, this.deleteSuccess);
+	  },
+	
+	  deleteSuccess: function () {
+	    Materialize.toast('Product removed!', 4000, 'red-text');
 	  },
 	
 	  editProduct: function (e) {
@@ -62632,15 +62675,15 @@
 	
 	    return React.createElement(
 	      'li',
-	      { className: 'account-product grey lighten-5 collection-item' },
+	      { className: 'account-product grey lighten-5 collection-item row' },
 	      React.createElement(
 	        'div',
-	        { className: 'product-image' },
+	        { className: 'product-image col s12 m4 l3' },
 	        React.createElement(Carousel, { images: product.img_urls })
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'product-content' },
+	        { className: 'product-content col s12 m5 l7' },
 	        React.createElement(
 	          Dotdotdot,
 	          { clamp: 1 },
@@ -62686,24 +62729,28 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'product-manage' },
+	        { className: 'product-manage col m3 s12 l2' },
 	        React.createElement(
-	          'button',
-	          {
-	            className: 'btn light-blue darken-1 waves-effect waves-light',
-	            type: 'submit',
-	            name: 'action',
-	            onClick: this.editProduct },
-	          'edit'
-	        ),
-	        React.createElement(
-	          'button',
-	          {
-	            className: 'btn red darken-1 waves-effect waves-light',
-	            type: 'submit',
-	            name: 'action',
-	            onClick: this.deleteProduct },
-	          'delete'
+	          'div',
+	          { className: 'btn-row' },
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'btn light-blue darken-1 waves-effect waves-light',
+	              type: 'submit',
+	              name: 'action',
+	              onClick: this.editProduct },
+	            'edit'
+	          ),
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'btn red darken-1 waves-effect waves-light',
+	              type: 'submit',
+	              name: 'action',
+	              onClick: this.deleteProduct },
+	            'remove'
+	          )
 	        )
 	      )
 	    );

@@ -20,34 +20,40 @@ module.exports = {
     });
   },
 
-  createProduct: function (data) {
+  createProduct: function (data, successCB) {
     $.ajax({
       url: "api/products",
       type: "POST",
       data: { product: data },
       success: function (product) {
         ServerActions.receiveProduct(product);
+        if (successCB)
+          successCB(product.id);
       }
     });
   },
 
-  updateProduct: function (data) {
+  updateProduct: function (data, successCB) {
     $.ajax({
       url: "api/products/" + data.id,
       type: "PATCH",
-      data: { product: { title: data.title, body: data.body } },
+      data: {product: data },
       success: function (product) {
         ServerActions.receiveProduct(product);
+        if (successCB)
+          successCB(product.id);
       }
     });
   },
 
-  deleteProduct: function (id) {
+  deleteProduct: function (id, successCB) {
     $.ajax({
       url: "api/products/" + id,
       type: "DELETE",
       success: function (product) {
         ServerActions.removeProduct(product);
+        if (successCB)
+          successCB(product.id);
       }
     });
   },

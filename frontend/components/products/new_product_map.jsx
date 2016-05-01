@@ -30,7 +30,7 @@ module.exports = React.createClass({
       map: map
     });
 
-    google.maps.event.addListener(self.marker, 'dragend', function(){
+    this.dragListener = google.maps.event.addListener(self.marker, 'dragend', function(){
       var pos = self.marker.getPosition();
       MapUtil.geocodePosition(pos, self.geoSuccess, self.geoError);
       self.props.setLatLng(pos);
@@ -65,10 +65,17 @@ module.exports = React.createClass({
     };
     self.map = new google.maps.Map(mapDOMNode, mapOptions);
 
-    self.map.addListener('click', function(e) {
+    self.mapListener = self.map.addListener('click', function(e) {
       MapUtil.geocodePosition(e.latLng, self.geoSuccess, self.geoError);
       self.props.setLatLng(e.latLng);
     });
+  },
+
+  componentWillUnmount: function() {
+    google.maps.event.removeListener(this.dragListener);
+    google.maps.event.removeListener(this.mapListener);
+    this.mapListener.remove();
+    this.map = null;
   },
 
   render: function () {

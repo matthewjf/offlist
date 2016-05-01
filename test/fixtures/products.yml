@@ -9,6 +9,10 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  img_urls    :json
+#  lat         :float            not null
+#  lng         :float            not null
+#  price       :integer          not null
+#  user_id     :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

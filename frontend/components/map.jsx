@@ -60,12 +60,13 @@ module.exports = React.createClass({
       streetViewControl: false
     };
     this.map = new google.maps.Map(map, mapOptions);
-    ProductStore.addListener(this.onChange);
+    this.productListener = ProductStore.addListener(this.onChange);
     this.mapListener = this.map.addListener('idle',this.getProducts);
   },
 
   componentWillUnmount: function() {
     google.maps.event.removeListener(this.mapListener);
+    this.productListener.remove();
   },
 
   render: function () {

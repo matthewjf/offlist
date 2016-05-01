@@ -50,6 +50,10 @@ module.exports = React.createClass({
     }
   },
 
+  componentWillUnmount: function() {
+
+  },
+
   render: function(){
     return (
       <div id="map" ref='map' />

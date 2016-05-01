@@ -9,6 +9,10 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  img_urls    :json
+#  lat         :float            not null
+#  lng         :float            not null
+#  price       :integer          not null
+#  user_id     :integer
 #
 
 class Product < ActiveRecord::Base
@@ -16,6 +20,7 @@ class Product < ActiveRecord::Base
 
   validates :title, :description, :img_urls, :user, presence: true
   belongs_to :user
+  has_many :offers
   def self.in_bounds(bounds)
     if bounds
       lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]

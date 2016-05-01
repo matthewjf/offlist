@@ -66,7 +66,7 @@ module.exports = React.createClass({
     this.setState({address: address});
   },
 
-  addressError: function(status){
+  addressError: function(status) {
     alert('something went wrong: ' + status);
   },
 

@@ -119,10 +119,20 @@ module.exports = React.createClass({
       description: this.state.description,
       lat: this.state.lat,
       lng: this.state.lng,
-      address: this.state.address,
       img_urls: this.state.img_urls
     };
-    ApiUtil.createProduct(product);
+    if (this.props.params.productId) {
+      product.id = this.props.params.productId;
+      ApiUtil.updateProduct(product, this.submitSuccess);
+    } else {
+      ApiUtil.createProduct(product, this.submitSuccess, 'created');
+    }
+  },
+
+  submitSuccess: function(id) {
+    var resultText = (this.props.params.productId ? 'updated' : 'created');
+    hashHistory.push('account');
+    Materialize.toast('Product ' + resultText + '!', 4000, 'green-text');
   },
 
   setImageUrls: function(error, result) {
@@ -137,16 +147,20 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     var self = this;
-    this.editForm();
+    this.productListener = ProductStore.addListener(this._productChanged);
+    this.editForm(this.props);
     $('#upload_widget_opener').cloudinary_upload_widget(
       cloudinaryWidgetOptions,
       function(error, result) {self.setImageUrls(error, result);});
   },
 
-  editForm: function() {
-    if (this.props.params['productId']) {
-      this.productListener = ProductStore.addListener(this._productChanged);
-      ClientActions.getProduct(this.props.params.productId);
+  componentWillUnmount: function() {
+    this.productListener.remove();
+  },
+
+  editForm: function(props) {
+    if (props.params['productId']) {
+      ClientActions.getProduct(props.params.productId);
     }
   },
 
@@ -158,14 +172,17 @@ module.exports = React.createClass({
       Object.keys(product).forEach(function(key) {
         self.setState(product);
       });
-      self.setState({googlePos: new google.maps.LatLng(product.lat, product.lng)});
+      /* global google */
+      self.setState({
+        googlePos: new google.maps.LatLng(product.lat, product.lng)
+      });
       self.lookupPosition();
       Materialize.updateTextFields();
     }
   },
 
   componentWillReceiveProps: function(newProps) {
-    this.editForm();
+    this.editForm(newProps);
   },
 
   render: function () {

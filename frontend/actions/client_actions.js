@@ -9,15 +9,15 @@ module.exports = {
     ApiUtil.getProduct(id);
   },
 
-  createProduct: function (data) {
-    ApiUtil.createProduct(data);
+  createProduct: function (data, successCB) {
+    ApiUtil.createProduct(data, successCB);
   },
 
-  editProduct: function (data) {
-    ApiUtil.updateProduct(data);
+  editProduct: function (data, successCB) {
+    ApiUtil.updateProduct(data, successCB);
   },
 
-  deleteProduct: function (id) {
-    ApiUtil.deleteProduct(id);
+  deleteProduct: function (id, successCB) {
+    ApiUtil.deleteProduct(id, successCB);
   }
 };

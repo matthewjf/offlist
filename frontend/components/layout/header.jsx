@@ -23,6 +23,10 @@ module.exports = React.createClass({
 		hashHistory.push('account');
 	},
 
+	home: function() {
+		hashHistory.push('/');
+	},
+
   notLoggedIn: function(){
     if (this.state.currentUser) {
 			return (
@@ -82,7 +86,7 @@ module.exports = React.createClass({
       <header>
         <nav className="white" role="navigation">
           <div className="nav-wrapper container">
-            <a id="logo-container" href="" className="brand-logo">
+            <a id="logo-container" onClick={this.home} className="brand-logo">
               <img id='logo' src="/logo.png" />
               splashy
             </a>
