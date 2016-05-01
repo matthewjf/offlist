@@ -7,15 +7,14 @@ module.exports = React.createClass({
   },
 
   render: function(){
-    var time;
-    if (this.props.created)
-      time = <TimeAgo className='grey-text' date={this.props.created} />;
-    else
-      time = <span/>;
-
+    var time = (
+      this.props.created ?
+        <TimeAgo className='grey-text' date={this.props.created} /> : <span />
+    );
     return(
       <div className='detail-description'>
         <div className='right'>
+          <span className='grey-text'> added </span>
           {time}
         </div>
 

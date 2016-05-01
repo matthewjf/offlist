@@ -33682,7 +33682,9 @@
 	    ApiUtil = __webpack_require__(251),
 	    hashHistory = __webpack_require__(166).hashHistory,
 	    NewProductMap = __webpack_require__(269),
-	    MapUtil = __webpack_require__(253);
+	    MapUtil = __webpack_require__(253),
+	    ProductStore = __webpack_require__(227),
+	    ClientActions = __webpack_require__(250);
 	
 	var cloudinary = __webpack_require__(270);
 	
@@ -33744,6 +33746,26 @@
 	    MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
 	  },
 	
+	  lookupPosition: function () {
+	    var self = this;
+	
+	    var success = function (result) {
+	      self.setState({ address: result });
+	      $(document).ready(function () {
+	        Materialize.updateTextFields();
+	      });
+	    };
+	
+	    var error = function (status) {
+	      self.props.setAddress('Unknown location: ' + status);
+	      $(document).ready(function () {
+	        Materialize.updateTextFields();
+	      });
+	    };
+	
+	    MapUtil.geocodePosition(this.state.googlePos, success, error);
+	  },
+	
 	  setLatLng: function (pos) {
 	    this.setState({ lat: pos.lat(), lng: pos.lng(), googlePos: pos });
 	    $(document).ready(function () {
@@ -33770,7 +33792,7 @@
 	    });
 	  },
 	
-	  createProduct: function (event) {
+	  handleSubmit: function (event) {
 	    event.preventDefault();
 	    var product = {
 	      title: this.state.title,
@@ -33794,19 +33816,41 @@
 	  },
 	
 	  componentDidMount: function () {
-	    console.log(this.props.params['productId']);
-	
 	    var self = this;
+	    this.editForm();
 	    $('#upload_widget_opener').cloudinary_upload_widget(cloudinaryWidgetOptions, function (error, result) {
 	      self.setImageUrls(error, result);
 	    });
 	  },
 	
+	  editForm: function () {
+	    if (this.props.params['productId']) {
+	      this.productListener = ProductStore.addListener(this._productChanged);
+	      ClientActions.getProduct(this.props.params.productId);
+	    }
+	  },
+	
+	  _productChanged: function () {
+	    var self = this;
+	    var productId = this.props.params.productId;
+	    var product = ProductStore.find(productId);
+	    if (product) {
+	      Object.keys(product).forEach(function (key) {
+	        self.setState(product);
+	      });
+	      self.setState({ googlePos: new google.maps.LatLng(product.lat, product.lng) });
+	      self.lookupPosition();
+	      Materialize.updateTextFields();
+	    }
+	  },
+	
 	  componentWillReceiveProps: function (newProps) {
-	    console.log(newProps.params['productId']);
+	    this.editForm();
 	  },
 	
 	  render: function () {
+	    var submitText = this.props.params['productId'] ? 'edit' : 'create';
+	
 	    return React.createElement(
 	      'div',
 	      { id: 'content' },
@@ -33817,13 +33861,13 @@
 	          'div',
 	          { className: 'sidebar-content' },
 	          React.createElement(
-	            'h3',
-	            { className: 'center-align' },
+	            'h4',
+	            { className: 'grey-text text-darken-3 center-align' },
 	            'Product Form'
 	          ),
 	          React.createElement(
 	            'form',
-	            { className: 'col s12 m10 l8 product-form', onSubmit: this.createProduct },
+	            { className: 'col s12 m10 l8 product-form', onSubmit: this.handleSubmit },
 	            React.createElement(
 	              'div',
 	              { className: 'row' },
@@ -33947,7 +33991,7 @@
 	                    'button',
 	                    {
 	                      className: 'waves-effect waves-light btn' },
-	                    'Create Product'
+	                    submitText
 	                  ),
 	                  React.createElement(
 	                    'div',
@@ -62121,15 +62165,18 @@
 	  },
 	
 	  render: function () {
-	    var time;
-	    if (this.props.created) time = React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created });else time = React.createElement('span', null);
-	
+	    var time = this.props.created ? React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created }) : React.createElement('span', null);
 	    return React.createElement(
 	      'div',
 	      { className: 'detail-description' },
 	      React.createElement(
 	        'div',
 	        { className: 'right' },
+	        React.createElement(
+	          'span',
+	          { className: 'grey-text' },
+	          ' added '
+	        ),
 	        time
 	      ),
 	      React.createElement(
@@ -62595,9 +62642,13 @@
 	        'div',
 	        { className: 'product-content' },
 	        React.createElement(
-	          'h5',
-	          { className: 'title' },
-	          product.title
+	          Dotdotdot,
+	          { clamp: 1 },
+	          React.createElement(
+	            'h5',
+	            { className: 'title' },
+	            product.title
+	          )
 	        ),
 	        React.createElement(
 	          'div',
@@ -62608,13 +62659,18 @@
 	            React.createElement(
 	              'span',
 	              { className: 'grey-text' },
-	              ' posted '
+	              ' added '
 	            ),
 	            React.createElement(TimeAgo, { className: 'grey-text', date: product.created_at })
 	          ),
 	          React.createElement(
 	            'div',
 	            null,
+	            React.createElement(
+	              'b',
+	              null,
+	              'Ask price: '
+	            ),
 	            '$' + product.price
 	          )
 	        ),

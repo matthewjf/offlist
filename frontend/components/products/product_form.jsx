@@ -2,7 +2,9 @@ var React = require('react'),
     ApiUtil = require('../../util/api_util.js'),
     hashHistory = require('react-router').hashHistory,
     NewProductMap = require('./new_product_map'),
-    MapUtil = require('../../util/map_util');
+    MapUtil = require('../../util/map_util'),
+    ProductStore = require('../../stores/product_store'),
+    ClientActions = require('../../actions/client_actions');
 
 
 var cloudinary = require('cloudinary');
@@ -63,6 +65,26 @@ module.exports = React.createClass({
     MapUtil.geocodeAddress(this.state.address, this.geoSuccess, this.geoError);
   },
 
+  lookupPosition: function() {
+    var self = this;
+
+    var success = function(result) {
+      self.setState({address: result});
+      $(document).ready(function() {
+        Materialize.updateTextFields();
+      });
+    };
+
+    var error = function(status){
+      self.props.setAddress('Unknown location: ' + status);
+      $(document).ready(function() {
+        Materialize.updateTextFields();
+      });
+    };
+
+    MapUtil.geocodePosition(this.state.googlePos, success, error);
+  },
+
   setLatLng: function(pos) {
     this.setState({lat: pos.lat(), lng: pos.lng(), googlePos: pos});
     $(document).ready(function() {
@@ -89,7 +111,7 @@ module.exports = React.createClass({
     });
   },
 
-  createProduct: function (event) {
+  handleSubmit: function (event) {
     event.preventDefault();
     var product = {
       title: this.state.title,
@@ -114,25 +136,47 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function() {
-    console.log(this.props.params['productId']);
-
     var self = this;
+    this.editForm();
     $('#upload_widget_opener').cloudinary_upload_widget(
       cloudinaryWidgetOptions,
       function(error, result) {self.setImageUrls(error, result);});
   },
 
+  editForm: function() {
+    if (this.props.params['productId']) {
+      this.productListener = ProductStore.addListener(this._productChanged);
+      ClientActions.getProduct(this.props.params.productId);
+    }
+  },
+
+  _productChanged: function () {
+    var self = this;
+    var productId = this.props.params.productId;
+    var product = ProductStore.find(productId);
+    if (product) {
+      Object.keys(product).forEach(function(key) {
+        self.setState(product);
+      });
+      self.setState({googlePos: new google.maps.LatLng(product.lat, product.lng)});
+      self.lookupPosition();
+      Materialize.updateTextFields();
+    }
+  },
+
   componentWillReceiveProps: function(newProps) {
-    console.log(newProps.params['productId']);
+    this.editForm();
   },
 
   render: function () {
+    var submitText = (this.props.params['productId'] ? 'edit' : 'create');
+
     return (
       <div id='content'>
         <div id='sidebar'>
           <div className='sidebar-content'>
-            <h3 className='center-align'>Product Form</h3>
-            <form className='col s12 m10 l8 product-form' onSubmit={this.createProduct}>
+            <h4 className='grey-text text-darken-3 center-align'>Product Form</h4>
+            <form className='col s12 m10 l8 product-form' onSubmit={this.handleSubmit}>
 
               <div className='row'>
                 <div className='input-field col s12'>
@@ -207,7 +251,7 @@ module.exports = React.createClass({
                   <div className='right-align'>
                     <button
                       className="waves-effect waves-light btn">
-                      Create Product
+                      {submitText}
                     </button>
                     <div className='upload_widget left'>
                       <a id='upload_widget_opener' />

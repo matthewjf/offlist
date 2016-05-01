@@ -28,13 +28,15 @@ module.exports = React.createClass({
                 <Carousel images={product.img_urls} />
               </div>
               <div className='product-content'>
-                <h5 className='title'>{product.title}</h5>
+                <Dotdotdot clamp={1} >
+                  <h5 className='title'>{product.title}</h5>
+                </Dotdotdot>
                 <div className='split-row'>
                   <div>
-                    <span className='grey-text'> posted </span>
+                    <span className='grey-text'> added </span>
                     <TimeAgo className='grey-text' date={product.created_at} />
                   </div>
-                  <div>{'$' + product.price}</div>
+                  <div><b>Ask price: </b>{'$' + product.price}</div>
                 </div>
                 <div className='section'>
                   <Dotdotdot clamp={2} >
