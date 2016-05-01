@@ -34125,8 +34125,6 @@
 	  componentWillUnmount: function () {
 	    google.maps.event.removeListener(this.dragListener);
 	    google.maps.event.removeListener(this.mapListener);
-	    this.mapListener.remove();
-	    this.map = null;
 	  },
 	
 	  render: function () {
