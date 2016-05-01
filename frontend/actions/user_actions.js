@@ -12,11 +12,11 @@ var UserActions = {
 		);
 	},
 
-	fetchCurrentUserWithProducts: function(){
+	fetchCurrentUserWithAssocs: function(){
 		UserApiUtil.fetchCurrentUser(
-			UserActions.receiveCurrentUserWithProducts,
+			UserActions.receiveCurrentUserWithAssocs,
 			UserActions.handleError,
-			{includeProducts: true}
+			{includeAssocs: true}
 		);
 	},
 
@@ -51,15 +51,12 @@ var UserActions = {
 		$('#login-modal').closeModal();
 	},
 
-	receiveCurrentUserWithProducts: function(data){
+	receiveCurrentUserWithAssocs: function(data){
 		AppDispatcher.dispatch({
 			actionType: UserConstants.LOGIN,
 			user: {username: data.username}
 		});
-		$('#signup-modal').closeModal();
-		$('#login-modal').closeModal();
-
-		// do other stuff with products
+		ServerActions.receiveOffers(data.offers);
 		ServerActions.receiveAll(data.products);
 	},
 

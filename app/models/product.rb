@@ -21,13 +21,26 @@ class Product < ActiveRecord::Base
   validates :title, :description, :img_urls, :user, presence: true
   belongs_to :user
   has_many :offers
+
+  def deactivate!
+    raise 'not active' unless self.active == true
+    transaction do
+      self.active = false
+      self.save!
+
+      self.offers.each do |offer| # n + 1 query???
+        offer.decline!
+      end
+    end
+  end
+
   def self.in_bounds(bounds)
     if bounds
       lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]
       lng = [bounds["northEast"]["lng"], bounds["southWest"]["lng"]]
-      return Product.where(lat: lat.min..lat.max,lng: lng.max..lng.min)
+      return Product.where(lat: lat.min..lat.max,lng: lng.max..lng.min, active: true)
     else
-      return Product.all
+      return Product.where(active: true)
     end
   end
 end

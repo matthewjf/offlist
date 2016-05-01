@@ -71,3 +71,14 @@ footer.page-footer {
   justify-content: space-between;
   align-items: center;
 }
+
+.btn-row {
+  margin-bottom: 0.5rem;
+  .btn-flat {
+    margin-right: 0.5rem;
+  }
+}
+
+.btn-flat:focus {
+  background-color: color('grey', 'lighten-2');
+}

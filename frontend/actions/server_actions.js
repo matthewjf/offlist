@@ -1,5 +1,6 @@
 var Dispatcher = require('../dispatcher/dispatcher');
 var ProductConstants = require('../constants/product_constants');
+var OfferConstants = require('../constants/offer_constants');
 
 var ServerActions = {
   receiveAll: function(products){
@@ -18,6 +19,18 @@ var ServerActions = {
     Dispatcher.dispatch({
       actionType: ProductConstants.PRODUCT_REMOVED,
       product: product
+    });
+  },
+  receiveOffers: function(offers) {
+    Dispatcher.dispatch({
+      actionType: OfferConstants.OFFERS_RECEIVED,
+      offers: offers
+    });
+  },
+  receiveOffer: function(offer) {
+    Dispatcher.dispatch({
+      actionType: OfferConstants.OFFER_CREATED,
+      offer: offer
     });
   }
 };

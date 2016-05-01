@@ -25,7 +25,7 @@ module.exports = React.createClass({
   },
 
   openDetail: function(){
-    hashHistory.push("/products/" + this.props.product.id);
+    hashHistory.push("/listings/" + this.props.product.id);
   },
 
   render: function() {

@@ -8,11 +8,10 @@ var React = require('react'),
 module.exports = React.createClass({
   createMap: function(){
     var map = ReactDOM.findDOMNode(this.refs.map);
-    if (!isNaN(this.props.lat) && !isNaN(this.props.lng)) {
-      var loc = new google.maps.LatLng(this.props.lat, this.props.lng);
-    }
+    var loc = new google.maps.LatLng(37.7758, -122.435);
+
     var mapOptions = {
-      center: loc || {lat: 37.7758, lng: -122.435},
+      center: loc,
       zoom: 13,
       zoomControl: true,
       zoomControlOptions: {
@@ -21,6 +20,13 @@ module.exports = React.createClass({
       streetViewControl: false,
     };
     this.map = new google.maps.Map(map, mapOptions);
+  },
+
+  setCenter: function(loc) {
+    google.maps.event.trigger(this.map, 'resize');
+    if (typeof loc.lat === 'number'  && typeof loc.lng === 'number') {
+      this.map.panTo(loc);
+    }
   },
 
   setMarker: function(latLng) {
@@ -40,18 +46,18 @@ module.exports = React.createClass({
 
   componentDidMount: function(){
     this.createMap();
+    var loc = {lat: this.props.lat, lng: this.props.lng};
   },
 
   componentWillReceiveProps: function(newProps){
-    if (!isNaN(newProps.lat) && !isNaN(newProps.lng)) {
-      var loc = new google.maps.LatLng(newProps.lat, newProps.lng);
-      this.map.setCenter(loc);
-      this.setMarker(loc);
-    }
+    var loc = {lat: this.props.lat, lng: this.props.lng};
+    this.setMarker(loc);
+    this.setCenter(loc);
   },
 
   componentWillUnmount: function() {
-
+    if (this.marker)
+      this.marker.setMap(null);
   },
 
   render: function(){

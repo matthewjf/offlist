@@ -21,6 +21,9 @@ class User < ActiveRecord::Base
 
 	has_many :products
 	has_many :offers
+	has_many :received_offers,
+		through: :products,
+		source: :offers
 
 	def password= password
 		self.password_digest = BCrypt::Password.create(password)

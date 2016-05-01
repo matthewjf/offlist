@@ -36,10 +36,10 @@ var Rtr = (
   <Router history={hashHistory}>
     <Route path='/' component={App}>
       <IndexRoute component={ProductList} />
-      <Route path='products/new' component={ProductForm} />
-      <Route path='products' component={ProductList} />
-      <Route path='products/:productId' component={ProductDetail} />
-      <Route path='products/:productId/edit' component={ProductForm} />
+      <Route path='listings/new' component={ProductForm} />
+      <Route path='listings' component={ProductList} />
+      <Route path='listings/:listingId' component={ProductDetail} />
+      <Route path='listings/:listingId/edit' component={ProductForm} />
       <Route path='users/:userId' component={SellerDetail} />
       <Route path='account' component={UserDetail} />
     </Route>

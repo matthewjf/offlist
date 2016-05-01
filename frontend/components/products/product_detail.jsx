@@ -8,11 +8,12 @@ var Map = require('./detail_map'),
     Seller = require('./seller'),
     Carousel = require('../carousel'),
     Offer = require('./offer'),
+    OfferForm = require('../offers/offer_form'),
     Description = require('./description');
 
 module.exports = React.createClass({
   getInitialState: function () {
-    var productId = this.props.params.productId;
+    var productId = this.props.params.listingId;
     var product = ProductStore.find(productId) || this.blankProduct();
     return {product: product};
   },
@@ -32,7 +33,7 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     this.productListener = ProductStore.addListener(this._productChanged);
-    ClientActions.getProduct(this.props.params.productId);
+    ClientActions.getProduct(this.props.params.listingId);
     this.setState({address: ''});
   },
 
@@ -41,11 +42,11 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function(newProps) {
-    ClientActions.getProduct(newProps.params.productId);
+    ClientActions.getProduct(newProps.params.listingId);
   },
 
   _productChanged: function () {
-    var productId = this.props.params.productId;
+    var productId = this.props.params.listingId;
     var product = ProductStore.find(productId);
     if (product) {
       this.setState({ product: product, _: '' });
@@ -92,6 +93,7 @@ module.exports = React.createClass({
           <div className='col s12 m5 l4 detail-right'>
             <Seller seller={seller} />
             <Offer price={product.price}/>
+            <OfferForm productId={this.props.params.listingId} />
             <div className='card'>
               <div className='card-image'>
                 <Map lat={product.lat} lng={product.lng}/>

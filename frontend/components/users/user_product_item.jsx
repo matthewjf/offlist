@@ -9,7 +9,7 @@ var hashHistory = require('react-router').hashHistory,
 
 module.exports = React.createClass({
   productLink: function() {
-    hashHistory.push('products/' + this.props.product.id);
+    hashHistory.push('listings/' + this.props.product.id);
   },
 
   deleteProduct: function(e) {
@@ -18,12 +18,12 @@ module.exports = React.createClass({
   },
 
   deleteSuccess: function() {
-    Materialize.toast('Product removed!', 4000, 'red-text');
+    Materialize.toast('Listing removed!', 4000, 'red-text');
   },
 
   editProduct: function(e) {
     e.preventDefault();
-    hashHistory.push('products/' + this.props.product.id + '/edit');
+    hashHistory.push('listings/' + this.props.product.id + '/edit');
   },
 
   render: function() {

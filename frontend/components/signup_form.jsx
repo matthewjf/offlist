@@ -100,25 +100,27 @@ var SignupForm = React.createClass({
 							</div>
 						</div>
 					</section>
-					<p className='right-align'>
-						<button
-							type="submit"
-							name='action'
-							value="submit"
-							className='waves-effect waves-light btn right'>
-							Sign Up
-						</button>
-						<button
-							className='waves-effect waves-light btn-flat'
-							onClick={this.closeModal}>
-							cancel
-						</button>
-						<button
-							className='waves-effect waves-grey btn-flat left'
-							onClick={this.toggleForm} >
-							Log In
-						</button>
-					</p>
+					<div className='btn-row row'>
+						<div className='input-field col s12'>
+							<button
+								type="submit"
+								name='action'
+								value="submit"
+								className='waves-effect waves-light btn right'>
+								Sign Up
+							</button>
+							<button
+								className='waves-effect waves-light btn-flat'
+								onClick={this.closeModal}>
+								cancel
+							</button>
+							<button
+								className='waves-effect waves-grey btn-flat left'
+								onClick={this.toggleForm} >
+								Log In
+							</button>
+						</div>
+					</div>
 				</form>
 		);
 	},

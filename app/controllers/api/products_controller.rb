@@ -36,7 +36,7 @@ class Api::ProductsController < ApplicationController
   def destroy
     @product = Product.find(params[:id])
 
-    if @product.destroy
+    if @product.deactivate!
       render json: @product
     else
       render json: @product.errors.full_messages, status: 422

@@ -19,7 +19,7 @@ var cloudinaryWidgetOptions = {
   cloud_name: 'dn0zhjiai',
   upload_preset: 'ls86piw7',
   theme: 'minimal',
-  button_class: 'waves-effect btn-flat',
+  button_class: 'waves-effect waves-light btn light-blue darken-1',
   sources: ['local', 'url'],
   folder: 'splashy',
   thumbnails: '.thumbnails',
@@ -119,7 +119,7 @@ module.exports = React.createClass({
 
   handleSubmit: function (event) {
     event.preventDefault();
-    var product = {
+    var listing = {
       title: this.state.title,
       price: this.state.price,
       description: this.state.description,
@@ -127,18 +127,18 @@ module.exports = React.createClass({
       lng: this.state.lng,
       img_urls: this.state.img_urls
     };
-    if (this.props.params.productId) {
-      product.id = this.props.params.productId;
-      ApiUtil.updateProduct(product, this.submitSuccess);
+    if (this.props.params.listingId) {
+      listing.id = this.props.params.listingId;
+      ApiUtil.updateProduct(listing, this.submitSuccess);
     } else {
-      ApiUtil.createProduct(product, this.submitSuccess, 'created');
+      ApiUtil.createProduct(listing, this.submitSuccess);
     }
   },
 
   submitSuccess: function(id) {
-    var resultText = (this.props.params.productId ? 'updated' : 'created');
+    var resultText = (this.props.params.listingId ? 'updated' : 'created');
     hashHistory.push('account');
-    Materialize.toast('Product ' + resultText + '!', 4000, 'green-text');
+    Materialize.toast('Listing ' + resultText + '!', 4000, 'green-text');
   },
 
   setImageUrls: function(error, result) {
@@ -165,22 +165,26 @@ module.exports = React.createClass({
   },
 
   editForm: function(props) {
-    if (props.params['productId']) {
-      ClientActions.getProduct(props.params.productId);
+    if (props.params['listingId']) {
+      ClientActions.getProduct(props.params.listingId);
     }
+  },
+
+  cancelForm: function() {
+    hashHistory.push('account');
   },
 
   _productChanged: function () {
     var self = this;
-    var productId = this.props.params.productId;
-    var product = ProductStore.find(productId);
-    if (product) {
-      Object.keys(product).forEach(function(key) {
-        self.setState(product);
+    var listingId = this.props.params.listingId;
+    var listing = ProductStore.find(listingId);
+    if (listing) {
+      Object.keys(listing).forEach(function(key) {
+        self.setState(listing);
       });
       /* global google */
       self.setState({
-        googlePos: new google.maps.LatLng(product.lat, product.lng)
+        googlePos: new google.maps.LatLng(listing.lat, listing.lng)
       });
       self.lookupPosition();
       Materialize.updateTextFields();
@@ -192,13 +196,13 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    var submitText = (this.props.params['productId'] ? 'edit' : 'create');
+    var submitText = (this.props.params['listingId'] ? 'edit' : 'create');
 
     return (
       <div id='content'>
         <div id='sidebar'>
           <div className='sidebar-content'>
-            <h4 className='grey-text text-darken-3 center-align'>Product Form</h4>
+            <h4 className='grey-text text-darken-3 center-align'>Listing Form</h4>
             <form className='col s12 m10 l8 product-form' onSubmit={this.handleSubmit}>
 
               <div className='row'>
@@ -269,16 +273,19 @@ module.exports = React.createClass({
                   />
                 </div>
               </div>
-              <div className='button-row'>
-                <div>
-                  <div className='right-align'>
-                    <button
-                      className="waves-effect waves-light btn">
-                      {submitText}
-                    </button>
-                    <div className='upload_widget left'>
-                      <a id='upload_widget_opener' />
-                    </div>
+              <div className='btn-row row'>
+                <div className='col s12'>
+                  <button
+                    className="waves-effect waves-light btn right">
+                    {submitText}
+                  </button>
+                  <button
+                    onClick={this.cancelForm}
+                    className="waves-effect waves-ripple btn-flat right">
+                    cancel
+                  </button>
+                  <div className='upload_widget left'>
+                    <a id='upload_widget_opener' />
                   </div>
                 </div>
               </div>

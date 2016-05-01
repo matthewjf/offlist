@@ -4,9 +4,6 @@ var React = require('react'),
     hashHistory = require('react-router').hashHistory;
 
 module.exports = React.createClass({
-  addProductClick: function() {
-  //   hashHistory.push('/products/new');
-  },
 
   render: function () {
     return (

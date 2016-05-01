@@ -24,7 +24,11 @@ class Api::SessionsController < ApplicationController
   def show
     if current_user
       @user = current_user
-      @products = @user.products if params[:includeProducts] == 'true'
+      if params[:includeAssocs] == 'true'
+        @products = @user.products.where(active: true)
+        @offers = @user.offers
+        @received_offers = @user.received_offers
+      end
       render "api/users/show"
     else
       @errors = nil

@@ -11,18 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160430230624) do
+ActiveRecord::Schema.define(version: 20160501044737) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "offers", force: :cascade do |t|
-    t.integer  "user_id",    null: false
-    t.integer  "product_id", null: false
-    t.integer  "amount",     null: false
+    t.integer  "user_id",                        null: false
+    t.integer  "product_id",                     null: false
+    t.integer  "amount",                         null: false
     t.text     "comment"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.string   "status",     default: "Pending"
   end
 
   add_index "offers", ["product_id"], name: "index_offers_on_product_id", using: :btree

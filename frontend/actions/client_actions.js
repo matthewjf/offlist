@@ -19,5 +19,14 @@ module.exports = {
 
   deleteProduct: function (id, successCB) {
     ApiUtil.deleteProduct(id, successCB);
+  },
+
+  fetchOffers: function () {
+    ApiUtil.fetchOffers();
+  },
+
+  createOffer: function (data, successCB) {
+    ApiUtil.createOffer(data, successCB);
   }
+
 };

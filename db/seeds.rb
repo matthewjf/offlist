@@ -25,7 +25,8 @@ def create_product(user)
     lat: lat,
     lng: lng,
     price: rand(1000) + 1,
-    user_id: user.id
+    user_id: user.id,
+    created_at: Faker::Time.backward(1000)
   )
 end
 
@@ -37,5 +38,16 @@ end
 User.all.each do |user|
   rand(3).times do
     create_product(user)
+  end
+end
+
+User.all.each do |user|
+  Product.all.each do |product|
+    Offer.create(
+      amount: rand(99) + 1,
+      user_id: user.id,
+      product_id: product.id,
+      created_at: Faker::Time.backward(1000)
+    )
   end
 end

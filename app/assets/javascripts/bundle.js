@@ -88,10 +88,10 @@
 	    Route,
 	    { path: '/', component: App },
 	    React.createElement(IndexRoute, { component: ProductList }),
-	    React.createElement(Route, { path: 'products/new', component: ProductForm }),
-	    React.createElement(Route, { path: 'products', component: ProductList }),
-	    React.createElement(Route, { path: 'products/:productId', component: ProductDetail }),
-	    React.createElement(Route, { path: 'products/:productId/edit', component: ProductForm }),
+	    React.createElement(Route, { path: 'listings/new', component: ProductForm }),
+	    React.createElement(Route, { path: 'listings', component: ProductList }),
+	    React.createElement(Route, { path: 'listings/:listingId', component: ProductDetail }),
+	    React.createElement(Route, { path: 'listings/:listingId/edit', component: ProductForm }),
 	    React.createElement(Route, { path: 'users/:userId', component: SellerDetail }),
 	    React.createElement(Route, { path: 'account', component: UserDetail })
 	  )
@@ -25480,9 +25480,6 @@
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
-	  addProductClick: function () {
-	    //   hashHistory.push('/products/new');
-	  },
 	
 	  render: function () {
 	    return React.createElement(
@@ -32424,7 +32421,16 @@
 	
 	  deleteProduct: function (id, successCB) {
 	    ApiUtil.deleteProduct(id, successCB);
+	  },
+	
+	  fetchOffers: function () {
+	    ApiUtil.fetchOffers();
+	  },
+	
+	  createOffer: function (data, successCB) {
+	    ApiUtil.createOffer(data, successCB);
 	  }
+	
 	};
 
 /***/ },
@@ -32486,7 +32492,53 @@
 	        if (successCB) successCB(product.id);
 	      }
 	    });
+	  },
+	
+	  fetchOffers: function () {
+	    $.ajax({
+	      url: "api/offers",
+	      success: function (offers) {
+	        ServerActions.receiveOffers(offers);
+	      }
+	    });
+	  },
+	
+	  createOffer: function (data, successCB) {
+	    $.ajax({
+	      url: "api/offers",
+	      type: "POST",
+	      data: { offer: data },
+	      success: function (offer) {
+	        ServerActions.receiveProduct(offer);
+	        if (successCB) successCB(offer.id);
+	      }
+	    });
 	  }
+	
+	  // acceptOffer: function (data, successCB) {
+	  //   $.ajax({
+	  //     url: "api/products/" + data.id,
+	  //     type: "PATCH",
+	  //     data: {product: data },
+	  //     success: function (product) {
+	  //       ServerActions.receiveProduct(product);
+	  //       if (successCB)
+	  //         successCB(product.id);
+	  //     }
+	  //   });
+	  // },
+	  //
+	  // rejectOffer: function (id, successCB) {
+	  //   $.ajax({
+	  //     url: "api/products/" + id,
+	  //     type: "DELETE",
+	  //     success: function (product) {
+	  //       ServerActions.removeProduct(product);
+	  //       if (successCB)
+	  //         successCB(product.id);
+	  //     }
+	  //   });
+	  // }
 	
 	};
 
@@ -32496,6 +32548,7 @@
 
 	var Dispatcher = __webpack_require__(246);
 	var ProductConstants = __webpack_require__(249);
+	var OfferConstants = __webpack_require__(355);
 	
 	var ServerActions = {
 	  receiveAll: function (products) {
@@ -32514,6 +32567,18 @@
 	    Dispatcher.dispatch({
 	      actionType: ProductConstants.PRODUCT_REMOVED,
 	      product: product
+	    });
+	  },
+	  receiveOffers: function (offers) {
+	    Dispatcher.dispatch({
+	      actionType: OfferConstants.OFFERS_RECEIVED,
+	      offers: offers
+	    });
+	  },
+	  receiveOffer: function (offer) {
+	    Dispatcher.dispatch({
+	      actionType: OfferConstants.OFFER_CREATED,
+	      offer: offer
 	    });
 	  }
 	};
@@ -32735,7 +32800,7 @@
 	  },
 	
 	  openDetail: function () {
-	    hashHistory.push("/products/" + this.props.product.id);
+	    hashHistory.push("/listings/" + this.props.product.id);
 	  },
 	
 	  render: function () {
@@ -32970,8 +33035,8 @@
 			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUser, UserActions.handleError);
 		},
 	
-		fetchCurrentUserWithProducts: function () {
-			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUserWithProducts, UserActions.handleError, { includeProducts: true });
+		fetchCurrentUserWithAssocs: function () {
+			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUserWithAssocs, UserActions.handleError, { includeAssocs: true });
 		},
 	
 		signup: function (user) {
@@ -33005,15 +33070,12 @@
 			$('#login-modal').closeModal();
 		},
 	
-		receiveCurrentUserWithProducts: function (data) {
+		receiveCurrentUserWithAssocs: function (data) {
 			AppDispatcher.dispatch({
 				actionType: UserConstants.LOGIN,
 				user: { username: data.username }
 			});
-			$('#signup-modal').closeModal();
-			$('#login-modal').closeModal();
-	
-			// do other stuff with products
+			ServerActions.receiveOffers(data.offers);
 			ServerActions.receiveAll(data.products);
 		},
 	
@@ -33430,37 +33492,41 @@
 					)
 				),
 				React.createElement(
-					"p",
-					{ className: "right-align" },
+					"div",
+					{ className: "btn-row row" },
 					React.createElement(
-						"button",
-						{
-							type: "submit",
-							name: "action",
-							value: "submit",
-							className: "waves-effect waves-light btn right" },
-						"Log In"
-					),
-					React.createElement(
-						"button",
-						{
-							className: "waves-effect waves-ripple btn-flat",
-							onClick: this.closeModal },
-						"cancel"
-					),
-					React.createElement(
-						"button",
-						{
-							className: "waves-effect btn-flat left",
-							onClick: this.toggleForm },
-						"Sign Up"
-					),
-					React.createElement(
-						"button",
-						{
-							className: "waves-effect waves-light btn grey darken-1 left",
-							onClick: this.demoSubmit },
-						"demo"
+						"div",
+						{ className: "input-field col s12" },
+						React.createElement(
+							"button",
+							{
+								type: "submit",
+								name: "action",
+								value: "submit",
+								className: "waves-effect waves-light btn right" },
+							"Log In"
+						),
+						React.createElement(
+							"button",
+							{
+								className: "waves-effect waves-ripple btn-flat right",
+								onClick: this.closeModal },
+							"cancel"
+						),
+						React.createElement(
+							"button",
+							{
+								className: "waves-effect btn-flat left",
+								onClick: this.toggleForm },
+							"Sign Up"
+						),
+						React.createElement(
+							"button",
+							{
+								className: "waves-effect waves-light btn grey darken-1 left",
+								onClick: this.demoSubmit },
+							"demo"
+						)
 					)
 				)
 			);
@@ -33626,30 +33692,34 @@
 					)
 				),
 				React.createElement(
-					"p",
-					{ className: "right-align" },
+					"div",
+					{ className: "btn-row row" },
 					React.createElement(
-						"button",
-						{
-							type: "submit",
-							name: "action",
-							value: "submit",
-							className: "waves-effect waves-light btn right" },
-						"Sign Up"
-					),
-					React.createElement(
-						"button",
-						{
-							className: "waves-effect waves-light btn-flat",
-							onClick: this.closeModal },
-						"cancel"
-					),
-					React.createElement(
-						"button",
-						{
-							className: "waves-effect waves-grey btn-flat left",
-							onClick: this.toggleForm },
-						"Log In"
+						"div",
+						{ className: "input-field col s12" },
+						React.createElement(
+							"button",
+							{
+								type: "submit",
+								name: "action",
+								value: "submit",
+								className: "waves-effect waves-light btn right" },
+							"Sign Up"
+						),
+						React.createElement(
+							"button",
+							{
+								className: "waves-effect waves-light btn-flat",
+								onClick: this.closeModal },
+							"cancel"
+						),
+						React.createElement(
+							"button",
+							{
+								className: "waves-effect waves-grey btn-flat left",
+								onClick: this.toggleForm },
+							"Log In"
+						)
 					)
 				)
 			);
@@ -33709,7 +33779,7 @@
 	  cloud_name: 'dn0zhjiai',
 	  upload_preset: 'ls86piw7',
 	  theme: 'minimal',
-	  button_class: 'waves-effect btn-flat',
+	  button_class: 'waves-effect waves-light btn light-blue darken-1',
 	  sources: ['local', 'url'],
 	  folder: 'splashy',
 	  thumbnails: '.thumbnails'
@@ -33809,7 +33879,7 @@
 	
 	  handleSubmit: function (event) {
 	    event.preventDefault();
-	    var product = {
+	    var listing = {
 	      title: this.state.title,
 	      price: this.state.price,
 	      description: this.state.description,
@@ -33817,18 +33887,18 @@
 	      lng: this.state.lng,
 	      img_urls: this.state.img_urls
 	    };
-	    if (this.props.params.productId) {
-	      product.id = this.props.params.productId;
-	      ApiUtil.updateProduct(product, this.submitSuccess);
+	    if (this.props.params.listingId) {
+	      listing.id = this.props.params.listingId;
+	      ApiUtil.updateProduct(listing, this.submitSuccess);
 	    } else {
-	      ApiUtil.createProduct(product, this.submitSuccess, 'created');
+	      ApiUtil.createProduct(listing, this.submitSuccess);
 	    }
 	  },
 	
 	  submitSuccess: function (id) {
-	    var resultText = this.props.params.productId ? 'updated' : 'created';
+	    var resultText = this.props.params.listingId ? 'updated' : 'created';
 	    hashHistory.push('account');
-	    Materialize.toast('Product ' + resultText + '!', 4000, 'green-text');
+	    Materialize.toast('Listing ' + resultText + '!', 4000, 'green-text');
 	  },
 	
 	  setImageUrls: function (error, result) {
@@ -33854,22 +33924,26 @@
 	  },
 	
 	  editForm: function (props) {
-	    if (props.params['productId']) {
-	      ClientActions.getProduct(props.params.productId);
+	    if (props.params['listingId']) {
+	      ClientActions.getProduct(props.params.listingId);
 	    }
+	  },
+	
+	  cancelForm: function () {
+	    hashHistory.push('account');
 	  },
 	
 	  _productChanged: function () {
 	    var self = this;
-	    var productId = this.props.params.productId;
-	    var product = ProductStore.find(productId);
-	    if (product) {
-	      Object.keys(product).forEach(function (key) {
-	        self.setState(product);
+	    var listingId = this.props.params.listingId;
+	    var listing = ProductStore.find(listingId);
+	    if (listing) {
+	      Object.keys(listing).forEach(function (key) {
+	        self.setState(listing);
 	      });
 	      /* global google */
 	      self.setState({
-	        googlePos: new google.maps.LatLng(product.lat, product.lng)
+	        googlePos: new google.maps.LatLng(listing.lat, listing.lng)
 	      });
 	      self.lookupPosition();
 	      Materialize.updateTextFields();
@@ -33881,7 +33955,7 @@
 	  },
 	
 	  render: function () {
-	    var submitText = this.props.params['productId'] ? 'edit' : 'create';
+	    var submitText = this.props.params['listingId'] ? 'edit' : 'create';
 	
 	    return React.createElement(
 	      'div',
@@ -33895,7 +33969,7 @@
 	          React.createElement(
 	            'h4',
 	            { className: 'grey-text text-darken-3 center-align' },
-	            'Product Form'
+	            'Listing Form'
 	          ),
 	          React.createElement(
 	            'form',
@@ -34012,24 +34086,27 @@
 	            ),
 	            React.createElement(
 	              'div',
-	              { className: 'button-row' },
+	              { className: 'btn-row row' },
 	              React.createElement(
 	                'div',
-	                null,
+	                { className: 'col s12' },
+	                React.createElement(
+	                  'button',
+	                  {
+	                    className: 'waves-effect waves-light btn right' },
+	                  submitText
+	                ),
+	                React.createElement(
+	                  'button',
+	                  {
+	                    onClick: this.cancelForm,
+	                    className: 'waves-effect waves-ripple btn-flat right' },
+	                  'cancel'
+	                ),
 	                React.createElement(
 	                  'div',
-	                  { className: 'right-align' },
-	                  React.createElement(
-	                    'button',
-	                    {
-	                      className: 'waves-effect waves-light btn' },
-	                    submitText
-	                  ),
-	                  React.createElement(
-	                    'div',
-	                    { className: 'upload_widget left' },
-	                    React.createElement('a', { id: 'upload_widget_opener' })
-	                  )
+	                  { className: 'upload_widget left' },
+	                  React.createElement('a', { id: 'upload_widget_opener' })
 	                )
 	              )
 	            ),
@@ -60190,13 +60267,14 @@
 	    Seller = __webpack_require__(336),
 	    Carousel = __webpack_require__(352),
 	    Offer = __webpack_require__(343),
+	    OfferForm = __webpack_require__(357),
 	    Description = __webpack_require__(344);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
 	  getInitialState: function () {
-	    var productId = this.props.params.productId;
+	    var productId = this.props.params.listingId;
 	    var product = ProductStore.find(productId) || this.blankProduct();
 	    return { product: product };
 	  },
@@ -60216,7 +60294,7 @@
 	
 	  componentDidMount: function () {
 	    this.productListener = ProductStore.addListener(this._productChanged);
-	    ClientActions.getProduct(this.props.params.productId);
+	    ClientActions.getProduct(this.props.params.listingId);
 	    this.setState({ address: '' });
 	  },
 	
@@ -60225,11 +60303,11 @@
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    ClientActions.getProduct(newProps.params.productId);
+	    ClientActions.getProduct(newProps.params.listingId);
 	  },
 	
 	  _productChanged: function () {
-	    var productId = this.props.params.productId;
+	    var productId = this.props.params.listingId;
 	    var product = ProductStore.find(productId);
 	    if (product) {
 	      this.setState({ product: product, _: '' });
@@ -60285,6 +60363,7 @@
 	          { className: 'col s12 m5 l4 detail-right' },
 	          React.createElement(Seller, { seller: seller }),
 	          React.createElement(Offer, { price: product.price }),
+	          React.createElement(OfferForm, { productId: this.props.params.listingId }),
 	          React.createElement(
 	            'div',
 	            { className: 'card' },
@@ -60321,11 +60400,10 @@
 	
 	  createMap: function () {
 	    var map = ReactDOM.findDOMNode(this.refs.map);
-	    if (!isNaN(this.props.lat) && !isNaN(this.props.lng)) {
-	      var loc = new google.maps.LatLng(this.props.lat, this.props.lng);
-	    }
+	    var loc = new google.maps.LatLng(37.7758, -122.435);
+	
 	    var mapOptions = {
-	      center: loc || { lat: 37.7758, lng: -122.435 },
+	      center: loc,
 	      zoom: 13,
 	      zoomControl: true,
 	      zoomControlOptions: {
@@ -60334,6 +60412,13 @@
 	      streetViewControl: false
 	    };
 	    this.map = new google.maps.Map(map, mapOptions);
+	  },
+	
+	  setCenter: function (loc) {
+	    google.maps.event.trigger(this.map, 'resize');
+	    if (typeof loc.lat === 'number' && typeof loc.lng === 'number') {
+	      this.map.panTo(loc);
+	    }
 	  },
 	
 	  setMarker: function (latLng) {
@@ -60352,17 +60437,18 @@
 	
 	  componentDidMount: function () {
 	    this.createMap();
+	    var loc = { lat: this.props.lat, lng: this.props.lng };
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    if (!isNaN(newProps.lat) && !isNaN(newProps.lng)) {
-	      var loc = new google.maps.LatLng(newProps.lat, newProps.lng);
-	      this.map.setCenter(loc);
-	      this.setMarker(loc);
-	    }
+	    var loc = { lat: this.props.lat, lng: this.props.lng };
+	    this.setMarker(loc);
+	    this.setCenter(loc);
 	  },
 	
-	  componentWillUnmount: function () {},
+	  componentWillUnmount: function () {
+	    if (this.marker) this.marker.setMap(null);
+	  },
 	
 	  render: function () {
 	    return React.createElement('div', { id: 'map', ref: 'map' });
@@ -62162,6 +62248,10 @@
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
+	  openOffer: function (e) {
+	    e.preventDefault();
+	    $('#offer-modal').openModal();
+	  },
 	  render: function () {
 	    return React.createElement(
 	      'div',
@@ -62181,7 +62271,9 @@
 	        ),
 	        React.createElement(
 	          'button',
-	          { className: 'waves-effect waves-light btn right' },
+	          {
+	            onClick: this.openOffer,
+	            className: 'waves-effect waves-light btn right' },
 	          'Offer'
 	        )
 	      )
@@ -62419,14 +62511,14 @@
 	  mixins: [CurrentUserState],
 	
 	  componentDidMount: function () {
-	    UserActions.fetchCurrentUserWithProducts();
+	    UserActions.fetchCurrentUserWithAssocs();
 	    $(document).ready(function () {
 	      $('ul.tabs').tabs();
 	    });
 	  },
 	
 	  componentWillReceiveProps: function () {
-	    UserActions.fetchCurrentUserWithProducts();
+	    UserActions.fetchCurrentUserWithAssocs();
 	  },
 	
 	  render: function () {
@@ -62454,7 +62546,7 @@
 	              React.createElement(
 	                "a",
 	                { href: "#products" },
-	                "Products"
+	                "Listings"
 	              )
 	            ),
 	            React.createElement(
@@ -62464,6 +62556,24 @@
 	                "a",
 	                { href: "#offers" },
 	                "Offers"
+	              )
+	            ),
+	            React.createElement(
+	              "li",
+	              { className: "tab col s3" },
+	              React.createElement(
+	                "a",
+	                { href: "#settings" },
+	                "Settings"
+	              )
+	            ),
+	            React.createElement(
+	              "li",
+	              { className: "tab col s3" },
+	              React.createElement(
+	                "a",
+	                { href: "#messages" },
+	                "Messages"
 	              )
 	            )
 	          )
@@ -62477,6 +62587,24 @@
 	          "div",
 	          { id: "offers", className: "col s12" },
 	          React.createElement(UserOffers, null)
+	        ),
+	        React.createElement(
+	          "div",
+	          { id: "settings", className: "col s12" },
+	          React.createElement(
+	            "h5",
+	            null,
+	            "coming soon"
+	          )
+	        ),
+	        React.createElement(
+	          "div",
+	          { id: "messages", className: "col s12" },
+	          React.createElement(
+	            "h5",
+	            null,
+	            "coming soon"
+	          )
 	        )
 	      )
 	    );
@@ -62533,13 +62661,17 @@
 	  },
 	
 	  newProduct: function () {
-	    hashHistory.push('products/new');
+	    hashHistory.push('listings/new');
 	  },
 	
 	  productItems: function () {
-	    return this.state.products.map(function (product) {
-	      return React.createElement(ProductItem, { key: product.id, product: product });
-	    });
+	    if (this.state.products && this.state.products.length > 0) {
+	      return this.state.products.map(function (product) {
+	        return React.createElement(ProductItem, { key: product.id, product: product });
+	      });
+	    } else {
+	      return React.createElement('div', null);
+	    }
 	  },
 	
 	  render: function () {
@@ -62553,14 +62685,15 @@
 	        React.createElement(
 	          'div',
 	          { className: 'num-products grey-text' },
+	          'you have ',
 	          numProducts,
-	          ' products'
+	          ' active listings'
 	        ),
 	        React.createElement(
 	          'button',
 	          {
 	            className: 'btn waves-effect waves-light', onClick: this.newProduct },
-	          'Add Product'
+	          'Add Listing'
 	        )
 	      ),
 	      React.createElement(
@@ -62579,60 +62712,78 @@
 	var React = __webpack_require__(1);
 	
 	var UserActions = __webpack_require__(260),
-	    CurrentUserState = __webpack_require__(264),
-	    UserStore = __webpack_require__(263);
+	    OfferStore = __webpack_require__(358),
+	    ReceivedOfferItem = __webpack_require__(359),
+	    MadeOfferItem = __webpack_require__(360);
 	
 	module.exports = React.createClass({
-	  displayName: "exports",
+	  displayName: 'exports',
 	
-	  mixins: [CurrentUserState],
+	  getInitialState: function () {
+	    return { madeOffers: [], receivedOffers: [] };
+	  },
+	
+	  getAllOffers: function () {
+	    this.setState({
+	      madeOffers: OfferStore.madeOffers(),
+	      receivedOffers: OfferStore.receivedOffers()
+	    });
+	  },
+	
+	  componentDidMount: function () {
+	    this.offerListener = OfferStore.addListener(this.getAllOffers);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.offerListener.remove();
+	  },
+	
+	  receivedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.length > 0) {
+	      return receivedOffers.map(function (offer) {
+	        return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
+	      });
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  },
+	
+	  madeOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.length > 0) {
+	      return madeOffers.map(function (offer) {
+	        return React.createElement(MadeOfferItem, { key: offer.id, offer: offer });
+	      });
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  },
+	
 	  render: function () {
 	    return React.createElement(
-	      "ul",
-	      { id: "staggered" },
+	      'div',
+	      { className: 'user-offers' },
 	      React.createElement(
-	        "li",
-	        { className: "section" },
-	        React.createElement(
-	          "h5",
-	          null,
-	          "Section 1"
-	        ),
-	        React.createElement(
-	          "p",
-	          null,
-	          "Stuff"
-	        )
+	        'h5',
+	        null,
+	        'Offers Received'
 	      ),
-	      React.createElement("div", { className: "divider" }),
 	      React.createElement(
-	        "li",
-	        { className: "section" },
-	        React.createElement(
-	          "h5",
-	          null,
-	          "Section 2"
-	        ),
-	        React.createElement(
-	          "p",
-	          null,
-	          "Stuff"
-	        )
+	        'ul',
+	        { className: 'collection' },
+	        this.receivedOffersList()
 	      ),
-	      React.createElement("div", { className: "divider" }),
+	      React.createElement('div', { className: 'row' }),
 	      React.createElement(
-	        "li",
-	        { className: "section" },
-	        React.createElement(
-	          "h5",
-	          null,
-	          "Section 3"
-	        ),
-	        React.createElement(
-	          "p",
-	          null,
-	          "Stuff"
-	        )
+	        'h5',
+	        null,
+	        'Offers Made'
+	      ),
+	      React.createElement(
+	        'ul',
+	        { className: 'collection' },
+	        this.madeOffersList()
 	      )
 	    );
 	  }
@@ -62655,7 +62806,7 @@
 	  displayName: 'exports',
 	
 	  productLink: function () {
-	    hashHistory.push('products/' + this.props.product.id);
+	    hashHistory.push('listings/' + this.props.product.id);
 	  },
 	
 	  deleteProduct: function (e) {
@@ -62664,12 +62815,12 @@
 	  },
 	
 	  deleteSuccess: function () {
-	    Materialize.toast('Product removed!', 4000, 'red-text');
+	    Materialize.toast('Listing removed!', 4000, 'red-text');
 	  },
 	
 	  editProduct: function (e) {
 	    e.preventDefault();
-	    hashHistory.push('products/' + this.props.product.id + '/edit');
+	    hashHistory.push('listings/' + this.props.product.id + '/edit');
 	  },
 	
 	  render: function () {
@@ -63138,6 +63289,299 @@
 	  return clamp;
 	}));
 
+
+/***/ },
+/* 355 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  OFFERS_RECEIVED: "OFFERS_RECEIVED",
+	  OFFER_CREATED: "OFFER_CREATED"
+	};
+
+/***/ },
+/* 356 */,
+/* 357 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    OfferStore = __webpack_require__(358),
+	    ClientActions = __webpack_require__(250);
+	
+	/* global Materialize */
+	
+	var OfferForm = React.createClass({
+	  displayName: 'OfferForm',
+	
+	  closeModal: function (e) {
+	    if (e) e.preventDefault();
+	    $('#offer-modal').closeModal();
+	    this.resetState();
+	  },
+	
+	  getInitialState: function () {
+	    return { amount: '', product_id: '', comment: '' };
+	  },
+	
+	  setAmount: function (e) {
+	    this.setState({ amount: e.target.value });
+	  },
+	
+	  setComment: function (e) {
+	    this.setState({ comment: e.target.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ amount: '', comment: '' });
+	  },
+	
+	  componentDidMount: function () {
+	    this.setState({ product_id: this.props.productId });
+	  },
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({ product_id: this.props.productId });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    ClientActions.createOffer(this.state, this.submitSuccess);
+	  },
+	
+	  submitSuccess: function () {
+	    Materialize.toast('Offer submitted!', 4000, 'green-text');
+	    this.closeModal();
+	  },
+	
+	  form: function () {
+	    return React.createElement(
+	      'form',
+	      { onSubmit: this.handleSubmit },
+	      React.createElement(
+	        'section',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'input-field col s12' },
+	            React.createElement('input', {
+	              type: 'text',
+	              value: this.state.amount,
+	              onChange: this.setAmount,
+	              id: 'amount' }),
+	            React.createElement(
+	              'label',
+	              { id: 'amount-label', htmlFor: 'amount' },
+	              'Amount'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'input-field col s12' },
+	            React.createElement('textarea', {
+	              id: 'comment',
+	              type: 'text',
+	              className: 'materialize-textarea',
+	              value: this.state.comment,
+	              onChange: this.setComment
+	            }),
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'comment' },
+	              'Comment (optional)'
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'btn-row row' },
+	        React.createElement(
+	          'div',
+	          { className: 'col s12' },
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'waves-effect waves-light btn right' },
+	            'Make Offer'
+	          ),
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'waves-effect waves-ripple btn-flat right',
+	              onClick: this.closeModal },
+	            'cancel'
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  render: function () {
+	
+	    return React.createElement(
+	      'div',
+	      { id: 'offer-form' },
+	      React.createElement(
+	        'div',
+	        { id: 'offer-modal', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'modal-content' },
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Make Offer'
+	          ),
+	          this.form()
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	$(document).ready(function () {
+	  $('.modal-trigger').leanModal();
+	});
+	
+	module.exports = OfferForm;
+
+/***/ },
+/* 358 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(228).Store,
+	    Dispatcher = __webpack_require__(246),
+	    OfferConstants = __webpack_require__(355);
+	
+	var _madeOffers = {};
+	var _receivedOffers = {};
+	
+	var resetOffers = function (offers) {
+	  _madeOffers = {};
+	  _receivedOffers = {};
+	
+	  setMadeOffers(offers.made_offers);
+	  setReceivedOffers(offers.received_offers);
+	};
+	
+	var setMadeOffers = function (madeOffers) {
+	  madeOffers.forEach(function (offer) {
+	    _madeOffers[offer.id] = offer;
+	  });
+	};
+	
+	var setReceivedOffers = function (receivedOffers) {
+	  receivedOffers.forEach(function (offer) {
+	    _receivedOffers[offer.id] = offer;
+	  });
+	};
+	
+	var setOfferMade = function (offer) {
+	  _madeOffers[offer.id] = offer;
+	};
+	
+	var OfferStore = new Store(Dispatcher);
+	
+	OfferStore.receivedOffers = function () {
+	  return Object.keys(_receivedOffers).map(function (offerId) {
+	    return _receivedOffers[offerId];
+	  });
+	};
+	
+	OfferStore.madeOffers = function () {
+	  return Object.keys(_madeOffers).map(function (offerId) {
+	    return _madeOffers[offerId];
+	  });
+	};
+	
+	OfferStore.find = function (id) {
+	  // return _offers[id];
+	};
+	
+	OfferStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case OfferConstants.OFFERS_RECEIVED:
+	      resetOffers(payload.offers);
+	      break;
+	    case OfferConstants.OFFER_CREATED:
+	      setOfferMade(payload.offer);
+	      break;
+	  }
+	  this.__emitChange();
+	};
+	
+	module.exports = OfferStore;
+
+/***/ },
+/* 359 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(353),
+	    TimeAgo = __webpack_require__(346).default,
+	    ClientActions = __webpack_require__(250);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	
+	  render: function () {
+	    var offer = this.props.offer;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'account-product grey lighten-5 collection-item row' },
+	      React.createElement('div', { className: 'product-content col s12 m9 l10' }),
+	      React.createElement(
+	        'div',
+	        { className: 'offer-content col s12 m3 l2' },
+	        offer.amount
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 360 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(353),
+	    TimeAgo = __webpack_require__(346).default,
+	    ClientActions = __webpack_require__(250);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	
+	  render: function () {
+	    var offer = this.props.offer;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'account-product grey lighten-5 collection-item row' },
+	      React.createElement('div', { className: 'product-content col s12 m9 l10' }),
+	      React.createElement(
+	        'div',
+	        { className: 'offer-content col s12 m3 l2' },
+	        offer.amount
+	      )
+	    );
+	  }
+	});
 
 /***/ }
 /******/ ]);

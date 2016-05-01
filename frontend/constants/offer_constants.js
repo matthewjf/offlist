@@ -1,0 +1,4 @@
+module.exports = {
+  OFFERS_RECEIVED: "OFFERS_RECEIVED",
+  OFFER_CREATED: "OFFER_CREATED"
+};
