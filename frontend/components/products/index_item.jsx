@@ -4,6 +4,7 @@ var React = require('react'),
     hashHistory = require('react-router').hashHistory;
 
 /* global google */
+/* global Materialize */
 
 module.exports = React.createClass({
   getInitialState: function() {

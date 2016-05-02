@@ -15,7 +15,15 @@ module.exports = React.createClass({
               <div className='product-content col s12 m9 l10'>
               </div>
               <div className='offer-content col s12 m3 l2'>
-                {offer.amount}
+
+              </div>
+              <div className='offer-content col s12 m3 l2'>
+                <div className='offer-content col s12 m3 l2'>
+
+                </div>
+                <div className='offer-content col s12 m3 l2'>
+
+                </div>
               </div>
             </li>;
   }

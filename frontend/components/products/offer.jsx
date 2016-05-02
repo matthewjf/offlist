@@ -1,10 +1,26 @@
-var React = require('react');
+var React = require('react'),
+		CurrentUserState = require("../../mixins/current_user_state");
+
+/* global Materialize */
 
 module.exports = React.createClass({
+  mixins: [CurrentUserState],
+
   openOffer: function(e) {
     e.preventDefault();
-		$('#offer-modal').openModal();
+    if (this.state.currentUser) {
+	    $('#offer-modal').openModal();
+    } else {
+      Materialize.toast('Log in or sign up to make an offer', 4000, 'red-text');
+    }
 	},
+
+  componentDidUpdate: function() {
+    $(document).ready(function(){
+      $('.tooltipped').tooltip({delay: 50});
+    });
+  },
+
   render: function(){
     return(
       <div className='offer card'>

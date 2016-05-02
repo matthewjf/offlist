@@ -32779,6 +32779,7 @@
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	/* global google */
+	/* global Materialize */
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -60328,6 +60329,24 @@
 	    alert('something went wrong: ' + status);
 	  },
 	
+	  isActive: function () {
+	    if (this.state.product && this.state.product.active === false) {
+	      return React.createElement(
+	        'div',
+	        { className: 'col s12' },
+	        React.createElement(
+	          'div',
+	          { className: 'card detail-inactive red' },
+	          React.createElement(
+	            'em',
+	            { className: 'white-text' },
+	            'This listing has been completed'
+	          )
+	        )
+	      );
+	    }
+	  },
+	
 	  render: function () {
 	    var product = this.state.product || this.blankProduct();
 	    var seller = product.seller ? product.seller : { username: '', id: null };
@@ -60338,6 +60357,7 @@
 	      React.createElement(
 	        'div',
 	        { className: 'row product-detail' },
+	        this.isActive(),
 	        React.createElement(
 	          'div',
 	          { className: 'col s12 m7 l8 detail-left' },
@@ -62243,15 +62263,31 @@
 /* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	var React = __webpack_require__(1),
+	    CurrentUserState = __webpack_require__(264);
+	
+	/* global Materialize */
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
+	  mixins: [CurrentUserState],
+	
 	  openOffer: function (e) {
 	    e.preventDefault();
-	    $('#offer-modal').openModal();
+	    if (this.state.currentUser) {
+	      $('#offer-modal').openModal();
+	    } else {
+	      Materialize.toast('Log in or sign up to make an offer', 4000, 'red-text');
+	    }
 	  },
+	
+	  componentDidUpdate: function () {
+	    $(document).ready(function () {
+	      $('.tooltipped').tooltip({ delay: 50 });
+	    });
+	  },
+	
 	  render: function () {
 	    return React.createElement(
 	      'div',
@@ -62716,6 +62752,8 @@
 	    ReceivedOfferItem = __webpack_require__(359),
 	    MadeOfferItem = __webpack_require__(360);
 	
+	// var _statuses = ['Pending', 'Declined', 'Approved'];
+	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
@@ -62724,40 +62762,239 @@
 	  },
 	
 	  getAllOffers: function () {
+	    this.setMadeOffers(OfferStore.madeOffers());
+	    this.setReceivedOffers(OfferStore.receivedOffers());
+	  },
+	
+	  setMadeOffers: function (offers) {
 	    this.setState({
-	      madeOffers: OfferStore.madeOffers(),
-	      receivedOffers: OfferStore.receivedOffers()
+	      madeOffers: this.statusOffers(offers)
 	    });
+	  },
+	
+	  setReceivedOffers: function (offers) {
+	    this.setState({
+	      receivedOffers: this.statusOffers(offers)
+	    });
+	  },
+	
+	  statusOffers: function (offers) {
+	    if (offers) {
+	      var pending = offers.filter(function (offer) {
+	        return offer.status === 'Pending';
+	      });
+	      var declined = offers.filter(function (offer) {
+	        return offer.status === 'Declined';
+	      });
+	      var approved = offers.filter(function (offer) {
+	        return offer.status === 'Approved';
+	      });
+	      return {
+	        pending: pending,
+	        declined: declined,
+	        approved: approved
+	      };
+	    } else {
+	      return '';
+	    }
 	  },
 	
 	  componentDidMount: function () {
 	    this.offerListener = OfferStore.addListener(this.getAllOffers);
 	  },
 	
+	  componentDidUpdate: function () {
+	    $(document).ready(function () {
+	      $('.collapsible').collapsible({
+	        accordion: false
+	      });
+	    });
+	  },
+	
 	  componentWillUnmount: function () {
 	    this.offerListener.remove();
 	  },
 	
-	  receivedOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.length > 0) {
-	      return receivedOffers.map(function (offer) {
-	        return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
-	      });
-	    } else {
-	      return React.createElement('div', null);
-	    }
+	  offersList: function (offers) {
+	    return offers.map(function (offer) {
+	      return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
+	    });
 	  },
 	
-	  madeOffersList: function () {
+	  receivedPendingOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.pending && receivedOffers.pending.length > 0) return this.offersList(receivedOffers.pending);else return React.createElement(
+	      'p',
+	      { className: 'grey lighten-5' },
+	      'no pending offers'
+	    );
+	  },
+	
+	  receivedAcceptedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.accepted && receivedOffers.accepted.length > 0) return this.offersList(receivedOffers.accepted);else return React.createElement(
+	      'p',
+	      { className: 'grey lighten-5' },
+	      'no accepted offers'
+	    );
+	  },
+	
+	  receivedDeclinedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.declined && receivedOffers.declined.length > 0) return this.offersList(receivedOffers.declined);else return React.createElement(
+	      'p',
+	      { className: 'grey lighten-5' },
+	      'no declined offers'
+	    );
+	  },
+	
+	  madePendingOffersList: function () {
 	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.length > 0) {
-	      return madeOffers.map(function (offer) {
-	        return React.createElement(MadeOfferItem, { key: offer.id, offer: offer });
-	      });
-	    } else {
-	      return React.createElement('div', null);
-	    }
+	    if (madeOffers && madeOffers.pending && madeOffers.pending.length > 0) return this.offersList(madeOffers.pending);else return React.createElement(
+	      'p',
+	      { className: 'grey lighten-5' },
+	      'no pending offers'
+	    );
+	  },
+	
+	  madeAcceptedOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.accepted && madeOffers.accepted.length > 0) return this.offersList(madeOffers.accepted);else return React.createElement(
+	      'p',
+	      { className: 'grey lighten-5' },
+	      'no accepted offers'
+	    );
+	  },
+	
+	  madeDeclinedOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.declined && madeOffers.declined.length > 0) return this.offersList(madeOffers.declined);else return React.createElement(
+	      'p',
+	      { className: 'grey lighten-5' },
+	      'no declined offers'
+	    );
+	  },
+	
+	  receivedOffersSection: function (offers) {
+	    return React.createElement(
+	      'ul',
+	      { className: 'collapsible', 'data-collapsible': 'expandable' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header' },
+	          'Pending'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedPendingOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header' },
+	          'Accepted'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedAcceptedOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header' },
+	          'Declined'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedDeclinedOffersList()
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  madeOffersSection: function (offers) {
+	    return React.createElement(
+	      'ul',
+	      { className: 'collapsible', 'data-collapsible': 'expandable' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header' },
+	          'Pending'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madePendingOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header' },
+	          'Accepted'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madeAcceptedOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header' },
+	          'Declined'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madeDeclinedOffersList()
+	          )
+	        )
+	      )
+	    );
 	  },
 	
 	  render: function () {
@@ -62769,22 +63006,14 @@
 	        null,
 	        'Offers Received'
 	      ),
-	      React.createElement(
-	        'ul',
-	        { className: 'collection' },
-	        this.receivedOffersList()
-	      ),
+	      this.receivedOffersSection(),
 	      React.createElement('div', { className: 'row' }),
 	      React.createElement(
 	        'h5',
 	        null,
 	        'Offers Made'
 	      ),
-	      React.createElement(
-	        'ul',
-	        { className: 'collection' },
-	        this.madeOffersList()
-	      )
+	      this.madeOffersSection()
 	    );
 	  }
 	});
@@ -63574,10 +63803,12 @@
 	      'li',
 	      { className: 'account-product grey lighten-5 collection-item row' },
 	      React.createElement('div', { className: 'product-content col s12 m9 l10' }),
+	      React.createElement('div', { className: 'offer-content col s12 m3 l2' }),
 	      React.createElement(
 	        'div',
 	        { className: 'offer-content col s12 m3 l2' },
-	        offer.amount
+	        React.createElement('div', { className: 'offer-content col s12 m3 l2' }),
+	        React.createElement('div', { className: 'offer-content col s12 m3 l2' })
 	      )
 	    );
 	  }

@@ -13,6 +13,7 @@ json.offers do
     if @offers
       json.array! @offers do |offer|
         json.merge! offer.as_json
+        json.extract! offer.product, :title
       end
     else
        json.null!
@@ -22,6 +23,7 @@ json.offers do
     if @received_offers
       json.array! @received_offers do |offer|
         json.merge! offer.as_json
+        json.extract! offer.product, :title
       end
     else
        json.null!

@@ -71,6 +71,18 @@ module.exports = React.createClass({
     alert('something went wrong: ' + status);
   },
 
+  isActive: function() {
+    if (this.state.product &&  this.state.product.active === false) {
+      return (
+        <div className='col s12'>
+          <div className='card detail-inactive red'>
+            <em className='white-text'>This listing has been completed</em>
+          </div>
+        </div>
+      );
+    }
+  },
+
   render: function () {
     var product = this.state.product || this.blankProduct();
     var seller = product.seller ? product.seller : {username: '', id: null };
@@ -78,6 +90,7 @@ module.exports = React.createClass({
     return (
       <div>
         <div className='row product-detail'>
+          {this.isActive()}
           <div className='col s12 m7 l8 detail-left'>
             <div className='card detail-content'>
               <div className='detail-image'>
