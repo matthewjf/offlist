@@ -29,6 +29,10 @@ var setOfferMade = function (offer) {
   _madeOffers[offer.id] = offer;
 };
 
+var setOfferReceived = function (offer) {
+  _receivedOffers[offer.id] = offer;
+};
+
 var OfferStore = new Store(Dispatcher);
 
 OfferStore.receivedOffers = function () {
@@ -54,6 +58,9 @@ OfferStore.__onDispatch = function (payload) {
       break;
     case OfferConstants.OFFER_CREATED:
       setOfferMade(payload.offer);
+      break;
+    case OfferConstants.OFFER_UPDATED:
+      setOfferReceived(payload.offer);
       break;
   }
   this.__emitChange();

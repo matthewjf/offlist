@@ -20,7 +20,4 @@ class ApplicationController < ActionController::Base
   def require_current_user
     render json: {status: 401, errors: {}} unless current_user
   end
-
-  def require_correct_user
-  end
 end

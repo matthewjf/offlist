@@ -73,36 +73,37 @@ module.exports = {
       type: "POST",
       data: { offer: data },
       success: function (offer) {
-        ServerActions.receiveProduct(offer);
+        ServerActions.receiveMadeOffer(offer);
+        if (successCB)
+          successCB(offer.id);
+      }
+    });
+  },
+
+  acceptOffer: function (id, successCB) {
+    $.ajax({
+      url: "api/offers/" + id,
+      type: "PATCH",
+      data: {offer: {status: 'Accepted'} },
+      success: function (offer) {
+        ServerActions.receiveUpdatedOffer(offer);
+        if (successCB)
+          successCB(offer.id);
+      }
+    });
+  },
+
+  declineOffer: function (id, successCB) {
+    $.ajax({
+      url: "api/offers/" + id,
+      type: "PATCH",
+      data: {offer: {status: 'Declined'} },
+      success: function (offer) {
+        ServerActions.receiveUpdatedOffer(offer);
         if (successCB)
           successCB(offer.id);
       }
     });
   }
-
-    // acceptOffer: function (data, successCB) {
-    //   $.ajax({
-    //     url: "api/products/" + data.id,
-    //     type: "PATCH",
-    //     data: {product: data },
-    //     success: function (product) {
-    //       ServerActions.receiveProduct(product);
-    //       if (successCB)
-    //         successCB(product.id);
-    //     }
-    //   });
-    // },
-    //
-    // rejectOffer: function (id, successCB) {
-    //   $.ajax({
-    //     url: "api/products/" + id,
-    //     type: "DELETE",
-    //     success: function (product) {
-    //       ServerActions.removeProduct(product);
-    //       if (successCB)
-    //         successCB(product.id);
-    //     }
-    //   });
-    // }
 
 };

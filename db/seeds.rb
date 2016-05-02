@@ -41,13 +41,15 @@ User.all.each do |user|
   end
 end
 
-User.all.each do |user|
+statuses = ['Accepted', 'Declined', 'Pending']
+statuses.each do |status|
   Product.all.each do |product|
     Offer.create(
-      amount: rand(99) + 1,
-      user_id: user.id,
+      amount: rand(1000) + 1,
+      user_id: rand(10),
       product_id: product.id,
-      created_at: Faker::Time.backward(1000)
+      created_at: Faker::Time.backward(1000),
+      status: status
     )
   end
 end

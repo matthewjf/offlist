@@ -5,20 +5,23 @@ class Api::OffersController < ApplicationController
   def create
     @offer = Offer.new(offer_params)
     @offer.user = current_user
+
     if @offer.save
-      render json: @offer
+      render "api/offers/show"
     else
-      render json: @offer.errors.full_messages, status: 422
+      @errors = @offer.errors.full_messages
+      render "api/shared/error", status: 422
     end
   end
 
   def update
-    @offer = Product.find(params[:id])
-
-    if @product.update(params[:offer][:status])
-      render json: @product
+    @offer = Offer.find(params[:id])
+    @offer.status = params[:offer][:status]
+    if @offer.save
+      render "api/offers/show"
     else
-      render json: @product.errors.full_messages, status: 422
+      @errors = @offer.errors.full_messages
+      render "api/shared/error", status: 422
     end
   end
 
@@ -26,6 +29,11 @@ class Api::OffersController < ApplicationController
 
   def offer_params
     params.require(:offer).permit(:amount, :comment, :product_id)
+  end
+
+  def require_target_user
+    @offer = current_user.received_offers.find(params[:id])
+    render json: {status: 422, errors: {}} unless @offer
   end
 
 end

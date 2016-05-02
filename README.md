@@ -24,7 +24,7 @@ progress. Put an x between the brackets for a checkmark: [x] -->
 - [x] Create an account (MVP)
 - [x] Log in / Log out, including as a Guest/Demo User (MVP)
 - [ ] Browse and search for products (MVP)
-- [ ] Create, read, edit, and delete products (MVP)
+- [x] Create, read, edit, and delete products (MVP)
 
 ## Design Docs
 * [View Wireframes][views]
@@ -59,7 +59,7 @@ the API.
 - [x] create `Product` model
 - [x] seed the database with a small amount of test data
 - [x] CRUD API for products (`ProductsController`)
-- [ ] jBuilder views for products
+- [x] jBuilder views for products
 - [x] setup Webpack & Flux scaffold
 - [x] setup `APIUtil` to interact with the API
 - [x] test out API interaction in the console.
@@ -114,19 +114,19 @@ user interface.
 
 **objective:** Buying occurs through offers.
 
-- [ ] create offer model
+- [x] create offer model
 - build out API, Flux loop, and components for:
-  - [ ] fetching offers
-  - [ ] creating offers
+  - [x] fetching offers
+  - [x] creating offers
   - [ ] offer notifications
 
 ### Phase 8: Styling Cleanup and Seeding (1 day)
 
 **objective:** Make the site feel more cohesive and awesome.
 
-- [ ] Get feedback on my UI from others
-- [ ] Refactor HTML classes & CSS rules
-- [ ] Add modals, transitions, and other styling flourishes
+- [x] Get feedback on my UI from others
+- [x] Refactor HTML classes & CSS rules
+- [x] Add modals, transitions, and other styling flourishes
 - [ ] Add splash page
 
 ### Bonus Features (TBD)

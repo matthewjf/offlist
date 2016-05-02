@@ -27,12 +27,18 @@ var ServerActions = {
       offers: offers
     });
   },
-  receiveOffer: function(offer) {
+  receiveMadeOffer: function(offer) {
     Dispatcher.dispatch({
       actionType: OfferConstants.OFFER_CREATED,
       offer: offer
     });
-  }
+  },
+  receiveUpdatedOffer: function(offer) {
+    Dispatcher.dispatch({
+      actionType: OfferConstants.OFFER_UPDATED,
+      offer: offer
+    });
+  },
 };
 
 module.exports = ServerActions;

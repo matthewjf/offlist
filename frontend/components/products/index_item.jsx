@@ -57,7 +57,6 @@ module.exports = React.createClass({
         <Dotdotdot clamp={1}>{product.description}</Dotdotdot>
       </div>
       <div className={hoverTransp + ' waves-effect waves-light'}></div>
-
     </li>
   );
   }

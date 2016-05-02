@@ -7,7 +7,7 @@ var UserActions = require("../../actions/user_actions"),
 module.exports = React.createClass({
   render: function(){
     return(
-      <div />
+      <h5>coming soon</h5>
     );
   }
 });

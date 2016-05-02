@@ -17,10 +17,6 @@ module.exports = React.createClass({
      });
   },
 
-  componentWillReceiveProps: function(){
-    UserActions.fetchCurrentUserWithAssocs();
-  },
-
   render: function(){
     var username = (this.state.currentUser ? this.state.currentUser.username : '');
     return(

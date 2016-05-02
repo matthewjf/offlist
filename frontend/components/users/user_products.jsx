@@ -1,7 +1,6 @@
 var React = require('react');
 
 var UserActions = require("../../actions/user_actions"),
-    UserStore = require('../../stores/user_store'),
     ProductStore = require('../../stores/product_store'),
     hashHistory = require('react-router').hashHistory,
     ProductItem = require('./user_product_item');

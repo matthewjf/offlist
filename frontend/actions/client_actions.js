@@ -27,6 +27,14 @@ module.exports = {
 
   createOffer: function (data, successCB) {
     ApiUtil.createOffer(data, successCB);
+  },
+
+  acceptOffer: function (id, successCB) {
+    ApiUtil.acceptOffer(id, successCB);
+  },
+
+  declineOffer: function(id, successCB) {
+    ApiUtil.declineOffer(id, successCB);
   }
 
 };

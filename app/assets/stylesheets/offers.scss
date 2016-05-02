@@ -1,0 +1,44 @@
+.offer-item {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+
+  .content {
+    flex-wrap: nowrap;
+    flex: 1 0 70%;
+  }
+
+  .money {
+    flex-wrap: nowrap;
+    flex: 1 0 30%;
+  }
+
+  .offer-title {
+    flex: 1 1 80%;
+    white-space: nowrap;
+  }
+
+  .offer-time {
+    flex: 1 1 20%;
+    white-space: nowrap;
+  }
+
+  .offer-price {
+    flex: 1 1 40%;
+    white-space: nowrap;
+  }
+
+  .offer-amount {
+    flex: 1 1 60%;
+    white-space: nowrap;
+  }
+
+  .btn {
+    margin-right: 0.5rem;
+  }
+
+  .btns {
+    align-self: flex-end;
+    flex: 1 0 100%;
+  }
+}

@@ -53,14 +53,14 @@
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	var ProductList = __webpack_require__(225),
-	    Header = __webpack_require__(259),
-	    Footer = __webpack_require__(265),
-	    LoginForm = __webpack_require__(266),
-	    SignupForm = __webpack_require__(267),
-	    ProductForm = __webpack_require__(268),
-	    ProductDetail = __webpack_require__(334),
-	    UserDetail = __webpack_require__(347),
-	    SellerDetail = __webpack_require__(348);
+	    Header = __webpack_require__(261),
+	    Footer = __webpack_require__(267),
+	    LoginForm = __webpack_require__(268),
+	    SignupForm = __webpack_require__(269),
+	    ProductForm = __webpack_require__(270),
+	    ProductDetail = __webpack_require__(336),
+	    UserDetail = __webpack_require__(350),
+	    SellerDetail = __webpack_require__(356);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -25474,7 +25474,7 @@
 
 	var React = __webpack_require__(1),
 	    Map = __webpack_require__(226),
-	    Index = __webpack_require__(256),
+	    Index = __webpack_require__(257),
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	module.exports = React.createClass({
@@ -25499,8 +25499,8 @@
 	    ReactDOM = __webpack_require__(32),
 	    ProductStore = __webpack_require__(227),
 	    ClientActions = __webpack_require__(250),
-	    MapUtil = __webpack_require__(253),
-	    MarkerStore = __webpack_require__(254);
+	    MapUtil = __webpack_require__(254),
+	    MarkerStore = __webpack_require__(255);
 	
 	/* global google */
 	
@@ -32429,6 +32429,14 @@
 	
 	  createOffer: function (data, successCB) {
 	    ApiUtil.createOffer(data, successCB);
+	  },
+	
+	  acceptOffer: function (id, successCB) {
+	    ApiUtil.acceptOffer(id, successCB);
+	  },
+	
+	  declineOffer: function (id, successCB) {
+	    ApiUtil.declineOffer(id, successCB);
 	  }
 	
 	};
@@ -32509,36 +32517,35 @@
 	      type: "POST",
 	      data: { offer: data },
 	      success: function (offer) {
-	        ServerActions.receiveProduct(offer);
+	        ServerActions.receiveMadeOffer(offer);
+	        if (successCB) successCB(offer.id);
+	      }
+	    });
+	  },
+	
+	  acceptOffer: function (id, successCB) {
+	    $.ajax({
+	      url: "api/offers/" + id,
+	      type: "PATCH",
+	      data: { offer: { status: 'Accepted' } },
+	      success: function (offer) {
+	        ServerActions.receiveUpdatedOffer(offer);
+	        if (successCB) successCB(offer.id);
+	      }
+	    });
+	  },
+	
+	  declineOffer: function (id, successCB) {
+	    $.ajax({
+	      url: "api/offers/" + id,
+	      type: "PATCH",
+	      data: { offer: { status: 'Declined' } },
+	      success: function (offer) {
+	        ServerActions.receiveUpdatedOffer(offer);
 	        if (successCB) successCB(offer.id);
 	      }
 	    });
 	  }
-	
-	  // acceptOffer: function (data, successCB) {
-	  //   $.ajax({
-	  //     url: "api/products/" + data.id,
-	  //     type: "PATCH",
-	  //     data: {product: data },
-	  //     success: function (product) {
-	  //       ServerActions.receiveProduct(product);
-	  //       if (successCB)
-	  //         successCB(product.id);
-	  //     }
-	  //   });
-	  // },
-	  //
-	  // rejectOffer: function (id, successCB) {
-	  //   $.ajax({
-	  //     url: "api/products/" + id,
-	  //     type: "DELETE",
-	  //     success: function (product) {
-	  //       ServerActions.removeProduct(product);
-	  //       if (successCB)
-	  //         successCB(product.id);
-	  //     }
-	  //   });
-	  // }
 	
 	};
 
@@ -32548,7 +32555,7 @@
 
 	var Dispatcher = __webpack_require__(246);
 	var ProductConstants = __webpack_require__(249);
-	var OfferConstants = __webpack_require__(355);
+	var OfferConstants = __webpack_require__(253);
 	
 	var ServerActions = {
 	  receiveAll: function (products) {
@@ -32575,9 +32582,15 @@
 	      offers: offers
 	    });
 	  },
-	  receiveOffer: function (offer) {
+	  receiveMadeOffer: function (offer) {
 	    Dispatcher.dispatch({
 	      actionType: OfferConstants.OFFER_CREATED,
+	      offer: offer
+	    });
+	  },
+	  receiveUpdatedOffer: function (offer) {
+	    Dispatcher.dispatch({
+	      actionType: OfferConstants.OFFER_UPDATED,
 	      offer: offer
 	    });
 	  }
@@ -32587,6 +32600,16 @@
 
 /***/ },
 /* 253 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  OFFERS_RECEIVED: "OFFERS_RECEIVED",
+	  OFFER_CREATED: "OFFER_CREATED",
+	  OFFER_UPDATED: "OFFER_UPDATED"
+	};
+
+/***/ },
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReactDOM = __webpack_require__(32);
@@ -32657,12 +32680,12 @@
 	};
 
 /***/ },
-/* 254 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(228).Store,
 	    Dispatcher = __webpack_require__(246),
-	    MarkerConstants = __webpack_require__(255);
+	    MarkerConstants = __webpack_require__(256);
 	
 	var _markers = {};
 	
@@ -32700,7 +32723,7 @@
 	module.exports = MarkerStore;
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -32708,12 +32731,12 @@
 	};
 
 /***/ },
-/* 256 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
 	    ProductStore = __webpack_require__(227),
-	    IndexItem = __webpack_require__(257),
+	    IndexItem = __webpack_require__(258),
 	    ClientActions = __webpack_require__(250);
 	
 	module.exports = React.createClass({
@@ -32770,12 +32793,12 @@
 	});
 
 /***/ },
-/* 257 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    MarkerStore = __webpack_require__(254),
-	    Dotdotdot = __webpack_require__(353),
+	    MarkerStore = __webpack_require__(255),
+	    Dotdotdot = __webpack_require__(259),
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	/* global google */
@@ -32850,13 +32873,354 @@
 	});
 
 /***/ },
-/* 258 */,
 /* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(32);
+	var clamp = __webpack_require__(260);
+	var PropTypes = React.PropTypes;
+	/**
+	 * multuline text-overflow: ellipsis
+	 */
+	function Dotdotdot() {
+	  if(!(this instanceof Dotdotdot)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
+	
+	Dotdotdot.prototype = Object.create(React.Component.prototype);
+	Dotdotdot.prototype.componentDidMount = function() {
+	  this.dotdotdot(ReactDOM.findDOMNode(this.refs.container));
+	};
+	Dotdotdot.prototype.componentDidUpdate = function() {
+	  this.dotdotdot(ReactDOM.findDOMNode(this.refs.container));
+	};
+	
+	Dotdotdot.prototype.dotdotdot = function(container) {
+	  if (this.props.clamp) {
+	    if (container.length) {
+	      throw new Error('Please provide exacly one child to dotdotdot');
+	    }
+	
+	    clamp(container, {
+	      clamp: this.props.clamp,
+	      truncationChar: this.props.truncationChar
+	    });
+	  }
+	};
+	
+	Dotdotdot.prototype.render = function() {
+	  return React.createElement(
+	    "div",
+	    { ref: "container", className: this.props.className },
+	    this.props.children
+	  );
+	};
+	
+	// Statics:
+	Dotdotdot.propTypes = {
+	  children: PropTypes.node,
+	  clamp: PropTypes.oneOfType([
+	    PropTypes.string,
+	    PropTypes.number,
+	    PropTypes.bool
+	  ]).isRequired,
+	  truncationChar: PropTypes.string,
+	  className: PropTypes.string
+	};
+	
+	Dotdotdot.defaultProps = {
+	  truncationChar: '\u2026'
+	};
+	
+	module.exports = Dotdotdot;
+
+
+/***/ },
+/* 260 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * Clamp.js 0.7.0
+	 *
+	 * Copyright 2011-2013, Joseph Schmitt http://joe.sh
+	 * Released under the WTFPL license
+	 * http://sam.zoy.org/wtfpl/
+	 */
+	
+	(function(root, factory) {
+	  if (true) {
+	    // AMD
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports === 'object') {
+	    // Node, CommonJS-like
+	    module.exports = factory();
+	  } else {
+	    // Browser globals
+	    root.$clamp = factory();
+	  }
+	}(this, function() {
+	  /**
+	   * Clamps a text node.
+	   * @param {HTMLElement} element. Element containing the text node to clamp.
+	   * @param {Object} options. Options to pass to the clamper.
+	   */
+	  function clamp(element, options) {
+	    options = options || {};
+	
+	    var self = this,
+	      win = window,
+	      opt = {
+	        clamp: options.clamp || 2,
+	        useNativeClamp: typeof(options.useNativeClamp) != 'undefined' ? options.useNativeClamp : true,
+	        splitOnChars: options.splitOnChars || ['.', '-', '–', '—', ' '], //Split on sentences (periods), hypens, en-dashes, em-dashes, and words (spaces).
+	        animate: options.animate || false,
+	        truncationChar: options.truncationChar || '…',
+	        truncationHTML: options.truncationHTML
+	      },
+	
+	      sty = element.style,
+	      originalText = element.innerHTML,
+	
+	      supportsNativeClamp = typeof(element.style.webkitLineClamp) != 'undefined',
+	      clampValue = opt.clamp,
+	      isCSSValue = clampValue.indexOf && (clampValue.indexOf('px') > -1 || clampValue.indexOf('em') > -1),
+	      truncationHTMLContainer;
+	
+	    if (opt.truncationHTML) {
+	      truncationHTMLContainer = document.createElement('span');
+	      truncationHTMLContainer.innerHTML = opt.truncationHTML;
+	    }
+	
+	
+	    // UTILITY FUNCTIONS __________________________________________________________
+	
+	    /**
+	     * Return the current style for an element.
+	     * @param {HTMLElement} elem The element to compute.
+	     * @param {string} prop The style property.
+	     * @returns {number}
+	     */
+	    function computeStyle(elem, prop) {
+	      if (!win.getComputedStyle) {
+	        win.getComputedStyle = function(el, pseudo) {
+	          this.el = el;
+	          this.getPropertyValue = function(prop) {
+	            var re = /(\-([a-z]){1})/g;
+	            if (prop == 'float') prop = 'styleFloat';
+	            if (re.test(prop)) {
+	              prop = prop.replace(re, function() {
+	                return arguments[2].toUpperCase();
+	              });
+	            }
+	            return el.currentStyle && el.currentStyle[prop] ? el.currentStyle[prop] : null;
+	          };
+	          return this;
+	        };
+	      }
+	
+	      return win.getComputedStyle(elem, null).getPropertyValue(prop);
+	    }
+	
+	    /**
+	     * Returns the maximum number of lines of text that should be rendered based
+	     * on the current height of the element and the line-height of the text.
+	     */
+	    function getMaxLines(height) {
+	      var availHeight = height || element.clientHeight,
+	        lineHeight = getLineHeight(element);
+	
+	      return Math.max(Math.floor(availHeight / lineHeight), 0);
+	    }
+	
+	    /**
+	     * Returns the maximum height a given element should have based on the line-
+	     * height of the text and the given clamp value.
+	     */
+	    function getMaxHeight(clmp) {
+	      var lineHeight = getLineHeight(element);
+	      return lineHeight * clmp;
+	    }
+	
+	    /**
+	     * Returns the line-height of an element as an integer.
+	     */
+	    function getLineHeight(elem) {
+	      var lh = computeStyle(elem, 'line-height');
+	      if (lh == 'normal') {
+	        // Normal line heights vary from browser to browser. The spec recommends
+	        // a value between 1.0 and 1.2 of the font size. Using 1.1 to split the diff.
+	        lh = parseInt(computeStyle(elem, 'font-size')) * 1.2;
+	      }
+	      return parseInt(lh);
+	    }
+	
+	
+	    // MEAT AND POTATOES (MMMM, POTATOES...) ______________________________________
+	    var splitOnChars = opt.splitOnChars.slice(0),
+	      splitChar = splitOnChars[0],
+	      chunks,
+	      lastChunk;
+	
+	    /**
+	     * Gets an element's last child. That may be another node or a node's contents.
+	     */
+	    function getLastChild(elem) {
+	      //Current element has children, need to go deeper and get last child as a text node
+	      if (elem.lastChild.children && elem.lastChild.children.length > 0) {
+	        return getLastChild(Array.prototype.slice.call(elem.children).pop());
+	      }
+	      //This is the absolute last child, a text node, but something's wrong with it. Remove it and keep trying
+	      else if (!elem.lastChild || !elem.lastChild.nodeValue || elem.lastChild.nodeValue === '' || elem.lastChild.nodeValue == opt.truncationChar) {
+	        elem.lastChild.parentNode.removeChild(elem.lastChild);
+	        return getLastChild(element);
+	      }
+	      //This is the last child we want, return it
+	      else {
+	        return elem.lastChild;
+	      }
+	    }
+	
+	    /**
+	     * Removes one character at a time from the text until its width or
+	     * height is beneath the passed-in max param.
+	     */
+	    function truncate(target, maxHeight) {
+	      if (!maxHeight) {
+	        return;
+	      }
+	
+	      /**
+	       * Resets global variables.
+	       */
+	      function reset() {
+	        splitOnChars = opt.splitOnChars.slice(0);
+	        splitChar = splitOnChars[0];
+	        chunks = null;
+	        lastChunk = null;
+	      }
+	
+	      var nodeValue = target.nodeValue.replace(opt.truncationChar, '');
+	
+	      //Grab the next chunks
+	      if (!chunks) {
+	        //If there are more characters to try, grab the next one
+	        if (splitOnChars.length > 0) {
+	          splitChar = splitOnChars.shift();
+	        }
+	        //No characters to chunk by. Go character-by-character
+	        else {
+	          splitChar = '';
+	        }
+	
+	        chunks = nodeValue.split(splitChar);
+	      }
+	
+	      //If there are chunks left to remove, remove the last one and see if
+	      // the nodeValue fits.
+	      if (chunks.length > 1) {
+	        // console.log('chunks', chunks);
+	        lastChunk = chunks.pop();
+	        // console.log('lastChunk', lastChunk);
+	        applyEllipsis(target, chunks.join(splitChar));
+	      }
+	      //No more chunks can be removed using this character
+	      else {
+	        chunks = null;
+	      }
+	
+	      //Insert the custom HTML before the truncation character
+	      if (truncationHTMLContainer) {
+	        target.nodeValue = target.nodeValue.replace(opt.truncationChar, '');
+	        element.innerHTML = target.nodeValue + ' ' + truncationHTMLContainer.innerHTML + opt.truncationChar;
+	      }
+	
+	      //Search produced valid chunks
+	      if (chunks) {
+	        //It fits
+	        if (element.clientHeight <= maxHeight) {
+	          //There's still more characters to try splitting on, not quite done yet
+	          if (splitOnChars.length >= 0 && splitChar !== '') {
+	            applyEllipsis(target, chunks.join(splitChar) + splitChar + lastChunk);
+	            chunks = null;
+	          }
+	          //Finished!
+	          else {
+	            return element.innerHTML;
+	          }
+	        }
+	      }
+	      //No valid chunks produced
+	      else {
+	        //No valid chunks even when splitting by letter, time to move
+	        //on to the next node
+	        if (splitChar === '') {
+	          applyEllipsis(target, '');
+	          target = getLastChild(element);
+	
+	          reset();
+	        }
+	      }
+	
+	      //If you get here it means still too big, let's keep truncating
+	      if (opt.animate) {
+	        setTimeout(function() {
+	          truncate(target, maxHeight);
+	        }, opt.animate === true ? 10 : opt.animate);
+	      } else {
+	        return truncate(target, maxHeight);
+	      }
+	    }
+	
+	    function applyEllipsis(elem, str) {
+	      elem.nodeValue = str + opt.truncationChar;
+	    }
+	
+	
+	    // CONSTRUCTOR ________________________________________________________________
+	
+	    if (clampValue == 'auto') {
+	      clampValue = getMaxLines();
+	    } else if (isCSSValue) {
+	      clampValue = getMaxLines(parseInt(clampValue));
+	    }
+	
+	    var clampedText;
+	    if (supportsNativeClamp && opt.useNativeClamp) {
+	      sty.overflow = 'hidden';
+	      sty.textOverflow = 'ellipsis';
+	      sty.webkitBoxOrient = 'vertical';
+	      sty.display = '-webkit-box';
+	      sty.webkitLineClamp = clampValue;
+	
+	      if (isCSSValue) {
+	        sty.height = opt.clamp + 'px';
+	      }
+	    } else {
+	      var height = getMaxHeight(clampValue);
+	      if (height <= element.clientHeight) {
+	        clampedText = truncate(getLastChild(element), height);
+	      }
+	    }
+	
+	    return {
+	      'original': originalText,
+	      'clamped': clampedText
+	    };
+	  }
+	
+	  return clamp;
+	}));
+
+
+/***/ },
+/* 261 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var React = __webpack_require__(1),
-	    UserActions = __webpack_require__(260),
-	    CurrentUserState = __webpack_require__(264),
+	    UserActions = __webpack_require__(262),
+	    CurrentUserState = __webpack_require__(266),
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	module.exports = React.createClass({
@@ -33022,12 +33386,12 @@
 	});
 
 /***/ },
-/* 260 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var UserConstants = __webpack_require__(261),
-	    UserApiUtil = __webpack_require__(262),
-	    UserStore = __webpack_require__(263),
+	var UserConstants = __webpack_require__(263),
+	    UserApiUtil = __webpack_require__(264),
+	    UserStore = __webpack_require__(265),
 	    AppDispatcher = __webpack_require__(246),
 	    ServerActions = __webpack_require__(252);
 	
@@ -33107,7 +33471,7 @@
 	module.exports = UserActions;
 
 /***/ },
-/* 261 */
+/* 263 */
 /***/ function(module, exports) {
 
 	var UserConstants = {
@@ -33119,7 +33483,7 @@
 	module.exports = UserConstants;
 
 /***/ },
-/* 262 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(246);
@@ -33157,7 +33521,7 @@
 	module.exports = UserApiUtil;
 
 /***/ },
-/* 263 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(246);
@@ -33211,11 +33575,11 @@
 	module.exports = UserStore;
 
 /***/ },
-/* 264 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var UserStore = __webpack_require__(263);
-	var UserActions = __webpack_require__(260);
+	var UserStore = __webpack_require__(265);
+	var UserActions = __webpack_require__(262);
 	
 	var CurrentUserState = {
 	
@@ -33246,7 +33610,7 @@
 	module.exports = CurrentUserState;
 
 /***/ },
-/* 265 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
@@ -33333,13 +33697,13 @@
 	});
 
 /***/ },
-/* 266 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var UserActions = __webpack_require__(260);
-	var CurrentUserState = __webpack_require__(264);
-	var UserStore = __webpack_require__(263);
+	var UserActions = __webpack_require__(262);
+	var CurrentUserState = __webpack_require__(266);
+	var UserStore = __webpack_require__(265);
 	
 	var LoginForm = React.createClass({
 		displayName: "LoginForm",
@@ -33569,13 +33933,13 @@
 	module.exports = LoginForm;
 
 /***/ },
-/* 267 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var UserActions = __webpack_require__(260);
-	var CurrentUserState = __webpack_require__(264);
-	var UserStore = __webpack_require__(263);
+	var UserActions = __webpack_require__(262);
+	var CurrentUserState = __webpack_require__(266);
+	var UserStore = __webpack_require__(265);
 	
 	var SignupForm = React.createClass({
 		displayName: "SignupForm",
@@ -33757,18 +34121,18 @@
 	module.exports = SignupForm;
 
 /***/ },
-/* 268 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
 	    ApiUtil = __webpack_require__(251),
 	    hashHistory = __webpack_require__(166).hashHistory,
-	    NewProductMap = __webpack_require__(269),
-	    MapUtil = __webpack_require__(253),
+	    NewProductMap = __webpack_require__(271),
+	    MapUtil = __webpack_require__(254),
 	    ProductStore = __webpack_require__(227),
 	    ClientActions = __webpack_require__(250);
 	
-	var cloudinary = __webpack_require__(270);
+	var cloudinary = __webpack_require__(272);
 	
 	cloudinary.config({ // not too worried about this
 	  cloud_name: 'dn0zhjiai',
@@ -34124,11 +34488,11 @@
 	});
 
 /***/ },
-/* 269 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    MapUtil = __webpack_require__(253);
+	    MapUtil = __webpack_require__(254);
 	
 	/* global google */
 	/* global Materialize */
@@ -34215,15 +34579,15 @@
 	});
 
 /***/ },
-/* 270 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(271),  cloudinary = module.exports;
-	exports.config = __webpack_require__(273);
-	exports.utils = __webpack_require__(279);
-	exports.uploader = __webpack_require__(302);
-	exports.api = __webpack_require__(329);
-	exports.PreloadedFile = __webpack_require__(330);
+	var _ = __webpack_require__(273),  cloudinary = module.exports;
+	exports.config = __webpack_require__(275);
+	exports.utils = __webpack_require__(281);
+	exports.uploader = __webpack_require__(304);
+	exports.api = __webpack_require__(331);
+	exports.PreloadedFile = __webpack_require__(332);
 	
 	exports.url = function(public_id, options) {
 	  options = _.extend({}, options);
@@ -34336,11 +34700,11 @@
 	exports.AKAMAI_SHARED_CDN = cloudinary.utils.AKAMAI_SHARED_CDN;
 	exports.SHARED_CDN = cloudinary.utils.SHARED_CDN;
 	exports.BLANK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-	exports.v2 = __webpack_require__(331);
+	exports.v2 = __webpack_require__(333);
 
 
 /***/ },
-/* 271 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -46695,10 +47059,10 @@
 	  }
 	}.call(this));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(272)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(274)(module), (function() { return this; }())))
 
 /***/ },
-/* 272 */
+/* 274 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -46714,14 +47078,14 @@
 
 
 /***/ },
-/* 273 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.10.0
 	(function() {
 	  var _, cloudinary_config;
 	
-	  _ = __webpack_require__(271);
+	  _ = __webpack_require__(273);
 	
 	  cloudinary_config = void 0;
 	
@@ -46730,7 +47094,7 @@
 	    if ((cloudinary_config == null) || new_config === true) {
 	      cloudinary_url = process.env.CLOUDINARY_URL;
 	      if (cloudinary_url != null) {
-	        uri = __webpack_require__(274).parse(cloudinary_url, true);
+	        uri = __webpack_require__(276).parse(cloudinary_url, true);
 	        cloudinary_config = {
 	          cloud_name: uri.host,
 	          api_key: uri.auth && uri.auth.split(":")[0],
@@ -46766,7 +47130,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 274 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -46790,7 +47154,7 @@
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
-	var punycode = __webpack_require__(275);
+	var punycode = __webpack_require__(277);
 	
 	exports.parse = urlParse;
 	exports.resolve = urlResolve;
@@ -46862,7 +47226,7 @@
 	      'gopher:': true,
 	      'file:': true
 	    },
-	    querystring = __webpack_require__(276);
+	    querystring = __webpack_require__(278);
 	
 	function urlParse(url, parseQueryString, slashesDenoteHost) {
 	  if (url && isObject(url) && url instanceof Url) return url;
@@ -47479,7 +47843,7 @@
 
 
 /***/ },
-/* 275 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/punycode v1.3.2 by @mathias */
@@ -48011,20 +48375,20 @@
 	
 	}(this));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(272)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(274)(module), (function() { return this; }())))
 
 /***/ },
-/* 276 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	exports.decode = exports.parse = __webpack_require__(277);
-	exports.encode = exports.stringify = __webpack_require__(278);
+	exports.decode = exports.parse = __webpack_require__(279);
+	exports.encode = exports.stringify = __webpack_require__(280);
 
 
 /***/ },
-/* 277 */
+/* 279 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -48110,7 +48474,7 @@
 
 
 /***/ },
-/* 278 */
+/* 280 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -48180,7 +48544,7 @@
 
 
 /***/ },
-/* 279 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
@@ -48188,13 +48552,13 @@
 	  var CLOUDINARY_JS_CONFIG_PARAMS, CONDITIONAL_OPERATORS, CONDITIONAL_PARAMETERS, DEFAULT_RESPONSIVE_WIDTH_TRANSFORMATION, LAYER_KEYWORD_PARAMS, _, build_custom_headers, build_eager, config, crc32, crypto, finalize_resource_type, finalize_source, hashToQuery, join_pair, norm_range_value, number_pattern, offset_any_pattern, offset_any_pattern_re, process_if, process_layer, process_video_params, querystring, smart_escape, split_range, textStyle, unsigned_url_prefix, utf8_encode, utils, v1_adapter, v1_result_adapter,
 	    slice = [].slice;
 	
-	  _ = __webpack_require__(271);
+	  _ = __webpack_require__(273);
 	
-	  config = __webpack_require__(273);
+	  config = __webpack_require__(275);
 	
-	  crypto = __webpack_require__(280);
+	  crypto = __webpack_require__(282);
 	
-	  querystring = __webpack_require__(276);
+	  querystring = __webpack_require__(278);
 	
 	  utils = exports;
 	
@@ -49479,10 +49843,10 @@
 
 
 /***/ },
-/* 280 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(285)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(287)
 	
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -49493,9 +49857,9 @@
 	    ].join('\n'))
 	}
 	
-	exports.createHash = __webpack_require__(287)
+	exports.createHash = __webpack_require__(289)
 	
-	exports.createHmac = __webpack_require__(299)
+	exports.createHmac = __webpack_require__(301)
 	
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -49516,7 +49880,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 	
-	var p = __webpack_require__(300)(exports)
+	var p = __webpack_require__(302)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 	
@@ -49536,10 +49900,10 @@
 	  }
 	})
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 281 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -49552,9 +49916,9 @@
 	
 	'use strict'
 	
-	var base64 = __webpack_require__(282)
-	var ieee754 = __webpack_require__(283)
-	var isArray = __webpack_require__(284)
+	var base64 = __webpack_require__(284)
+	var ieee754 = __webpack_require__(285)
+	var isArray = __webpack_require__(286)
 	
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -51091,10 +51455,10 @@
 	  return i
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 282 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -51224,7 +51588,7 @@
 
 
 /***/ },
-/* 283 */
+/* 285 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -51314,7 +51678,7 @@
 
 
 /***/ },
-/* 284 */
+/* 286 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -51325,13 +51689,13 @@
 
 
 /***/ },
-/* 285 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(286)
+	    g.crypto || g.msCrypto || __webpack_require__(288)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -51355,22 +51719,22 @@
 	  }
 	}())
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(283).Buffer))
 
 /***/ },
-/* 286 */
+/* 288 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 287 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(288)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(290)
 	
-	var md5 = toConstructor(__webpack_require__(296))
-	var rmd160 = toConstructor(__webpack_require__(298))
+	var md5 = toConstructor(__webpack_require__(298))
+	var rmd160 = toConstructor(__webpack_require__(300))
 	
 	function toConstructor (fn) {
 	  return function () {
@@ -51398,10 +51762,10 @@
 	  return createHash(alg)
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -51410,16 +51774,16 @@
 	  return new Alg()
 	}
 	
-	var Buffer = __webpack_require__(281).Buffer
-	var Hash   = __webpack_require__(289)(Buffer)
+	var Buffer = __webpack_require__(283).Buffer
+	var Hash   = __webpack_require__(291)(Buffer)
 	
-	exports.sha1 = __webpack_require__(290)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(294)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(295)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(292)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(296)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(297)(Buffer, Hash)
 
 
 /***/ },
-/* 289 */
+/* 291 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -51502,7 +51866,7 @@
 
 
 /***/ },
-/* 290 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -51514,7 +51878,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 	
-	var inherits = __webpack_require__(291).inherits
+	var inherits = __webpack_require__(293).inherits
 	
 	module.exports = function (Buffer, Hash) {
 	
@@ -51646,7 +52010,7 @@
 
 
 /***/ },
-/* 291 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -52174,7 +52538,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 	
-	exports.isBuffer = __webpack_require__(292);
+	exports.isBuffer = __webpack_require__(294);
 	
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -52218,7 +52582,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(293);
+	exports.inherits = __webpack_require__(295);
 	
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -52239,7 +52603,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(3)))
 
 /***/ },
-/* 292 */
+/* 294 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -52250,7 +52614,7 @@
 	}
 
 /***/ },
-/* 293 */
+/* 295 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -52279,7 +52643,7 @@
 
 
 /***/ },
-/* 294 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -52291,7 +52655,7 @@
 	 *
 	 */
 	
-	var inherits = __webpack_require__(291).inherits
+	var inherits = __webpack_require__(293).inherits
 	
 	module.exports = function (Buffer, Hash) {
 	
@@ -52432,10 +52796,10 @@
 
 
 /***/ },
-/* 295 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(291).inherits
+	var inherits = __webpack_require__(293).inherits
 	
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -52682,7 +53046,7 @@
 
 
 /***/ },
-/* 296 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -52694,7 +53058,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 	
-	var helpers = __webpack_require__(297);
+	var helpers = __webpack_require__(299);
 	
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -52843,7 +53207,7 @@
 
 
 /***/ },
-/* 297 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -52881,10 +53245,10 @@
 	
 	module.exports = { hash: hash };
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 298 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -53093,13 +53457,13 @@
 	
 	
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 299 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(287)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(289)
 	
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -53143,13 +53507,13 @@
 	}
 	
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 300 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(301)
+	var pbkdf2Export = __webpack_require__(303)
 	
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -53164,7 +53528,7 @@
 
 
 /***/ },
-/* 301 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -53252,10 +53616,10 @@
 	  }
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 302 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {// Generated by CoffeeScript 1.10.0
@@ -53264,25 +53628,25 @@
 	    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	    hasProp = {}.hasOwnProperty;
 	
-	  _ = __webpack_require__(271);
+	  _ = __webpack_require__(273);
 	
-	  https = __webpack_require__(303);
+	  https = __webpack_require__(305);
 	
-	  UploadStream = __webpack_require__(324);
+	  UploadStream = __webpack_require__(326);
 	
-	  utils = __webpack_require__(279);
+	  utils = __webpack_require__(281);
 	
-	  util = __webpack_require__(291);
+	  util = __webpack_require__(293);
 	
-	  config = __webpack_require__(273);
+	  config = __webpack_require__(275);
 	
-	  fs = __webpack_require__(325);
+	  fs = __webpack_require__(327);
 	
-	  path = __webpack_require__(326);
+	  path = __webpack_require__(328);
 	
-	  Q = __webpack_require__(327);
+	  Q = __webpack_require__(329);
 	
-	  Writable = __webpack_require__(307).Writable;
+	  Writable = __webpack_require__(309).Writable;
 	
 	  build_upload_params = function(options) {
 	    return utils.build_upload_params(options);
@@ -53744,7 +54108,7 @@
 	      filename = options.stream ? "file" : path.basename(file);
 	      file_header = new Buffer(EncodeFilePart(boundary, 'application/octet-stream', 'file', filename), 'binary');
 	    }
-	    post_options = __webpack_require__(274).parse(url);
+	    post_options = __webpack_require__(276).parse(url);
 	    headers = {
 	      'Content-Type': 'multipart/form-data; boundary=' + boundary,
 	      'User-Agent': utils.getUserAgent()
@@ -53894,13 +54258,13 @@
 	
 	//# sourceMappingURL=uploader.js.map
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 303 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var http = __webpack_require__(304);
+	var http = __webpack_require__(306);
 	
 	var https = module.exports;
 	
@@ -53916,13 +54280,13 @@
 
 
 /***/ },
-/* 304 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var http = module.exports;
-	var EventEmitter = __webpack_require__(305).EventEmitter;
-	var Request = __webpack_require__(306);
-	var url = __webpack_require__(274)
+	var EventEmitter = __webpack_require__(307).EventEmitter;
+	var Request = __webpack_require__(308);
+	var url = __webpack_require__(276)
 	
 	http.request = function (params, cb) {
 	    if (typeof params === 'string') {
@@ -54066,7 +54430,7 @@
 	};
 
 /***/ },
-/* 305 */
+/* 307 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -54370,13 +54734,13 @@
 
 
 /***/ },
-/* 306 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stream = __webpack_require__(307);
-	var Response = __webpack_require__(322);
-	var Base64 = __webpack_require__(323);
-	var inherits = __webpack_require__(293);
+	var Stream = __webpack_require__(309);
+	var Response = __webpack_require__(324);
+	var Base64 = __webpack_require__(325);
+	var inherits = __webpack_require__(295);
 	
 	var Request = module.exports = function (xhr, params) {
 	    var self = this;
@@ -54585,7 +54949,7 @@
 
 
 /***/ },
-/* 307 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -54611,15 +54975,15 @@
 	
 	module.exports = Stream;
 	
-	var EE = __webpack_require__(305).EventEmitter;
-	var inherits = __webpack_require__(293);
+	var EE = __webpack_require__(307).EventEmitter;
+	var inherits = __webpack_require__(295);
 	
 	inherits(Stream, EE);
-	Stream.Readable = __webpack_require__(308);
-	Stream.Writable = __webpack_require__(318);
-	Stream.Duplex = __webpack_require__(319);
-	Stream.Transform = __webpack_require__(320);
-	Stream.PassThrough = __webpack_require__(321);
+	Stream.Readable = __webpack_require__(310);
+	Stream.Writable = __webpack_require__(320);
+	Stream.Duplex = __webpack_require__(321);
+	Stream.Transform = __webpack_require__(322);
+	Stream.PassThrough = __webpack_require__(323);
 	
 	// Backwards-compat with node 0.4.x
 	Stream.Stream = Stream;
@@ -54718,24 +55082,24 @@
 
 
 /***/ },
-/* 308 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {exports = module.exports = __webpack_require__(309);
-	exports.Stream = __webpack_require__(307);
+	/* WEBPACK VAR INJECTION */(function(process) {exports = module.exports = __webpack_require__(311);
+	exports.Stream = __webpack_require__(309);
 	exports.Readable = exports;
-	exports.Writable = __webpack_require__(314);
-	exports.Duplex = __webpack_require__(313);
-	exports.Transform = __webpack_require__(316);
-	exports.PassThrough = __webpack_require__(317);
+	exports.Writable = __webpack_require__(316);
+	exports.Duplex = __webpack_require__(315);
+	exports.Transform = __webpack_require__(318);
+	exports.PassThrough = __webpack_require__(319);
 	if (!process.browser && process.env.READABLE_STREAM === 'disable') {
-	  module.exports = __webpack_require__(307);
+	  module.exports = __webpack_require__(309);
 	}
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 309 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -54762,17 +55126,17 @@
 	module.exports = Readable;
 	
 	/*<replacement>*/
-	var isArray = __webpack_require__(310);
+	var isArray = __webpack_require__(312);
 	/*</replacement>*/
 	
 	
 	/*<replacement>*/
-	var Buffer = __webpack_require__(281).Buffer;
+	var Buffer = __webpack_require__(283).Buffer;
 	/*</replacement>*/
 	
 	Readable.ReadableState = ReadableState;
 	
-	var EE = __webpack_require__(305).EventEmitter;
+	var EE = __webpack_require__(307).EventEmitter;
 	
 	/*<replacement>*/
 	if (!EE.listenerCount) EE.listenerCount = function(emitter, type) {
@@ -54780,18 +55144,18 @@
 	};
 	/*</replacement>*/
 	
-	var Stream = __webpack_require__(307);
+	var Stream = __webpack_require__(309);
 	
 	/*<replacement>*/
-	var util = __webpack_require__(311);
-	util.inherits = __webpack_require__(293);
+	var util = __webpack_require__(313);
+	util.inherits = __webpack_require__(295);
 	/*</replacement>*/
 	
 	var StringDecoder;
 	
 	
 	/*<replacement>*/
-	var debug = __webpack_require__(312);
+	var debug = __webpack_require__(314);
 	if (debug && debug.debuglog) {
 	  debug = debug.debuglog('stream');
 	} else {
@@ -54803,7 +55167,7 @@
 	util.inherits(Readable, Stream);
 	
 	function ReadableState(options, stream) {
-	  var Duplex = __webpack_require__(313);
+	  var Duplex = __webpack_require__(315);
 	
 	  options = options || {};
 	
@@ -54864,14 +55228,14 @@
 	  this.encoding = null;
 	  if (options.encoding) {
 	    if (!StringDecoder)
-	      StringDecoder = __webpack_require__(315).StringDecoder;
+	      StringDecoder = __webpack_require__(317).StringDecoder;
 	    this.decoder = new StringDecoder(options.encoding);
 	    this.encoding = options.encoding;
 	  }
 	}
 	
 	function Readable(options) {
-	  var Duplex = __webpack_require__(313);
+	  var Duplex = __webpack_require__(315);
 	
 	  if (!(this instanceof Readable))
 	    return new Readable(options);
@@ -54974,7 +55338,7 @@
 	// backwards compatibility.
 	Readable.prototype.setEncoding = function(enc) {
 	  if (!StringDecoder)
-	    StringDecoder = __webpack_require__(315).StringDecoder;
+	    StringDecoder = __webpack_require__(317).StringDecoder;
 	  this._readableState.decoder = new StringDecoder(enc);
 	  this._readableState.encoding = enc;
 	  return this;
@@ -55693,7 +56057,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 310 */
+/* 312 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -55702,7 +56066,7 @@
 
 
 /***/ },
-/* 311 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {// Copyright Joyent, Inc. and other Node contributors.
@@ -55813,16 +56177,16 @@
 	  return Object.prototype.toString.call(o);
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 312 */
+/* 314 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 313 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -55863,12 +56227,12 @@
 	
 	
 	/*<replacement>*/
-	var util = __webpack_require__(311);
-	util.inherits = __webpack_require__(293);
+	var util = __webpack_require__(313);
+	util.inherits = __webpack_require__(295);
 	/*</replacement>*/
 	
-	var Readable = __webpack_require__(309);
-	var Writable = __webpack_require__(314);
+	var Readable = __webpack_require__(311);
+	var Writable = __webpack_require__(316);
 	
 	util.inherits(Duplex, Readable);
 	
@@ -55918,7 +56282,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 314 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -55949,18 +56313,18 @@
 	module.exports = Writable;
 	
 	/*<replacement>*/
-	var Buffer = __webpack_require__(281).Buffer;
+	var Buffer = __webpack_require__(283).Buffer;
 	/*</replacement>*/
 	
 	Writable.WritableState = WritableState;
 	
 	
 	/*<replacement>*/
-	var util = __webpack_require__(311);
-	util.inherits = __webpack_require__(293);
+	var util = __webpack_require__(313);
+	util.inherits = __webpack_require__(295);
 	/*</replacement>*/
 	
-	var Stream = __webpack_require__(307);
+	var Stream = __webpack_require__(309);
 	
 	util.inherits(Writable, Stream);
 	
@@ -55971,7 +56335,7 @@
 	}
 	
 	function WritableState(options, stream) {
-	  var Duplex = __webpack_require__(313);
+	  var Duplex = __webpack_require__(315);
 	
 	  options = options || {};
 	
@@ -56059,7 +56423,7 @@
 	}
 	
 	function Writable(options) {
-	  var Duplex = __webpack_require__(313);
+	  var Duplex = __webpack_require__(315);
 	
 	  // Writable ctor is applied to Duplexes, though they're not
 	  // instanceof Writable, they're instanceof Readable.
@@ -56402,7 +56766,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 315 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -56426,7 +56790,7 @@
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
-	var Buffer = __webpack_require__(281).Buffer;
+	var Buffer = __webpack_require__(283).Buffer;
 	
 	var isBufferEncoding = Buffer.isEncoding
 	  || function(encoding) {
@@ -56629,7 +56993,7 @@
 
 
 /***/ },
-/* 316 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -56698,11 +57062,11 @@
 	
 	module.exports = Transform;
 	
-	var Duplex = __webpack_require__(313);
+	var Duplex = __webpack_require__(315);
 	
 	/*<replacement>*/
-	var util = __webpack_require__(311);
-	util.inherits = __webpack_require__(293);
+	var util = __webpack_require__(313);
+	util.inherits = __webpack_require__(295);
 	/*</replacement>*/
 	
 	util.inherits(Transform, Duplex);
@@ -56844,7 +57208,7 @@
 
 
 /***/ },
-/* 317 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -56874,11 +57238,11 @@
 	
 	module.exports = PassThrough;
 	
-	var Transform = __webpack_require__(316);
+	var Transform = __webpack_require__(318);
 	
 	/*<replacement>*/
-	var util = __webpack_require__(311);
-	util.inherits = __webpack_require__(293);
+	var util = __webpack_require__(313);
+	util.inherits = __webpack_require__(295);
 	/*</replacement>*/
 	
 	util.inherits(PassThrough, Transform);
@@ -56896,20 +57260,6 @@
 
 
 /***/ },
-/* 318 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(314)
-
-
-/***/ },
-/* 319 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(313)
-
-
-/***/ },
 /* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -56920,15 +57270,29 @@
 /* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(317)
+	module.exports = __webpack_require__(315)
 
 
 /***/ },
 /* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stream = __webpack_require__(307);
-	var util = __webpack_require__(291);
+	module.exports = __webpack_require__(318)
+
+
+/***/ },
+/* 323 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(319)
+
+
+/***/ },
+/* 324 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Stream = __webpack_require__(309);
+	var util = __webpack_require__(293);
 	
 	var Response = module.exports = function (res) {
 	    this.offset = 0;
@@ -57050,7 +57414,7 @@
 
 
 /***/ },
-/* 323 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -57116,16 +57480,16 @@
 
 
 /***/ },
-/* 324 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {// Generated by CoffeeScript 1.10.0
 	(function() {
 	  var UploadStream, stream, util;
 	
-	  stream = __webpack_require__(307);
+	  stream = __webpack_require__(309);
 	
-	  util = __webpack_require__(291);
+	  util = __webpack_require__(293);
 	
 	  UploadStream = function(options) {
 	    this.boundary = options.boundary;
@@ -57153,16 +57517,16 @@
 	
 	//# sourceMappingURL=upload_stream.js.map
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 325 */
+/* 327 */
 /***/ function(module, exports) {
 
 
 
 /***/ },
-/* 326 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -57393,7 +57757,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 327 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, setImmediate) {// vim:ts=4:sts=4:sw=4:
@@ -59445,10 +59809,10 @@
 	
 	});
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(328).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(330).setImmediate))
 
 /***/ },
-/* 328 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(3).nextTick;
@@ -59527,10 +59891,10 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(328).setImmediate, __webpack_require__(328).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(330).setImmediate, __webpack_require__(330).clearImmediate))
 
 /***/ },
-/* 329 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {// Generated by CoffeeScript 1.10.0
@@ -59538,17 +59902,17 @@
 	  var Q, _, api, call_api, config, https, querystring, transformation_string, utils,
 	    slice = [].slice;
 	
-	  _ = __webpack_require__(271);
+	  _ = __webpack_require__(273);
 	
-	  https = __webpack_require__(303);
+	  https = __webpack_require__(305);
 	
-	  utils = __webpack_require__(279);
+	  utils = __webpack_require__(281);
 	
-	  config = __webpack_require__(273);
+	  config = __webpack_require__(275);
 	
-	  querystring = __webpack_require__(276);
+	  querystring = __webpack_require__(278);
 	
-	  Q = __webpack_require__(327);
+	  Q = __webpack_require__(329);
 	
 	  api = module.exports;
 	
@@ -59585,7 +59949,7 @@
 	    if (method === "get") {
 	      api_url += "?" + query_params;
 	    }
-	    request_options = __webpack_require__(274).parse(api_url);
+	    request_options = __webpack_require__(276).parse(api_url);
 	    request_options = _.extend(request_options, {
 	      method: method.toUpperCase(),
 	      headers: {
@@ -60041,19 +60405,19 @@
 	
 	//# sourceMappingURL=api.js.map
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(281).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(283).Buffer))
 
 /***/ },
-/* 330 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
 	(function() {
 	  var PRELOADED_CLOUDINARY_PATH, PreloadedFile, config, utils;
 	
-	  utils = __webpack_require__(279);
+	  utils = __webpack_require__(281);
 	
-	  config = __webpack_require__(273);
+	  config = __webpack_require__(275);
 	
 	  PRELOADED_CLOUDINARY_PATH = /^([^\/]+)\/([^\/]+)\/v(\d+)\/([^#]+)#([^\/]+)$/;
 	
@@ -60127,22 +60491,22 @@
 
 
 /***/ },
-/* 331 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
 	(function() {
 	  var _, v1, v2;
 	
-	  v1 = __webpack_require__(270);
+	  v1 = __webpack_require__(272);
 	
-	  _ = __webpack_require__(271);
+	  _ = __webpack_require__(273);
 	
 	  v2 = _.clone(v1);
 	
-	  v2.api = __webpack_require__(332);
+	  v2.api = __webpack_require__(334);
 	
-	  v2.uploader = __webpack_require__(333);
+	  v2.uploader = __webpack_require__(335);
 	
 	  module.exports = v2;
 	
@@ -60152,16 +60516,16 @@
 
 
 /***/ },
-/* 332 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
 	(function() {
 	  var api, utils;
 	
-	  api = __webpack_require__(329);
+	  api = __webpack_require__(331);
 	
-	  utils = __webpack_require__(279);
+	  utils = __webpack_require__(281);
 	
 	  utils.v1_adapters(exports, api, {
 	    ping: 0,
@@ -60205,16 +60569,16 @@
 
 
 /***/ },
-/* 333 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
 	(function() {
 	  var uploader, utils;
 	
-	  uploader = __webpack_require__(302);
+	  uploader = __webpack_require__(304);
 	
-	  utils = __webpack_require__(279);
+	  utils = __webpack_require__(281);
 	
 	  utils.v1_adapters(exports, uploader, {
 	    unsigned_upload_stream: 1,
@@ -60255,21 +60619,21 @@
 
 
 /***/ },
-/* 334 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
 	    hashHistory = __webpack_require__(166).hashHistory,
 	    ProductStore = __webpack_require__(227),
 	    ClientActions = __webpack_require__(250),
-	    MapUtil = __webpack_require__(253);
+	    MapUtil = __webpack_require__(254);
 	
-	var Map = __webpack_require__(335),
-	    Seller = __webpack_require__(336),
-	    Carousel = __webpack_require__(352),
-	    Offer = __webpack_require__(343),
-	    OfferForm = __webpack_require__(357),
-	    Description = __webpack_require__(344);
+	var Map = __webpack_require__(337),
+	    Seller = __webpack_require__(338),
+	    Carousel = __webpack_require__(339),
+	    Offer = __webpack_require__(345),
+	    OfferForm = __webpack_require__(346),
+	    Description = __webpack_require__(348);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -60405,15 +60769,15 @@
 	});
 
 /***/ },
-/* 335 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
 	    ReactDOM = __webpack_require__(32),
 	    ProductStore = __webpack_require__(227),
 	    ClientActions = __webpack_require__(250),
-	    MapUtil = __webpack_require__(253),
-	    MarkerStore = __webpack_require__(254);
+	    MapUtil = __webpack_require__(254),
+	    MarkerStore = __webpack_require__(255);
 	/* global google */
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -60476,7 +60840,7 @@
 	});
 
 /***/ },
-/* 336 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
@@ -60524,19 +60888,56 @@
 	});
 
 /***/ },
-/* 337 */,
-/* 338 */
+/* 339 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var Carousel = __webpack_require__(340);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [Carousel.ControllerMixin],
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({});
+	  },
+	
+	  render: function () {
+	    var images;
+	    if (this.props.images) {
+	      images = this.props.images.map(function (url) {
+	        return React.createElement('img', { key: url, src: url });
+	      });
+	    } else {
+	      images = '';
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'carousel-wrapper' },
+	      React.createElement(
+	        Carousel,
+	        null,
+	        images
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Carousel = __webpack_require__(339);
+	var Carousel = __webpack_require__(341);
 	
 	module.exports = Carousel;
 
 
 /***/ },
-/* 339 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60557,11 +60958,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _kwReactTweenState = __webpack_require__(340);
+	var _kwReactTweenState = __webpack_require__(342);
 	
 	var _kwReactTweenState2 = _interopRequireDefault(_kwReactTweenState);
 	
-	var _decorators = __webpack_require__(341);
+	var _decorators = __webpack_require__(343);
 	
 	var _decorators2 = _interopRequireDefault(_decorators);
 	
@@ -60569,7 +60970,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _exenv = __webpack_require__(342);
+	var _exenv = __webpack_require__(344);
 	
 	var _exenv2 = _interopRequireDefault(_exenv);
 	
@@ -61310,7 +61711,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 340 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function webpackUniversalModuleDefinition(root, factory) {
@@ -62073,7 +62474,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 341 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62214,7 +62615,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 342 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -62260,11 +62661,11 @@
 
 
 /***/ },
-/* 343 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    CurrentUserState = __webpack_require__(264);
+	    CurrentUserState = __webpack_require__(266);
 	
 	/* global Materialize */
 	
@@ -62318,11 +62719,237 @@
 	});
 
 /***/ },
-/* 344 */
+/* 346 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    OfferStore = __webpack_require__(347),
+	    ClientActions = __webpack_require__(250);
+	
+	/* global Materialize */
+	
+	var OfferForm = React.createClass({
+	  displayName: 'OfferForm',
+	
+	  closeModal: function (e) {
+	    if (e) e.preventDefault();
+	    $('#offer-modal').closeModal();
+	    this.resetState();
+	  },
+	
+	  getInitialState: function () {
+	    return { amount: '', product_id: '', comment: '' };
+	  },
+	
+	  setAmount: function (e) {
+	    this.setState({ amount: e.target.value });
+	  },
+	
+	  setComment: function (e) {
+	    this.setState({ comment: e.target.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ amount: '', comment: '' });
+	  },
+	
+	  componentDidMount: function () {
+	    this.setState({ product_id: this.props.productId });
+	  },
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({ product_id: this.props.productId });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    ClientActions.createOffer(this.state, this.submitSuccess);
+	  },
+	
+	  submitSuccess: function () {
+	    Materialize.toast('Offer submitted!', 4000, 'green-text');
+	    this.closeModal();
+	  },
+	
+	  form: function () {
+	    return React.createElement(
+	      'form',
+	      { onSubmit: this.handleSubmit },
+	      React.createElement(
+	        'section',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'input-field col s12' },
+	            React.createElement('input', {
+	              type: 'text',
+	              value: this.state.amount,
+	              onChange: this.setAmount,
+	              id: 'amount' }),
+	            React.createElement(
+	              'label',
+	              { id: 'amount-label', htmlFor: 'amount' },
+	              'Amount'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'input-field col s12' },
+	            React.createElement('textarea', {
+	              id: 'comment',
+	              type: 'text',
+	              className: 'materialize-textarea',
+	              value: this.state.comment,
+	              onChange: this.setComment
+	            }),
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'comment' },
+	              'Comment (optional)'
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'btn-row row' },
+	        React.createElement(
+	          'div',
+	          { className: 'col s12' },
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'waves-effect waves-light btn right' },
+	            'Make Offer'
+	          ),
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'waves-effect waves-ripple btn-flat right',
+	              onClick: this.closeModal },
+	            'cancel'
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  render: function () {
+	
+	    return React.createElement(
+	      'div',
+	      { id: 'offer-form' },
+	      React.createElement(
+	        'div',
+	        { id: 'offer-modal', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'modal-content' },
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Make Offer'
+	          ),
+	          this.form()
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	$(document).ready(function () {
+	  $('.modal-trigger').leanModal();
+	});
+	
+	module.exports = OfferForm;
+
+/***/ },
+/* 347 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(228).Store,
+	    Dispatcher = __webpack_require__(246),
+	    OfferConstants = __webpack_require__(253);
+	
+	var _madeOffers = {};
+	var _receivedOffers = {};
+	
+	var resetOffers = function (offers) {
+	  _madeOffers = {};
+	  _receivedOffers = {};
+	
+	  setMadeOffers(offers.made_offers);
+	  setReceivedOffers(offers.received_offers);
+	};
+	
+	var setMadeOffers = function (madeOffers) {
+	  madeOffers.forEach(function (offer) {
+	    _madeOffers[offer.id] = offer;
+	  });
+	};
+	
+	var setReceivedOffers = function (receivedOffers) {
+	  receivedOffers.forEach(function (offer) {
+	    _receivedOffers[offer.id] = offer;
+	  });
+	};
+	
+	var setOfferMade = function (offer) {
+	  _madeOffers[offer.id] = offer;
+	};
+	
+	var setOfferReceived = function (offer) {
+	  _receivedOffers[offer.id] = offer;
+	};
+	
+	var OfferStore = new Store(Dispatcher);
+	
+	OfferStore.receivedOffers = function () {
+	  return Object.keys(_receivedOffers).map(function (offerId) {
+	    return _receivedOffers[offerId];
+	  });
+	};
+	
+	OfferStore.madeOffers = function () {
+	  return Object.keys(_madeOffers).map(function (offerId) {
+	    return _madeOffers[offerId];
+	  });
+	};
+	
+	OfferStore.find = function (id) {
+	  // return _offers[id];
+	};
+	
+	OfferStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case OfferConstants.OFFERS_RECEIVED:
+	      resetOffers(payload.offers);
+	      break;
+	    case OfferConstants.OFFER_CREATED:
+	      setOfferMade(payload.offer);
+	      break;
+	    case OfferConstants.OFFER_UPDATED:
+	      setOfferReceived(payload.offer);
+	      break;
+	  }
+	  this.__emitChange();
+	};
+	
+	module.exports = OfferStore;
+
+/***/ },
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var TimeAgo = __webpack_require__(346).default;
+	var TimeAgo = __webpack_require__(349).default;
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -62361,8 +62988,7 @@
 	});
 
 /***/ },
-/* 345 */,
-/* 346 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62529,16 +63155,16 @@
 	exports.default = TimeAgo;
 
 /***/ },
-/* 347 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	
-	var UserActions = __webpack_require__(260),
-	    CurrentUserState = __webpack_require__(264),
-	    UserStore = __webpack_require__(263),
-	    UserProducts = __webpack_require__(349),
-	    UserOffers = __webpack_require__(350);
+	var UserActions = __webpack_require__(262),
+	    CurrentUserState = __webpack_require__(266),
+	    UserStore = __webpack_require__(265),
+	    UserProducts = __webpack_require__(351),
+	    UserOffers = __webpack_require__(353);
 	/* global Materialize */
 	
 	module.exports = React.createClass({
@@ -62551,10 +63177,6 @@
 	    $(document).ready(function () {
 	      $('ul.tabs').tabs();
 	    });
-	  },
-	
-	  componentWillReceiveProps: function () {
-	    UserActions.fetchCurrentUserWithAssocs();
 	  },
 	
 	  render: function () {
@@ -62648,34 +63270,15 @@
 	});
 
 /***/ },
-/* 348 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	
-	var UserActions = __webpack_require__(260),
-	    CurrentUserState = __webpack_require__(264),
-	    UserStore = __webpack_require__(263);
-	
-	module.exports = React.createClass({
-	  displayName: "exports",
-	
-	  render: function () {
-	    return React.createElement("div", null);
-	  }
-	});
-
-/***/ },
-/* 349 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var UserActions = __webpack_require__(260),
-	    UserStore = __webpack_require__(263),
+	var UserActions = __webpack_require__(262),
 	    ProductStore = __webpack_require__(227),
 	    hashHistory = __webpack_require__(166).hashHistory,
-	    ProductItem = __webpack_require__(351);
+	    ProductItem = __webpack_require__(352);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -62742,291 +63345,14 @@
 	});
 
 /***/ },
-/* 350 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var UserActions = __webpack_require__(260),
-	    OfferStore = __webpack_require__(358),
-	    ReceivedOfferItem = __webpack_require__(359),
-	    MadeOfferItem = __webpack_require__(360);
-	
-	// var _statuses = ['Pending', 'Declined', 'Approved'];
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  getInitialState: function () {
-	    return { madeOffers: [], receivedOffers: [] };
-	  },
-	
-	  getAllOffers: function () {
-	    this.setMadeOffers(OfferStore.madeOffers());
-	    this.setReceivedOffers(OfferStore.receivedOffers());
-	  },
-	
-	  setMadeOffers: function (offers) {
-	    this.setState({
-	      madeOffers: this.statusOffers(offers)
-	    });
-	  },
-	
-	  setReceivedOffers: function (offers) {
-	    this.setState({
-	      receivedOffers: this.statusOffers(offers)
-	    });
-	  },
-	
-	  statusOffers: function (offers) {
-	    if (offers) {
-	      var pending = offers.filter(function (offer) {
-	        return offer.status === 'Pending';
-	      });
-	      var declined = offers.filter(function (offer) {
-	        return offer.status === 'Declined';
-	      });
-	      var approved = offers.filter(function (offer) {
-	        return offer.status === 'Approved';
-	      });
-	      return {
-	        pending: pending,
-	        declined: declined,
-	        approved: approved
-	      };
-	    } else {
-	      return '';
-	    }
-	  },
-	
-	  componentDidMount: function () {
-	    this.offerListener = OfferStore.addListener(this.getAllOffers);
-	  },
-	
-	  componentDidUpdate: function () {
-	    $(document).ready(function () {
-	      $('.collapsible').collapsible({
-	        accordion: false
-	      });
-	    });
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.offerListener.remove();
-	  },
-	
-	  offersList: function (offers) {
-	    return offers.map(function (offer) {
-	      return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
-	    });
-	  },
-	
-	  receivedPendingOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.pending && receivedOffers.pending.length > 0) return this.offersList(receivedOffers.pending);else return React.createElement(
-	      'p',
-	      { className: 'grey lighten-5' },
-	      'no pending offers'
-	    );
-	  },
-	
-	  receivedAcceptedOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.accepted && receivedOffers.accepted.length > 0) return this.offersList(receivedOffers.accepted);else return React.createElement(
-	      'p',
-	      { className: 'grey lighten-5' },
-	      'no accepted offers'
-	    );
-	  },
-	
-	  receivedDeclinedOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.declined && receivedOffers.declined.length > 0) return this.offersList(receivedOffers.declined);else return React.createElement(
-	      'p',
-	      { className: 'grey lighten-5' },
-	      'no declined offers'
-	    );
-	  },
-	
-	  madePendingOffersList: function () {
-	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.pending && madeOffers.pending.length > 0) return this.offersList(madeOffers.pending);else return React.createElement(
-	      'p',
-	      { className: 'grey lighten-5' },
-	      'no pending offers'
-	    );
-	  },
-	
-	  madeAcceptedOffersList: function () {
-	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.accepted && madeOffers.accepted.length > 0) return this.offersList(madeOffers.accepted);else return React.createElement(
-	      'p',
-	      { className: 'grey lighten-5' },
-	      'no accepted offers'
-	    );
-	  },
-	
-	  madeDeclinedOffersList: function () {
-	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.declined && madeOffers.declined.length > 0) return this.offersList(madeOffers.declined);else return React.createElement(
-	      'p',
-	      { className: 'grey lighten-5' },
-	      'no declined offers'
-	    );
-	  },
-	
-	  receivedOffersSection: function (offers) {
-	    return React.createElement(
-	      'ul',
-	      { className: 'collapsible', 'data-collapsible': 'expandable' },
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header' },
-	          'Pending'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.receivedPendingOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header' },
-	          'Accepted'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.receivedAcceptedOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header' },
-	          'Declined'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.receivedDeclinedOffersList()
-	          )
-	        )
-	      )
-	    );
-	  },
-	
-	  madeOffersSection: function (offers) {
-	    return React.createElement(
-	      'ul',
-	      { className: 'collapsible', 'data-collapsible': 'expandable' },
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header' },
-	          'Pending'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.madePendingOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header' },
-	          'Accepted'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.madeAcceptedOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header' },
-	          'Declined'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.madeDeclinedOffersList()
-	          )
-	        )
-	      )
-	    );
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'user-offers' },
-	      React.createElement(
-	        'h5',
-	        null,
-	        'Offers Received'
-	      ),
-	      this.receivedOffersSection(),
-	      React.createElement('div', { className: 'row' }),
-	      React.createElement(
-	        'h5',
-	        null,
-	        'Offers Made'
-	      ),
-	      this.madeOffersSection()
-	    );
-	  }
-	});
-
-/***/ },
-/* 351 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	var hashHistory = __webpack_require__(166).hashHistory,
-	    Dotdotdot = __webpack_require__(353),
-	    TimeAgo = __webpack_require__(346).default,
-	    Carousel = __webpack_require__(352),
+	    Dotdotdot = __webpack_require__(259),
+	    TimeAgo = __webpack_require__(349).default,
+	    Carousel = __webpack_require__(339),
 	    ClientActions = __webpack_require__(250);
 	
 	/* global Materialize */
@@ -63140,676 +63466,512 @@
 	});
 
 /***/ },
-/* 352 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var Carousel = __webpack_require__(338);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  mixins: [Carousel.ControllerMixin],
-	
-	  componentWillReceiveProps: function () {
-	    this.setState({});
-	  },
-	
-	  render: function () {
-	    var images;
-	    if (this.props.images) {
-	      images = this.props.images.map(function (url) {
-	        return React.createElement('img', { key: url, src: url });
-	      });
-	    } else {
-	      images = '';
-	    }
-	
-	    return React.createElement(
-	      'div',
-	      { className: 'carousel-wrapper' },
-	      React.createElement(
-	        Carousel,
-	        null,
-	        images
-	      )
-	    );
-	  }
-	});
-
-/***/ },
 /* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var ReactDOM = __webpack_require__(32);
-	var clamp = __webpack_require__(354);
-	var PropTypes = React.PropTypes;
-	/**
-	 * multuline text-overflow: ellipsis
-	 */
-	function Dotdotdot() {
-	  if(!(this instanceof Dotdotdot)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
 	
-	Dotdotdot.prototype = Object.create(React.Component.prototype);
-	Dotdotdot.prototype.componentDidMount = function() {
-	  this.dotdotdot(ReactDOM.findDOMNode(this.refs.container));
-	};
-	Dotdotdot.prototype.componentDidUpdate = function() {
-	  this.dotdotdot(ReactDOM.findDOMNode(this.refs.container));
-	};
+	var UserActions = __webpack_require__(262),
+	    OfferStore = __webpack_require__(347),
+	    ReceivedOfferItem = __webpack_require__(354),
+	    MadeOfferItem = __webpack_require__(355);
 	
-	Dotdotdot.prototype.dotdotdot = function(container) {
-	  if (this.props.clamp) {
-	    if (container.length) {
-	      throw new Error('Please provide exacly one child to dotdotdot');
-	    }
+	// var _statuses = ['Pending', 'Declined', 'Accepted'];
 	
-	    clamp(container, {
-	      clamp: this.props.clamp,
-	      truncationChar: this.props.truncationChar
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { madeOffers: [], receivedOffers: [] };
+	  },
+	
+	  getAllOffers: function () {
+	    this.setState({
+	      madeOffers: this.setMadeOffers(OfferStore.madeOffers()),
+	      receivedOffers: this.setReceivedOffers(OfferStore.receivedOffers())
 	    });
+	  },
+	
+	  setMadeOffers: function (offers) {
+	    return this.statusOffers(offers);
+	  },
+	
+	  setReceivedOffers: function (offers) {
+	    return this.statusOffers(offers);
+	  },
+	
+	  statusOffers: function (offers) {
+	    if (offers) {
+	      var pending = offers.filter(function (offer) {
+	        return offer.status === 'Pending';
+	      });
+	      var declined = offers.filter(function (offer) {
+	        return offer.status === 'Declined';
+	      });
+	      var accepted = offers.filter(function (offer) {
+	        return offer.status === 'Accepted';
+	      });
+	      return {
+	        pending: pending,
+	        declined: declined,
+	        accepted: accepted
+	      };
+	    } else {
+	      return '';
+	    }
+	  },
+	
+	  componentDidMount: function () {
+	    this.offerListener = OfferStore.addListener(this.getAllOffers);
+	  },
+	
+	  componentDidUpdate: function () {
+	    $(document).ready(function () {
+	      $('.collapsible').collapsible({
+	        accordion: false
+	      });
+	    });
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.offerListener.remove();
+	  },
+	
+	  receivedOffersList: function (offers) {
+	    return offers.map(function (offer) {
+	      return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
+	    });
+	  },
+	
+	  madeOffersList: function (offers) {
+	    return offers.map(function (offer) {
+	      return React.createElement(MadeOfferItem, { key: offer.id, offer: offer });
+	    });
+	  },
+	
+	  emptyOffersList: function (offerType) {
+	    return React.createElement(
+	      'li',
+	      { className: 'account-product grey lighten-5 collection-item row' },
+	      React.createElement(
+	        'div',
+	        { className: 'offer-content col s6 m3 l2 grey-text text-darken-1' },
+	        React.createElement(
+	          'em',
+	          null,
+	          'no ',
+	          offerType,
+	          ' offers'
+	        )
+	      )
+	    );
+	  },
+	
+	  receivedPendingOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.pending && receivedOffers.pending.length > 0) return this.receivedOffersList(receivedOffers.pending);else return this.emptyOffersList('pending');
+	  },
+	
+	  receivedAcceptedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.accepted && receivedOffers.accepted.length > 0) return this.receivedOffersList(receivedOffers.accepted);else return this.emptyOffersList('accepted');
+	  },
+	
+	  receivedDeclinedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.declined && receivedOffers.declined.length > 0) return this.receivedOffersList(receivedOffers.declined);else return this.emptyOffersList('declined');
+	  },
+	
+	  madePendingOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.pending && madeOffers.pending.length > 0) return this.madeOffersList(madeOffers.pending);else return this.emptyOffersList('pending');
+	  },
+	
+	  madeAcceptedOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.accepted && madeOffers.accepted.length > 0) return this.madeOffersList(madeOffers.accepted);else return this.emptyOffersList('accepted');
+	  },
+	
+	  madeDeclinedOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.declined && madeOffers.declined.length > 0) return this.madeOffersList(madeOffers.declined);else return this.emptyOffersList('declined');
+	  },
+	
+	  receivedOffersSection: function (offers) {
+	    return React.createElement(
+	      'ul',
+	      { className: 'collapsible', 'data-collapsible': 'expandable' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Pending'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedPendingOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Accepted'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedAcceptedOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Declined'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedDeclinedOffersList()
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  madeOffersSection: function (offers) {
+	    return React.createElement(
+	      'ul',
+	      { className: 'collapsible', 'data-collapsible': 'expandable' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Pending'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madePendingOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Accepted'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madeAcceptedOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Declined'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madeDeclinedOffersList()
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  renderTest: function () {
+	    if (this.state.receivedOffers) var offers = this.state.receivedOffers.filter(function (offer) {
+	      return offer.status === 'Pending';
+	    });
+	    return offers.length;
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'user-offers' },
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Offers Received'
+	      ),
+	      this.receivedOffersSection(),
+	      React.createElement('div', { className: 'row' }),
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Offers Made'
+	      ),
+	      this.madeOffersSection()
+	    );
 	  }
-	};
-	
-	Dotdotdot.prototype.render = function() {
-	  return React.createElement(
-	    "div",
-	    { ref: "container", className: this.props.className },
-	    this.props.children
-	  );
-	};
-	
-	// Statics:
-	Dotdotdot.propTypes = {
-	  children: PropTypes.node,
-	  clamp: PropTypes.oneOfType([
-	    PropTypes.string,
-	    PropTypes.number,
-	    PropTypes.bool
-	  ]).isRequired,
-	  truncationChar: PropTypes.string,
-	  className: PropTypes.string
-	};
-	
-	Dotdotdot.defaultProps = {
-	  truncationChar: '\u2026'
-	};
-	
-	module.exports = Dotdotdot;
-
+	});
 
 /***/ },
 /* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * Clamp.js 0.7.0
-	 *
-	 * Copyright 2011-2013, Joseph Schmitt http://joe.sh
-	 * Released under the WTFPL license
-	 * http://sam.zoy.org/wtfpl/
-	 */
-	
-	(function(root, factory) {
-	  if (true) {
-	    // AMD
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof exports === 'object') {
-	    // Node, CommonJS-like
-	    module.exports = factory();
-	  } else {
-	    // Browser globals
-	    root.$clamp = factory();
-	  }
-	}(this, function() {
-	  /**
-	   * Clamps a text node.
-	   * @param {HTMLElement} element. Element containing the text node to clamp.
-	   * @param {Object} options. Options to pass to the clamper.
-	   */
-	  function clamp(element, options) {
-	    options = options || {};
-	
-	    var self = this,
-	      win = window,
-	      opt = {
-	        clamp: options.clamp || 2,
-	        useNativeClamp: typeof(options.useNativeClamp) != 'undefined' ? options.useNativeClamp : true,
-	        splitOnChars: options.splitOnChars || ['.', '-', '–', '—', ' '], //Split on sentences (periods), hypens, en-dashes, em-dashes, and words (spaces).
-	        animate: options.animate || false,
-	        truncationChar: options.truncationChar || '…',
-	        truncationHTML: options.truncationHTML
-	      },
-	
-	      sty = element.style,
-	      originalText = element.innerHTML,
-	
-	      supportsNativeClamp = typeof(element.style.webkitLineClamp) != 'undefined',
-	      clampValue = opt.clamp,
-	      isCSSValue = clampValue.indexOf && (clampValue.indexOf('px') > -1 || clampValue.indexOf('em') > -1),
-	      truncationHTMLContainer;
-	
-	    if (opt.truncationHTML) {
-	      truncationHTMLContainer = document.createElement('span');
-	      truncationHTMLContainer.innerHTML = opt.truncationHTML;
-	    }
-	
-	
-	    // UTILITY FUNCTIONS __________________________________________________________
-	
-	    /**
-	     * Return the current style for an element.
-	     * @param {HTMLElement} elem The element to compute.
-	     * @param {string} prop The style property.
-	     * @returns {number}
-	     */
-	    function computeStyle(elem, prop) {
-	      if (!win.getComputedStyle) {
-	        win.getComputedStyle = function(el, pseudo) {
-	          this.el = el;
-	          this.getPropertyValue = function(prop) {
-	            var re = /(\-([a-z]){1})/g;
-	            if (prop == 'float') prop = 'styleFloat';
-	            if (re.test(prop)) {
-	              prop = prop.replace(re, function() {
-	                return arguments[2].toUpperCase();
-	              });
-	            }
-	            return el.currentStyle && el.currentStyle[prop] ? el.currentStyle[prop] : null;
-	          };
-	          return this;
-	        };
-	      }
-	
-	      return win.getComputedStyle(elem, null).getPropertyValue(prop);
-	    }
-	
-	    /**
-	     * Returns the maximum number of lines of text that should be rendered based
-	     * on the current height of the element and the line-height of the text.
-	     */
-	    function getMaxLines(height) {
-	      var availHeight = height || element.clientHeight,
-	        lineHeight = getLineHeight(element);
-	
-	      return Math.max(Math.floor(availHeight / lineHeight), 0);
-	    }
-	
-	    /**
-	     * Returns the maximum height a given element should have based on the line-
-	     * height of the text and the given clamp value.
-	     */
-	    function getMaxHeight(clmp) {
-	      var lineHeight = getLineHeight(element);
-	      return lineHeight * clmp;
-	    }
-	
-	    /**
-	     * Returns the line-height of an element as an integer.
-	     */
-	    function getLineHeight(elem) {
-	      var lh = computeStyle(elem, 'line-height');
-	      if (lh == 'normal') {
-	        // Normal line heights vary from browser to browser. The spec recommends
-	        // a value between 1.0 and 1.2 of the font size. Using 1.1 to split the diff.
-	        lh = parseInt(computeStyle(elem, 'font-size')) * 1.2;
-	      }
-	      return parseInt(lh);
-	    }
-	
-	
-	    // MEAT AND POTATOES (MMMM, POTATOES...) ______________________________________
-	    var splitOnChars = opt.splitOnChars.slice(0),
-	      splitChar = splitOnChars[0],
-	      chunks,
-	      lastChunk;
-	
-	    /**
-	     * Gets an element's last child. That may be another node or a node's contents.
-	     */
-	    function getLastChild(elem) {
-	      //Current element has children, need to go deeper and get last child as a text node
-	      if (elem.lastChild.children && elem.lastChild.children.length > 0) {
-	        return getLastChild(Array.prototype.slice.call(elem.children).pop());
-	      }
-	      //This is the absolute last child, a text node, but something's wrong with it. Remove it and keep trying
-	      else if (!elem.lastChild || !elem.lastChild.nodeValue || elem.lastChild.nodeValue === '' || elem.lastChild.nodeValue == opt.truncationChar) {
-	        elem.lastChild.parentNode.removeChild(elem.lastChild);
-	        return getLastChild(element);
-	      }
-	      //This is the last child we want, return it
-	      else {
-	        return elem.lastChild;
-	      }
-	    }
-	
-	    /**
-	     * Removes one character at a time from the text until its width or
-	     * height is beneath the passed-in max param.
-	     */
-	    function truncate(target, maxHeight) {
-	      if (!maxHeight) {
-	        return;
-	      }
-	
-	      /**
-	       * Resets global variables.
-	       */
-	      function reset() {
-	        splitOnChars = opt.splitOnChars.slice(0);
-	        splitChar = splitOnChars[0];
-	        chunks = null;
-	        lastChunk = null;
-	      }
-	
-	      var nodeValue = target.nodeValue.replace(opt.truncationChar, '');
-	
-	      //Grab the next chunks
-	      if (!chunks) {
-	        //If there are more characters to try, grab the next one
-	        if (splitOnChars.length > 0) {
-	          splitChar = splitOnChars.shift();
-	        }
-	        //No characters to chunk by. Go character-by-character
-	        else {
-	          splitChar = '';
-	        }
-	
-	        chunks = nodeValue.split(splitChar);
-	      }
-	
-	      //If there are chunks left to remove, remove the last one and see if
-	      // the nodeValue fits.
-	      if (chunks.length > 1) {
-	        // console.log('chunks', chunks);
-	        lastChunk = chunks.pop();
-	        // console.log('lastChunk', lastChunk);
-	        applyEllipsis(target, chunks.join(splitChar));
-	      }
-	      //No more chunks can be removed using this character
-	      else {
-	        chunks = null;
-	      }
-	
-	      //Insert the custom HTML before the truncation character
-	      if (truncationHTMLContainer) {
-	        target.nodeValue = target.nodeValue.replace(opt.truncationChar, '');
-	        element.innerHTML = target.nodeValue + ' ' + truncationHTMLContainer.innerHTML + opt.truncationChar;
-	      }
-	
-	      //Search produced valid chunks
-	      if (chunks) {
-	        //It fits
-	        if (element.clientHeight <= maxHeight) {
-	          //There's still more characters to try splitting on, not quite done yet
-	          if (splitOnChars.length >= 0 && splitChar !== '') {
-	            applyEllipsis(target, chunks.join(splitChar) + splitChar + lastChunk);
-	            chunks = null;
-	          }
-	          //Finished!
-	          else {
-	            return element.innerHTML;
-	          }
-	        }
-	      }
-	      //No valid chunks produced
-	      else {
-	        //No valid chunks even when splitting by letter, time to move
-	        //on to the next node
-	        if (splitChar === '') {
-	          applyEllipsis(target, '');
-	          target = getLastChild(element);
-	
-	          reset();
-	        }
-	      }
-	
-	      //If you get here it means still too big, let's keep truncating
-	      if (opt.animate) {
-	        setTimeout(function() {
-	          truncate(target, maxHeight);
-	        }, opt.animate === true ? 10 : opt.animate);
-	      } else {
-	        return truncate(target, maxHeight);
-	      }
-	    }
-	
-	    function applyEllipsis(elem, str) {
-	      elem.nodeValue = str + opt.truncationChar;
-	    }
-	
-	
-	    // CONSTRUCTOR ________________________________________________________________
-	
-	    if (clampValue == 'auto') {
-	      clampValue = getMaxLines();
-	    } else if (isCSSValue) {
-	      clampValue = getMaxLines(parseInt(clampValue));
-	    }
-	
-	    var clampedText;
-	    if (supportsNativeClamp && opt.useNativeClamp) {
-	      sty.overflow = 'hidden';
-	      sty.textOverflow = 'ellipsis';
-	      sty.webkitBoxOrient = 'vertical';
-	      sty.display = '-webkit-box';
-	      sty.webkitLineClamp = clampValue;
-	
-	      if (isCSSValue) {
-	        sty.height = opt.clamp + 'px';
-	      }
-	    } else {
-	      var height = getMaxHeight(clampValue);
-	      if (height <= element.clientHeight) {
-	        clampedText = truncate(getLastChild(element), height);
-	      }
-	    }
-	
-	    return {
-	      'original': originalText,
-	      'clamped': clampedText
-	    };
-	  }
-	
-	  return clamp;
-	}));
-
-
-/***/ },
-/* 355 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  OFFERS_RECEIVED: "OFFERS_RECEIVED",
-	  OFFER_CREATED: "OFFER_CREATED"
-	};
-
-/***/ },
-/* 356 */,
-/* 357 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1),
-	    OfferStore = __webpack_require__(358),
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(259),
+	    TimeAgo = __webpack_require__(349).default,
 	    ClientActions = __webpack_require__(250);
 	
 	/* global Materialize */
 	
-	var OfferForm = React.createClass({
-	  displayName: 'OfferForm',
+	module.exports = React.createClass({
+	  displayName: 'exports',
 	
-	  closeModal: function (e) {
-	    if (e) e.preventDefault();
-	    $('#offer-modal').closeModal();
-	    this.resetState();
+	
+	  handleAccept: function () {
+	    ClientActions.acceptOffer(this.props.offer.id, this.acceptSuccess);
 	  },
 	
-	  getInitialState: function () {
-	    return { amount: '', product_id: '', comment: '' };
+	  handleDecline: function () {
+	    ClientActions.declineOffer(this.props.offer.id, this.declineSuccess);
 	  },
 	
-	  setAmount: function (e) {
-	    this.setState({ amount: e.target.value });
+	  acceptSuccess: function () {
+	    Materialize.toast('Offer accepted!', 4000, 'green-text');
 	  },
 	
-	  setComment: function (e) {
-	    this.setState({ comment: e.target.value });
+	  declineSuccess: function () {
+	    Materialize.toast('Offer declined', 4000, 'red-text');
+	  },
+	  componentWillReceiveProps: function (newProps) {},
+	
+	  buttons: function () {
+	    if (this.props.offer.status === 'Pending') {
+	      return React.createElement(
+	        'div',
+	        { className: 'btns' },
+	        React.createElement(
+	          'button',
+	          {
+	            onClick: this.handleAccept,
+	            className: 'waves-effect waves-light btn right green' },
+	          'Accept'
+	        ),
+	        React.createElement(
+	          'button',
+	          {
+	            onClick: this.handleDecline,
+	            className: 'waves-effect waves-light btn right red' },
+	          'Decline'
+	        )
+	      );
+	    } else {
+	      return React.createElement('span', null);
+	    }
 	  },
 	
-	  resetState: function () {
-	    this.setState({ amount: '', comment: '' });
-	  },
+	  render: function () {
+	    var offer = this.props.offer;
 	
-	  componentDidMount: function () {
-	    this.setState({ product_id: this.props.productId });
-	  },
-	
-	  componentWillReceiveProps: function () {
-	    this.setState({ product_id: this.props.productId });
-	  },
-	
-	  handleSubmit: function (e) {
-	    e.preventDefault();
-	    ClientActions.createOffer(this.state, this.submitSuccess);
-	  },
-	
-	  submitSuccess: function () {
-	    Materialize.toast('Offer submitted!', 4000, 'green-text');
-	    this.closeModal();
-	  },
-	
-	  form: function () {
 	    return React.createElement(
-	      'form',
-	      { onSubmit: this.handleSubmit },
+	      'li',
+	      { className: 'offer-item grey lighten-5 collection-item row' },
 	      React.createElement(
-	        'section',
-	        null,
+	        'div',
+	        { className: 'split-row content' },
 	        React.createElement(
 	          'div',
-	          { className: 'row' },
+	          { className: 'offer-title' },
 	          React.createElement(
-	            'div',
-	            { className: 'input-field col s12' },
-	            React.createElement('input', {
-	              type: 'text',
-	              value: this.state.amount,
-	              onChange: this.setAmount,
-	              id: 'amount' }),
-	            React.createElement(
-	              'label',
-	              { id: 'amount-label', htmlFor: 'amount' },
-	              'Amount'
-	            )
+	            Dotdotdot,
+	            { clamp: 1 },
+	            offer.title
 	          )
 	        ),
 	        React.createElement(
 	          'div',
-	          { className: 'row' },
-	          React.createElement(
-	            'div',
-	            { className: 'input-field col s12' },
-	            React.createElement('textarea', {
-	              id: 'comment',
-	              type: 'text',
-	              className: 'materialize-textarea',
-	              value: this.state.comment,
-	              onChange: this.setComment
-	            }),
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'comment' },
-	              'Comment (optional)'
-	            )
-	          )
+	          { className: 'offer-time' },
+	          React.createElement(TimeAgo, { className: 'grey-text', date: offer.created_at })
 	        )
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'btn-row row' },
+	        { className: 'split-row money' },
 	        React.createElement(
 	          'div',
-	          { className: 'col s12' },
+	          { className: 'offer-price' },
 	          React.createElement(
-	            'button',
-	            {
-	              className: 'waves-effect waves-light btn right' },
-	            'Make Offer'
-	          ),
-	          React.createElement(
-	            'button',
-	            {
-	              className: 'waves-effect waves-ripple btn-flat right',
-	              onClick: this.closeModal },
-	            'cancel'
-	          )
-	        )
-	      )
-	    );
-	  },
-	
-	  render: function () {
-	
-	    return React.createElement(
-	      'div',
-	      { id: 'offer-form' },
-	      React.createElement(
-	        'div',
-	        { id: 'offer-modal', className: 'modal' },
-	        React.createElement(
-	          'div',
-	          { className: 'modal-content' },
-	          React.createElement(
-	            'h4',
+	            'b',
 	            null,
-	            'Make Offer'
+	            'Ask:'
 	          ),
-	          this.form()
+	          ' $',
+	          offer.price
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-amount' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Offer:'
+	          ),
+	          ' $',
+	          offer.amount
+	        )
+	      ),
+	      this.buttons()
+	    );
+	  }
+	});
+
+/***/ },
+/* 355 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(259),
+	    TimeAgo = __webpack_require__(349).default,
+	    ClientActions = __webpack_require__(250);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	
+	  render: function () {
+	    var offer = this.props.offer;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'offer-item grey lighten-5 collection-item row' },
+	      React.createElement(
+	        'div',
+	        { className: 'split-row content' },
+	        React.createElement(
+	          'div',
+	          { className: 'offer-title' },
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 1 },
+	            offer.title
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-time' },
+	          React.createElement(TimeAgo, { className: 'grey-text', date: offer.created_at })
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'split-row money' },
+	        React.createElement(
+	          'div',
+	          { className: 'offer-price' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Ask:'
+	          ),
+	          ' $',
+	          offer.price
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-amount' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Offer:'
+	          ),
+	          ' $',
+	          offer.amount
 	        )
 	      )
 	    );
 	  }
 	});
-	
-	$(document).ready(function () {
-	  $('.modal-trigger').leanModal();
-	});
-	
-	module.exports = OfferForm;
 
 /***/ },
-/* 358 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(228).Store,
-	    Dispatcher = __webpack_require__(246),
-	    OfferConstants = __webpack_require__(355);
-	
-	var _madeOffers = {};
-	var _receivedOffers = {};
-	
-	var resetOffers = function (offers) {
-	  _madeOffers = {};
-	  _receivedOffers = {};
-	
-	  setMadeOffers(offers.made_offers);
-	  setReceivedOffers(offers.received_offers);
-	};
-	
-	var setMadeOffers = function (madeOffers) {
-	  madeOffers.forEach(function (offer) {
-	    _madeOffers[offer.id] = offer;
-	  });
-	};
-	
-	var setReceivedOffers = function (receivedOffers) {
-	  receivedOffers.forEach(function (offer) {
-	    _receivedOffers[offer.id] = offer;
-	  });
-	};
-	
-	var setOfferMade = function (offer) {
-	  _madeOffers[offer.id] = offer;
-	};
-	
-	var OfferStore = new Store(Dispatcher);
-	
-	OfferStore.receivedOffers = function () {
-	  return Object.keys(_receivedOffers).map(function (offerId) {
-	    return _receivedOffers[offerId];
-	  });
-	};
-	
-	OfferStore.madeOffers = function () {
-	  return Object.keys(_madeOffers).map(function (offerId) {
-	    return _madeOffers[offerId];
-	  });
-	};
-	
-	OfferStore.find = function (id) {
-	  // return _offers[id];
-	};
-	
-	OfferStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case OfferConstants.OFFERS_RECEIVED:
-	      resetOffers(payload.offers);
-	      break;
-	    case OfferConstants.OFFER_CREATED:
-	      setOfferMade(payload.offer);
-	      break;
-	  }
-	  this.__emitChange();
-	};
-	
-	module.exports = OfferStore;
-
-/***/ },
-/* 359 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var hashHistory = __webpack_require__(166).hashHistory,
-	    Dotdotdot = __webpack_require__(353),
-	    TimeAgo = __webpack_require__(346).default,
-	    ClientActions = __webpack_require__(250);
 	
-	/* global Materialize */
+	var UserActions = __webpack_require__(262),
+	    CurrentUserState = __webpack_require__(266),
+	    UserStore = __webpack_require__(265);
 	
 	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	
-	  render: function () {
-	    var offer = this.props.offer;
-	
-	    return React.createElement(
-	      'li',
-	      { className: 'account-product grey lighten-5 collection-item row' },
-	      React.createElement('div', { className: 'product-content col s12 m9 l10' }),
-	      React.createElement(
-	        'div',
-	        { className: 'offer-content col s12 m3 l2' },
-	        offer.amount
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 360 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var hashHistory = __webpack_require__(166).hashHistory,
-	    Dotdotdot = __webpack_require__(353),
-	    TimeAgo = __webpack_require__(346).default,
-	    ClientActions = __webpack_require__(250);
-	
-	/* global Materialize */
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
+	  displayName: "exports",
 	
 	  render: function () {
-	    var offer = this.props.offer;
-	
 	    return React.createElement(
-	      'li',
-	      { className: 'account-product grey lighten-5 collection-item row' },
-	      React.createElement('div', { className: 'product-content col s12 m9 l10' }),
-	      React.createElement('div', { className: 'offer-content col s12 m3 l2' }),
-	      React.createElement(
-	        'div',
-	        { className: 'offer-content col s12 m3 l2' },
-	        React.createElement('div', { className: 'offer-content col s12 m3 l2' }),
-	        React.createElement('div', { className: 'offer-content col s12 m3 l2' })
-	      )
+	      "h5",
+	      null,
+	      "coming soon"
 	    );
 	  }
 	});

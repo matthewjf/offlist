@@ -5,7 +5,7 @@ var UserActions = require("../../actions/user_actions"),
     ReceivedOfferItem = require('./received_offer_item'),
     MadeOfferItem = require('./made_offer_item');
 
-// var _statuses = ['Pending', 'Declined', 'Approved'];
+// var _statuses = ['Pending', 'Declined', 'Accepted'];
 
 module.exports = React.createClass({
   getInitialState: function(){
@@ -13,20 +13,18 @@ module.exports = React.createClass({
   },
 
   getAllOffers: function(){
-    this.setMadeOffers(OfferStore.madeOffers());
-    this.setReceivedOffers(OfferStore.receivedOffers());
+    this.setState({
+      madeOffers: this.setMadeOffers(OfferStore.madeOffers()),
+      receivedOffers: this.setReceivedOffers(OfferStore.receivedOffers())
+    });
   },
 
   setMadeOffers: function(offers) {
-    this.setState({
-      madeOffers: this.statusOffers(offers)
-    });
+    return this.statusOffers(offers);
   },
 
   setReceivedOffers: function(offers) {
-    this.setState({
-      receivedOffers: this.statusOffers(offers)
-    });
+    return this.statusOffers(offers);
   },
 
   statusOffers: function(offers) {
@@ -37,14 +35,14 @@ module.exports = React.createClass({
       var declined = offers.filter(function(offer) {
         return (offer.status === 'Declined');
       });
-      var approved = offers.filter(function(offer) {
-        return (offer.status === 'Approved');
+      var accepted = offers.filter(function(offer) {
+        return (offer.status === 'Accepted');
       });
       return (
         {
           pending: pending,
           declined: declined,
-          approved: approved
+          accepted: accepted
         }
       );
     } else {
@@ -68,66 +66,80 @@ module.exports = React.createClass({
     this.offerListener.remove();
   },
 
-  offersList: function(offers) {
+  receivedOffersList: function(offers) {
     return offers.map(function(offer){
       return  <ReceivedOfferItem key={offer.id} offer={offer} />;
     });
   },
 
+  madeOffersList: function(offers) {
+    return offers.map(function(offer){
+      return  <MadeOfferItem key={offer.id} offer={offer} />;
+    });
+  },
+
+  emptyOffersList: function(offerType) {
+    return <li className="account-product grey lighten-5 collection-item row">
+        <div className='offer-content col s6 m3 l2 grey-text text-darken-1'>
+          <em>no {offerType} offers</em>
+        </div>
+      </li>;
+  },
+
   receivedPendingOffersList: function() {
     var receivedOffers = this.state.receivedOffers;
     if (receivedOffers && receivedOffers.pending && receivedOffers.pending.length > 0)
-      return this.offersList(receivedOffers.pending);
+      return this.receivedOffersList(receivedOffers.pending);
     else
-      return <p className='grey lighten-5'>no pending offers</p>;
+      return this.emptyOffersList('pending');
   },
 
   receivedAcceptedOffersList: function() {
     var receivedOffers = this.state.receivedOffers;
     if (receivedOffers && receivedOffers.accepted && receivedOffers.accepted.length > 0)
-      return this.offersList(receivedOffers.accepted);
+      return this.receivedOffersList(receivedOffers.accepted);
     else
-      return <p className='grey lighten-5'>no accepted offers</p>;
+      return this.emptyOffersList('accepted');
   },
 
   receivedDeclinedOffersList: function() {
     var receivedOffers = this.state.receivedOffers;
     if (receivedOffers && receivedOffers.declined && receivedOffers.declined.length > 0)
-      return this.offersList(receivedOffers.declined);
+      return this.receivedOffersList(receivedOffers.declined);
     else
-      return <p className='grey lighten-5'>no declined offers</p>;
+      return this.emptyOffersList('declined');
   },
 
   madePendingOffersList: function() {
     var madeOffers = this.state.madeOffers;
     if (madeOffers && madeOffers.pending && madeOffers.pending.length > 0)
-      return this.offersList(madeOffers.pending);
+      return this.madeOffersList(madeOffers.pending);
     else
-      return <p className='grey lighten-5'>no pending offers</p>;
+      return this.emptyOffersList('pending');
   },
 
   madeAcceptedOffersList: function() {
     var madeOffers = this.state.madeOffers;
     if (madeOffers && madeOffers.accepted && madeOffers.accepted.length > 0)
-      return this.offersList(madeOffers.accepted);
+      return this.madeOffersList(madeOffers.accepted);
     else
-      return <p className='grey lighten-5'>no accepted offers</p>;
+      return this.emptyOffersList('accepted');
   },
 
   madeDeclinedOffersList: function() {
     var madeOffers = this.state.madeOffers;
     if (madeOffers && madeOffers.declined && madeOffers.declined.length > 0)
-      return this.offersList(madeOffers.declined);
+      return this.madeOffersList(madeOffers.declined);
     else
-      return <p className='grey lighten-5'>no declined offers</p>;
+      return this.emptyOffersList('declined');
   },
 
   receivedOffersSection: function(offers) {
     return (
       <ul className="collapsible" data-collapsible="expandable">
         <li>
-          <div className="collapsible-header">
-            Pending
+          <div className="collapsible-header waves-effect">
+            <b>Pending</b>
           </div>
           <div className="collapsible-body">
             <ul className='collection'>
@@ -136,7 +148,9 @@ module.exports = React.createClass({
           </div>
         </li>
         <li>
-          <div className="collapsible-header">Accepted</div>
+          <div className="collapsible-header waves-effect">
+            <b>Accepted</b>
+          </div>
           <div className="collapsible-body">
             <ul className='collection'>
               {this.receivedAcceptedOffersList()}
@@ -144,8 +158,8 @@ module.exports = React.createClass({
           </div>
         </li>
         <li>
-          <div className="collapsible-header">
-            Declined
+          <div className="collapsible-header waves-effect">
+            <b>Declined</b>
           </div>
           <div className="collapsible-body">
             <ul className='collection'>
@@ -161,7 +175,9 @@ module.exports = React.createClass({
     return (
       <ul className="collapsible" data-collapsible="expandable">
         <li>
-          <div className="collapsible-header">Pending</div>
+          <div className="collapsible-header waves-effect">
+            <b>Pending</b>
+          </div>
           <div className="collapsible-body">
             <ul className='collection'>
               {this.madePendingOffersList()}
@@ -169,7 +185,9 @@ module.exports = React.createClass({
           </div>
         </li>
         <li>
-          <div className="collapsible-header">Accepted</div>
+          <div className="collapsible-header waves-effect">
+            <b>Accepted</b>
+          </div>
           <div className="collapsible-body">
             <ul className='collection'>
               {this.madeAcceptedOffersList()}
@@ -177,7 +195,9 @@ module.exports = React.createClass({
           </div>
         </li>
         <li>
-          <div className="collapsible-header">Declined</div>
+          <div className="collapsible-header waves-effect">
+            <b>Declined</b>
+          </div>
           <div className="collapsible-body">
             <ul className='collection'>
               {this.madeDeclinedOffersList()}
@@ -188,6 +208,13 @@ module.exports = React.createClass({
     );
   },
 
+  renderTest: function() {
+    if (this.state.receivedOffers)
+    var offers = this.state.receivedOffers.filter(function(offer) {
+      return (offer.status === 'Pending');
+    });
+    return offers.length;
+  },
 
   render: function(){
     return <div className='user-offers'>
