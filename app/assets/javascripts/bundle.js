@@ -32838,7 +32838,8 @@
 	      { className: 'card product-item hoverable',
 	        onMouseEnter: this.onMouseEnter,
 	        onMouseLeave: this.onMouseLeave,
-	        onClick: this.openDetail },
+	        onClick: this.openDetail,
+	        target: '_blank' },
 	      React.createElement(
 	        'div',
 	        { className: 'card-price right' },

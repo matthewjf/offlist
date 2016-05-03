@@ -40,7 +40,8 @@ module.exports = React.createClass({
     <li className='card product-item hoverable'
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
-        onClick={this.openDetail}>
+        onClick={this.openDetail}
+        target="_blank">
         <div className='card-price right'>
           {'$' + product.price}
         </div>

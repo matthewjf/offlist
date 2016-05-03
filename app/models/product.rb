@@ -34,7 +34,7 @@ class Product < ActiveRecord::Base
     end
   end
 
-  def self.in_bounds(bounds)
+  def self.in_bounds(bounds = nil)
     result = Product.where(active: true)
     if bounds
       lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]
@@ -52,17 +52,22 @@ class Product < ActiveRecord::Base
       result = result.union_all(Product.search_by_keyword(keywords.shift))
     end
 
-    result.order('count_id desc').group(:id).count(:id)
+    # generates an active record relation if that's what I need instead
+    # result.select('id, count(id) as count_id').order('count_id desc').group(:id)
+
+    # this generates a count hash
+    result.select(:id).order('count_id desc').group(:id).count(:id)
   end
 
   def self.search_by_keyword(keyword)
-    Product.select(:id).where(
+    Product.where(
       'LOWER(title) LIKE ? or LOWER(description) LIKE ?',
       "%#{keyword.downcase}%",
        "%#{keyword.downcase}%")
   end
 
-  def self.combined_search(query, bounds)
-    Product.where(id: Product.search(query)).merge(Product.in_bounds(bounds))
+  def self.combined_search(query, bounds = nil)
+    # runs 3 queries at eval
+    Product.where(id: Product.search(query).keys).merge(Product.in_bounds(bounds))
   end
 end
