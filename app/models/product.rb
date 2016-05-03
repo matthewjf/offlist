@@ -28,9 +28,13 @@ class Product < ActiveRecord::Base
       self.active = false
       self.save!
 
-      self.offers.each do |offer| # n + 1 query???
-        offer.decline!
-      end
+      # self.offers.each do |offer| # n + 1 query???
+      # self.id
+      #   offer.decline!
+      # end
+
+      # fewer queries?
+      Product.includes(:offers).find(self.id).offers.includes(:user).each { |offer| offer.decline!}
     end
   end
 
