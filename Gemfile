@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+gem 'active_record_union'
 gem 'materialize-sass'
 gem 'rails', '4.2.5.1'
 gem 'pg', '~> 0.15'

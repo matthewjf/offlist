@@ -1,7 +1,8 @@
 var React = require('react'),
 		UserActions = require("../../actions/user_actions"),
 		CurrentUserState = require("../../mixins/current_user_state"),
-    hashHistory = require('react-router').hashHistory;
+    hashHistory = require('react-router').hashHistory,
+		SearchForm = require('./search_form');
 
 module.exports = React.createClass({
 	mixins: [CurrentUserState],
@@ -30,7 +31,7 @@ module.exports = React.createClass({
   notLoggedIn: function(){
     if (this.state.currentUser) {
 			return (
-        <ul className="right hide-on-med-and-down">
+        <ul className="hide-on-med-and-down">
 					<li><a onClick={this.goToAccount}>
 						{this.state.currentUser.username}
 					</a></li>
@@ -39,7 +40,7 @@ module.exports = React.createClass({
       );
 		}
     return (
-      <ul className="right hide-on-med-and-down">
+      <ul className="hide-on-med-and-down">
 				<li>
 					<a onClick={this.openSignup} className="modal-trigger">
 						Sign Up
@@ -85,14 +86,18 @@ module.exports = React.createClass({
     return (
       <header>
         <nav className="white" role="navigation">
+
           <div className="nav-wrapper container">
-            <a id="logo-container" onClick={this.home} className="brand-logo">
-              <img id='logo' src="/logo.png" />
-              splashy
-            </a>
+						<div className='logo-wrapper'>
+	            <a id="logo-container" onClick={this.home} className="brand-logo">
+	              <img id='logo' src="/logo.png" />
+	              splashy
+	            </a>
+							<SearchForm />
+						</div>
             {this.notLoggedIn()}
             {this.notLoggedInMobile()}
-            <a href="#" data-activates="nav-mobile" className="button-collapse">
+            <a data-activates="nav-mobile" className="button-collapse">
               <i className="material-icons">menu</i>
             </a>
           </div>
@@ -106,4 +111,5 @@ module.exports = React.createClass({
 
 $(document).ready(function(){
   $('.modal-trigger').leanModal();
+	 $(".button-collapse").sideNav();
 });

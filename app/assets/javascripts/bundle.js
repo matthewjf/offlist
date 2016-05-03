@@ -33221,168 +33221,175 @@
 	var React = __webpack_require__(1),
 	    UserActions = __webpack_require__(262),
 	    CurrentUserState = __webpack_require__(266),
-	    hashHistory = __webpack_require__(166).hashHistory;
+	    hashHistory = __webpack_require__(166).hashHistory,
+	    SearchForm = __webpack_require__(358);
 	
 	module.exports = React.createClass({
-	  displayName: "exports",
+			displayName: "exports",
 	
-	  mixins: [CurrentUserState],
+			mixins: [CurrentUserState],
 	
-	  logout: function (e) {
-	    e.preventDefault();
-	    UserActions.logout();
-	  },
+			logout: function (e) {
+					e.preventDefault();
+					UserActions.logout();
+			},
 	
-	  openLogin: function () {
-	    $('#login-modal').openModal();
-	  },
+			openLogin: function () {
+					$('#login-modal').openModal();
+			},
 	
-	  openSignup: function () {
-	    $('#signup-modal').openModal();
-	  },
+			openSignup: function () {
+					$('#signup-modal').openModal();
+			},
 	
-	  goToAccount: function () {
-	    hashHistory.push('account');
-	  },
+			goToAccount: function () {
+					hashHistory.push('account');
+			},
 	
-	  home: function () {
-	    hashHistory.push('/');
-	  },
+			home: function () {
+					hashHistory.push('/');
+			},
 	
-	  notLoggedIn: function () {
-	    if (this.state.currentUser) {
-	      return React.createElement(
-	        "ul",
-	        { className: "right hide-on-med-and-down" },
-	        React.createElement(
-	          "li",
-	          null,
-	          React.createElement(
-	            "a",
-	            { onClick: this.goToAccount },
-	            this.state.currentUser.username
-	          )
-	        ),
-	        React.createElement(
-	          "li",
-	          null,
-	          React.createElement(
-	            "a",
-	            { onClick: this.logout },
-	            "Log Out"
-	          )
-	        )
-	      );
-	    }
-	    return React.createElement(
-	      "ul",
-	      { className: "right hide-on-med-and-down" },
-	      React.createElement(
-	        "li",
-	        null,
-	        React.createElement(
-	          "a",
-	          { onClick: this.openSignup, className: "modal-trigger" },
-	          "Sign Up"
-	        )
-	      ),
-	      React.createElement(
-	        "li",
-	        null,
-	        React.createElement(
-	          "a",
-	          { onClick: this.openLogin, className: "modal-trigger" },
-	          "Log In"
-	        )
-	      )
-	    );
-	  },
+			notLoggedIn: function () {
+					if (this.state.currentUser) {
+							return React.createElement(
+									"ul",
+									{ className: "hide-on-med-and-down" },
+									React.createElement(
+											"li",
+											null,
+											React.createElement(
+													"a",
+													{ onClick: this.goToAccount },
+													this.state.currentUser.username
+											)
+									),
+									React.createElement(
+											"li",
+											null,
+											React.createElement(
+													"a",
+													{ onClick: this.logout },
+													"Log Out"
+											)
+									)
+							);
+					}
+					return React.createElement(
+							"ul",
+							{ className: "hide-on-med-and-down" },
+							React.createElement(
+									"li",
+									null,
+									React.createElement(
+											"a",
+											{ onClick: this.openSignup, className: "modal-trigger" },
+											"Sign Up"
+									)
+							),
+							React.createElement(
+									"li",
+									null,
+									React.createElement(
+											"a",
+											{ onClick: this.openLogin, className: "modal-trigger" },
+											"Log In"
+									)
+							)
+					);
+			},
 	
-	  notLoggedInMobile: function () {
-	    if (this.state.currentUser) {
-	      return React.createElement(
-	        "ul",
-	        { id: "nav-mobile", className: "side-nav" },
-	        React.createElement(
-	          "li",
-	          null,
-	          React.createElement(
-	            "a",
-	            { onClick: this.goToAccount },
-	            this.state.currentUser.username
-	          )
-	        ),
-	        React.createElement(
-	          "li",
-	          null,
-	          React.createElement(
-	            "a",
-	            { onClick: this.logout },
-	            "Log Out"
-	          )
-	        )
-	      );
-	    }
-	    return React.createElement(
-	      "ul",
-	      { id: "nav-mobile", className: "side-nav" },
-	      React.createElement(
-	        "li",
-	        null,
-	        React.createElement(
-	          "a",
-	          { onClick: this.openSignup, className: "modal-trigger" },
-	          "Sign Up"
-	        )
-	      ),
-	      React.createElement(
-	        "li",
-	        null,
-	        React.createElement(
-	          "a",
-	          { onClick: this.openLogin, className: "modal-trigger" },
-	          "Log In"
-	        )
-	      )
-	    );
-	  },
+			notLoggedInMobile: function () {
+					if (this.state.currentUser) {
+							return React.createElement(
+									"ul",
+									{ id: "nav-mobile", className: "side-nav" },
+									React.createElement(
+											"li",
+											null,
+											React.createElement(
+													"a",
+													{ onClick: this.goToAccount },
+													this.state.currentUser.username
+											)
+									),
+									React.createElement(
+											"li",
+											null,
+											React.createElement(
+													"a",
+													{ onClick: this.logout },
+													"Log Out"
+											)
+									)
+							);
+					}
+					return React.createElement(
+							"ul",
+							{ id: "nav-mobile", className: "side-nav" },
+							React.createElement(
+									"li",
+									null,
+									React.createElement(
+											"a",
+											{ onClick: this.openSignup, className: "modal-trigger" },
+											"Sign Up"
+									)
+							),
+							React.createElement(
+									"li",
+									null,
+									React.createElement(
+											"a",
+											{ onClick: this.openLogin, className: "modal-trigger" },
+											"Log In"
+									)
+							)
+					);
+			},
 	
-	  render: function () {
-	    return React.createElement(
-	      "header",
-	      null,
-	      React.createElement(
-	        "nav",
-	        { className: "white", role: "navigation" },
-	        React.createElement(
-	          "div",
-	          { className: "nav-wrapper container" },
-	          React.createElement(
-	            "a",
-	            { id: "logo-container", onClick: this.home, className: "brand-logo" },
-	            React.createElement("img", { id: "logo", src: "/logo.png" }),
-	            "splashy"
-	          ),
-	          this.notLoggedIn(),
-	          this.notLoggedInMobile(),
-	          React.createElement(
-	            "a",
-	            { href: "#", "data-activates": "nav-mobile", className: "button-collapse" },
-	            React.createElement(
-	              "i",
-	              { className: "material-icons" },
-	              "menu"
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
+			render: function () {
+					return React.createElement(
+							"header",
+							null,
+							React.createElement(
+									"nav",
+									{ className: "white", role: "navigation" },
+									React.createElement(
+											"div",
+											{ className: "nav-wrapper container" },
+											React.createElement(
+													"div",
+													{ className: "logo-wrapper" },
+													React.createElement(
+															"a",
+															{ id: "logo-container", onClick: this.home, className: "brand-logo" },
+															React.createElement("img", { id: "logo", src: "/logo.png" }),
+															"splashy"
+													),
+													React.createElement(SearchForm, null)
+											),
+											this.notLoggedIn(),
+											this.notLoggedInMobile(),
+											React.createElement(
+													"a",
+													{ "data-activates": "nav-mobile", className: "button-collapse" },
+													React.createElement(
+															"i",
+															{ className: "material-icons" },
+															"menu"
+													)
+											)
+									)
+							)
+					);
+			}
 	
 	});
 	
 	$(document).ready(function () {
-	  $('.modal-trigger').leanModal();
+			$('.modal-trigger').leanModal();
+			$(".button-collapse").sideNav();
 	});
 
 /***/ },
@@ -63606,7 +63613,7 @@
 	        null,
 	        React.createElement(
 	          'div',
-	          { className: 'collapsible-header waves-effect' },
+	          { className: 'collapsible-header waves-effect active' },
 	          React.createElement(
 	            'b',
 	            null,
@@ -63972,6 +63979,84 @@
 	      "h5",
 	      null,
 	      "coming soon"
+	    );
+	  }
+	});
+
+/***/ },
+/* 357 */,
+/* 358 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { search: '', address: '', searchOpen: false };
+	  },
+	
+	  open: function () {
+	    this.setState({ searchOpen: true });
+	  },
+	
+	  close: function () {
+	    this.setState({ searchOpen: false });
+	  },
+	
+	  setSearch: function (e) {
+	    this.setState({ search: e.target.value });
+	  },
+	
+	  setAddress: function (e) {
+	    this.setState({ address: e.targe.value });
+	  },
+	
+	  handleSubmit: function () {},
+	
+	  componentDidUpdate: function () {
+	    Materialize.updateTextFields();
+	  },
+	
+	  render: function () {
+	    var openClass = this.state.searchOpen ? 'open' : 'closed';
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'search-wrapper' },
+	      React.createElement(
+	        'i',
+	        { onClick: this.open, className: 'material-icons first-icon' },
+	        'search'
+	      ),
+	      React.createElement(
+	        'form',
+	        { id: 'search-form', className: openClass, onSubmit: this.handleSbumit },
+	        React.createElement(
+	          'div',
+	          { className: 'input-field' },
+	          React.createElement('input', { id: 'search', type: 'text', placeholder: 'Find' }),
+	          React.createElement('label', { htmlFor: 'search' })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'input-field' },
+	          React.createElement(
+	            'i',
+	            { className: 'material-icons first-icon' },
+	            'location_on'
+	          ),
+	          React.createElement('input', { id: 'address', type: 'text', placeholder: 'Near' }),
+	          React.createElement('label', { htmlFor: 'address' })
+	        ),
+	        React.createElement(
+	          'i',
+	          { onClick: this.close, className: 'material-icons first-icon' },
+	          'close'
+	        )
+	      )
 	    );
 	  }
 	});

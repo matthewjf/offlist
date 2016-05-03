@@ -35,5 +35,4 @@ class Api::OffersController < ApplicationController
     @offer = current_user.received_offers.find(params[:id])
     render json: {status: 422, errors: {}} unless @offer
   end
-
 end

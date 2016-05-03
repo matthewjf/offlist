@@ -35,12 +35,34 @@ class Product < ActiveRecord::Base
   end
 
   def self.in_bounds(bounds)
+    result = Product.where(active: true)
     if bounds
       lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]
       lng = [bounds["northEast"]["lng"], bounds["southWest"]["lng"]]
-      return Product.where(lat: lat.min..lat.max,lng: lng.max..lng.min, active: true)
+      return result.where(lat: lat.min..lat.max,lng: lng.max..lng.min)
     else
-      return Product.where(active: true)
+      return result
     end
+  end
+
+  def self.search(query)
+    keywords = query.split(' ')
+    result = Product.search_by_keyword(keywords.shift)
+    until keywords.empty?
+      result = result.union_all(Product.search_by_keyword(keywords.shift))
+    end
+
+    result.order('count_id desc').group(:id).count(:id)
+  end
+
+  def self.search_by_keyword(keyword)
+    Product.select(:id).where(
+      'LOWER(title) LIKE ? or LOWER(description) LIKE ?',
+      "%#{keyword.downcase}%",
+       "%#{keyword.downcase}%")
+  end
+
+  def self.combined_search(query, bounds)
+    Product.where(id: Product.search(query)).merge(Product.in_bounds(bounds))
   end
 end

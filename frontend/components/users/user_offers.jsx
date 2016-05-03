@@ -138,7 +138,7 @@ module.exports = React.createClass({
     return (
       <ul className="collapsible" data-collapsible="expandable">
         <li>
-          <div className="collapsible-header waves-effect">
+          <div className="collapsible-header waves-effect active">
             <b>Pending</b>
           </div>
           <div className="collapsible-body">

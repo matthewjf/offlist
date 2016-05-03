@@ -48,4 +48,9 @@ class Api::ProductsController < ApplicationController
   def product_params
     params.require(:product).permit(:title, :description, :lat, :lng, :price)
   end
+
+  def require_correct_user
+    @product = current_user.products.find(params[:id])
+    render json: {status: 422, errors: {}} unless @product
+  end
 end

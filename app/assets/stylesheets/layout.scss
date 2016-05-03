@@ -17,11 +17,39 @@ main {
  flex: 1 0 auto;
 }
 
+/* nav */
+
+nav .nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+
+  #logo-container {
+    position: static;
+    padding-right: 1rem;
+  }
+  .logo-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+  }
+}
+
+.button-collapse {
+  .material-icons {
+    color: $primary-color !important;
+  }
+}
+
 /* logo */
 
 #logo {
  max-height: 50px;
  cursor: pointer;
+ position: static;
 }
 
 #logo-container {
@@ -33,15 +61,18 @@ main {
  display: flex !important;
  vertical-align: middle;
  font-family: 'Raleway', sans-serif;
+ left: 0 !important;
+ transform: none !important;
+}
+
+nav .brand-logo {
+  position: static;
 }
 
 /* links */
 
 nav li a {
  color: color('grey', 'darken-1');
-}
-nav .material-icons {
-  color: $primary-color !important;
 }
 
 /* footer */
