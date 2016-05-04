@@ -60987,7 +60987,13 @@
 	
 	  tagsList: function () {
 	    if (this.state.product && this.state.product.tags) {
-	      return '';
+	      return this.state.products.tags.map(function (tag) {
+	        return React.createElement(
+	          'div',
+	          { className: 'chip' },
+	          tag.name
+	        );
+	      });
 	    } else {
 	      return '';
 	    }
@@ -61044,15 +61050,7 @@
 	              this.state.address
 	            )
 	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'tags' },
-	            React.createElement(
-	              'div',
-	              { className: 'chip' },
-	              'Jane Doe'
-	            )
-	          )
+	          React.createElement('div', { className: 'tags' })
 	        )
 	      )
 	    );

@@ -1,10 +1,10 @@
-# Splashy
+# OffList
 
-[Splashy][https://splashy-app.herokuapp.com/]
+[OffList][https://OffList-app.herokuapp.com/]
 
 ## Minimum Viable Product
 
-Splashy is a web application inspired by Etsy that will be built using Ruby on Rails and React.js.  It's a site for people selling locally made products, locally.  By the end of Week 9, this app will, at a minimum, satisfy the following criteria:
+OffList is a web application inspired by Etsy that will be built using Ruby on Rails and React.js.  It's a site for people selling locally made products, locally.  By the end of Week 9, this app will, at a minimum, satisfy the following criteria:
 
 - [x] New account creation, login, and guest/demo login
 - [x] Smooth, bug-free navigation
@@ -16,7 +16,7 @@ Splashy is a web application inspired by Etsy that will be built using Ruby on R
 
 ## Product Goals and Priorities
 
-Splashy will allow users to do the following:
+OffList will allow users to do the following:
 
 <!-- This is a Markdown checklist. Use it to keep track of your
 progress. Put an x between the brackets for a checkmark: [x] -->

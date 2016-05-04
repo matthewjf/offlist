@@ -81,7 +81,11 @@ module.exports = React.createClass({
 
   tagsList: function() {
     if(this.state.product && this.state.product.tags) {
-      return '';
+      return this.state.products.tags.map(function(tag) {
+        return <div className="chip">
+          {tag.name}
+        </div>;
+      });
     } else {
       return '';
     }
@@ -120,9 +124,7 @@ module.exports = React.createClass({
               </div>
             </div>
             <div className='tags'>
-              <div className="chip">
-                Jane Doe
-              </div>
+
             </div>
           </div>
         </div>
