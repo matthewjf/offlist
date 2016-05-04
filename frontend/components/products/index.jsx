@@ -12,6 +12,14 @@ module.exports = React.createClass({
     this.setState({ products: ProductStore.all() });
   },
 
+  setProducts: function() {
+
+  },
+
+  setNearbyProducts: function() {
+
+  },
+
   componentDidMount: function () {
     this.productListener = ProductStore.addListener(this.getProducts);
     ClientActions.fetchProducts();
@@ -25,6 +33,30 @@ module.exports = React.createClass({
     return <li className='placeholder-card card product-item'></li>;
   },
 
+  productItems: function() {
+    return this.itemList(this.state.products);
+  },
+
+  nearbyItems: function() {
+    return (
+      <ul className='sidebar-list'>
+        {this.placeholder()}
+        {this.placeholder()}
+        {this.placeholder()}
+        {this.placeholder()}
+      </ul>
+    );
+  },
+
+  itemList: function(items) {
+    return items.map(function(item) {
+      return <IndexItem
+        product={item}
+        key={item.id}
+      />;
+    });
+  },
+
   render: function() {
     var links = this.state.products.map(function(product) {
       return <IndexItem
@@ -36,12 +68,13 @@ module.exports = React.createClass({
     return <div id='sidebar'>
       <div className='sidebar-content'>
         <ul className='sidebar-list'>
-          {links}
+          {this.productItems()}
           {this.placeholder()}
           {this.placeholder()}
           {this.placeholder()}
           {this.placeholder()}
         </ul>
+
       </div>
     </div>;
   }

@@ -18,9 +18,15 @@
 class Product < ActiveRecord::Base
   default_scope -> { order(created_at: :desc) }
 
-  validates :title, :description, :img_urls, :user, presence: true
+  validates :title, :description, :img_urls, :user, :price, presence: true
   belongs_to :user
   has_many :offers
+  has_many :taggings, inverse_of: :product, dependent: :destroy
+  has_many :tags, through: :taggings
+
+  def tag_list=(tags)
+    self.tags = tags.map { |name| Tag.find_by_name(name) }.compact
+  end
 
   def deactivate!
     raise 'not active' unless self.active == true

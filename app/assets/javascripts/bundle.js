@@ -25545,7 +25545,8 @@
 	              React.createElement('input', {
 	                id: 'address',
 	                type: 'text',
-	                ref: 'address' })
+	                ref: 'address',
+	                defaultValue: 'San Francisco' })
 	            ),
 	            React.createElement(
 	              'label',
@@ -25673,8 +25674,8 @@
 	  componentDidMount: function () {
 	    var map = ReactDOM.findDOMNode(this.refs.map);
 	    var mapOptions = {
-	      center: { lat: 37.7758, lng: -122.435 },
-	      zoom: 13,
+	      center: { lat: 37.7749295, lng: -122.4194155 },
+	      zoom: 12,
 	      zoomControl: true,
 	      zoomControlOptions: {
 	        position: google.maps.ControlPosition.TOP_RIGHT
@@ -25701,7 +25702,9 @@
 	  },
 	
 	  lookupSuccess: function (latLng) {
-	    var circle = new google.maps.Circle({
+	    if (this.circle) this.circle.setMap(null);
+	
+	    this.circle = new google.maps.Circle({
 	      center: latLng,
 	      radius: parseInt(this.state.distance) / 0.00062137,
 	      map: this.map,
@@ -25712,7 +25715,7 @@
 	      strokeWeight: 1
 	    });
 	
-	    this.map.fitBounds(circle.getBounds());
+	    this.map.fitBounds(this.circle.getBounds());
 	    this.setLatLng();
 	  },
 	
@@ -25727,7 +25730,6 @@
 	  },
 	
 	  render: function () {
-	    var resultText = '';
 	    return React.createElement('div', { id: 'map', ref: 'map', className: 'index' });
 	  }
 	});
@@ -32990,6 +32992,10 @@
 	    this.setState({ products: ProductStore.all() });
 	  },
 	
+	  setProducts: function () {},
+	
+	  setNearbyProducts: function () {},
+	
 	  componentDidMount: function () {
 	    this.productListener = ProductStore.addListener(this.getProducts);
 	    ClientActions.fetchProducts();
@@ -33001,6 +33007,30 @@
 	
 	  placeholder: function () {
 	    return React.createElement('li', { className: 'placeholder-card card product-item' });
+	  },
+	
+	  productItems: function () {
+	    return this.itemList(this.state.products);
+	  },
+	
+	  nearbyItems: function () {
+	    return React.createElement(
+	      'ul',
+	      { className: 'sidebar-list' },
+	      this.placeholder(),
+	      this.placeholder(),
+	      this.placeholder(),
+	      this.placeholder()
+	    );
+	  },
+	
+	  itemList: function (items) {
+	    return items.map(function (item) {
+	      return React.createElement(IndexItem, {
+	        product: item,
+	        key: item.id
+	      });
+	    });
 	  },
 	
 	  render: function () {
@@ -33020,7 +33050,7 @@
 	        React.createElement(
 	          'ul',
 	          { className: 'sidebar-list' },
-	          links,
+	          this.productItems(),
 	          this.placeholder(),
 	          this.placeholder(),
 	          this.placeholder(),
@@ -34578,7 +34608,7 @@
 	        { id: 'sidebar' },
 	        React.createElement(
 	          'div',
-	          { className: 'sidebar-content' },
+	          { className: 'sidebar-detail-content' },
 	          React.createElement(
 	            'h4',
 	            { className: 'grey-text text-darken-3 center-align' },
@@ -60900,7 +60930,8 @@
 	      img_urls: [],
 	      lat: '',
 	      lng: '',
-	      seller: { username: '' }
+	      seller: { username: '' },
+	      tags: []
 	    };
 	    return blank;
 	  },
@@ -60928,11 +60959,6 @@
 	    }
 	  },
 	
-	  getProduct: function (id) {
-	    var product = ProductStore.find(id) || this.blankProduct();
-	    return { product: product };
-	  },
-	
 	  setAddress: function (address) {
 	    this.setState({ address: address });
 	  },
@@ -60956,6 +60982,14 @@
 	          )
 	        )
 	      );
+	    }
+	  },
+	
+	  tagsList: function () {
+	    if (this.state.product && this.state.product.tags) {
+	      return '';
+	    } else {
+	      return '';
 	    }
 	  },
 	
@@ -61008,6 +61042,15 @@
 	              'div',
 	              { className: 'address' },
 	              this.state.address
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'tags' },
+	            React.createElement(
+	              'div',
+	              { className: 'chip' },
+	              'Jane Doe'
 	            )
 	          )
 	        )

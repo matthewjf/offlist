@@ -21,6 +21,11 @@ body, html, main, #app, #root {
   height: calc(100vh - 64px - 59px);
 }
 
+.sidebar-detail-content {
+  overflow-y: auto;
+  height: calc(100vh - 64px);
+}
+
 .sidebar-list {
   display: flex;
   flex-flow: row wrap;
@@ -29,6 +34,13 @@ body, html, main, #app, #root {
   margin-top: 1rem;
 }
 
+.divider {
+  margin: 0 1.5rem;
+}
+
+.results-text {
+
+}
 
 .product-item {
   flex: 1 0 100%;

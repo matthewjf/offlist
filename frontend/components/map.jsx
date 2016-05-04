@@ -62,8 +62,8 @@ module.exports = React.createClass({
   componentDidMount: function(){
     var map = ReactDOM.findDOMNode(this.refs.map);
     var mapOptions = {
-      center: {lat: 37.7758, lng: -122.435},
-      zoom: 13,
+      center: {lat: 37.7749295, lng: -122.4194155},
+      zoom: 12,
       zoomControl: true,
       zoomControlOptions: {
         position: google.maps.ControlPosition.TOP_RIGHT
@@ -93,7 +93,10 @@ module.exports = React.createClass({
   },
 
   lookupSuccess: function(latLng) {
-    var circle = new google.maps.Circle({
+    if (this.circle)
+      this.circle.setMap(null);
+
+    this.circle = new google.maps.Circle({
       center: latLng,
       radius: parseInt(this.state.distance) / 0.00062137,
       map: this.map,
@@ -104,7 +107,7 @@ module.exports = React.createClass({
       strokeWeight: 1
     });
 
-    this.map.fitBounds(circle.getBounds());
+    this.map.fitBounds(this.circle.getBounds());
     this.setLatLng();
   },
 
@@ -119,7 +122,6 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    var resultText = '';
     return (
       <div id="map" ref='map' className='index' />
     );

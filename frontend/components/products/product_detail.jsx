@@ -26,7 +26,8 @@ module.exports = React.createClass({
       img_urls: [],
       lat: '',
       lng: '',
-      seller: {username: ''}
+      seller: {username: ''},
+      tags: []
     };
     return blank;
   },
@@ -58,11 +59,6 @@ module.exports = React.createClass({
     }
   },
 
-  getProduct: function(id){
-    var product = ProductStore.find(id) || this.blankProduct();
-    return {product: product};
-  },
-
   setAddress: function(address){
     this.setState({address: address});
   },
@@ -80,6 +76,14 @@ module.exports = React.createClass({
           </div>
         </div>
       );
+    }
+  },
+
+  tagsList: function() {
+    if(this.state.product && this.state.product.tags) {
+      return '';
+    } else {
+      return '';
     }
   },
 
@@ -113,6 +117,11 @@ module.exports = React.createClass({
               </div>
               <div className='address'>
                 {this.state.address}
+              </div>
+            </div>
+            <div className='tags'>
+              <div className="chip">
+                Jane Doe
               </div>
             </div>
           </div>

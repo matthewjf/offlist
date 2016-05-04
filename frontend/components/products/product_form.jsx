@@ -202,7 +202,7 @@ module.exports = React.createClass({
     return (
       <div id='content'>
         <div id='sidebar'>
-          <div className='sidebar-content'>
+          <div className='sidebar-detail-content'>
             <h4 className='grey-text text-darken-3 center-align'>Listing Form</h4>
             <form className='col s12 m10 l8 product-form' onSubmit={this.handleSubmit}>
 

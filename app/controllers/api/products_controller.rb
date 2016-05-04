@@ -48,7 +48,7 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:title, :description, :lat, :lng, :price)
+    params.require(:product).permit(:title, :description, :lat, :lng, :price, :tag_list)
   end
 
   def require_correct_user

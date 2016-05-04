@@ -50,7 +50,8 @@ module.exports = React.createClass({
               <input
                 id="address"
                 type="text"
-                ref='address' />
+                ref='address'
+                defaultValue='San Francisco' />
             </div>
 
             <label htmlFor='distance'>within</label>
