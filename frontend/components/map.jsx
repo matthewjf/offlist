@@ -95,7 +95,13 @@ module.exports = React.createClass({
   lookupSuccess: function(latLng) {
     var circle = new google.maps.Circle({
       center: latLng,
-      radius: parseInt(this.state.distance) / 0.00062137
+      radius: parseInt(this.state.distance) / 0.00062137,
+      map: this.map,
+      fillColor: '#F57C00',
+      fillOpacity: 0.20,
+      strokeColor: '#F57C00',
+      strokeOpacity: 0.5,
+      strokeWeight: 1
     });
 
     this.map.fitBounds(circle.getBounds());

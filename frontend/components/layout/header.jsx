@@ -90,8 +90,7 @@ module.exports = React.createClass({
           <div className="nav-wrapper container">
 						<div className='logo-wrapper'>
 	            <a id="logo-container" onClick={this.home} className="brand-logo">
-	              <img id='logo' src="/logo.png" />
-	              splashy
+	              OffList
 	            </a>
 						</div>
             {this.notLoggedIn()}
