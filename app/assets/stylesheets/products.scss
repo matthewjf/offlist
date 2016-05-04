@@ -18,7 +18,7 @@ body, html, main, #app, #root {
 }
 .sidebar-content {
   overflow-y: auto;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 64px - 59px);
 }
 
 .sidebar-list {

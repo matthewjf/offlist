@@ -3,8 +3,10 @@ class Api::ProductsController < ApplicationController
   before_action :require_correct_user, only: [:update, :destroy]
 
   def index
-    @products = Product.in_bounds(params[:bounds])
-    render json: @products
+    result = Product.search(params[:opts])
+    @products = result[:products]
+    @scores = result[:scores]
+    render :index
   end
 
   def show

@@ -28,41 +28,45 @@ class Product < ActiveRecord::Base
       self.active = false
       self.save!
 
-      # self.offers.each do |offer| # n + 1 query???
-      # self.id
-      #   offer.decline!
-      # end
-
-      # fewer queries?
+      # offer validation checks user so this might reduce queries? not sure
       Product.includes(:offers).find(self.id).offers.includes(:user).each { |offer| offer.decline!}
     end
   end
 
   def self.in_bounds(bounds = nil)
-    result = Product.where(active: true)
     if bounds
       lat = [bounds["northEast"]["lat"], bounds["southWest"]["lat"]]
       lng = [bounds["northEast"]["lng"], bounds["southWest"]["lng"]]
-      return result.where(lat: lat.min..lat.max,lng: lng.max..lng.min)
+      return Product.where(lat: lat.min..lat.max,lng: lng.max..lng.min)
     else
-      return result
+      return Product.all
     end
   end
 
-  def self.search(query)
-    keywords = query.split(' ')
-    result = Product.search_by_keyword(keywords.shift)
-    until keywords.empty?
-      result = result.union_all(Product.search_by_keyword(keywords.shift))
+  def self.score(opts={})
+    defaults = { "query" => '', "bounds" => nil, "active" => true}
+    opts = (opts ? defaults.merge(opts) : defaults)
+
+    filtered_result = Product.where(active: opts["active"]).in_bounds(opts["bounds"])
+    if opts["query"].empty?
+      return filtered_result.select(:id).order('count_id desc').group(:id).count(:id)
     end
 
-    # generates an active record relation if that's what I need instead
-    # result.select('id, count(id) as count_id').order('count_id desc').group(:id)
 
-    # this generates a count hash
+    keywords = opts["query"].split(' ')
+    result = filtered_result.search_by_keyword(keywords.shift)
+    until keywords.empty?
+      result = result.union_all(filtered_result.search_by_keyword(keywords.shift))
+    end
+
     result.select(:id).order('count_id desc').group(:id).count(:id)
   end
 
+  def self.active
+    Product.where(active: true)
+  end
+
+  # need to escape this
   def self.search_by_keyword(keyword)
     Product.where(
       'LOWER(title) LIKE ? or LOWER(description) LIKE ?',
@@ -70,8 +74,9 @@ class Product < ActiveRecord::Base
        "%#{keyword.downcase}%")
   end
 
-  def self.combined_search(query, bounds = nil)
-    # runs 3 queries at eval
-    Product.where(id: Product.search(query).keys).merge(Product.in_bounds(bounds))
+  def self.search(opts)
+    scores = Product.score(opts)
+    {products: Product.where(id: scores.keys), scores: scores}
   end
+
 end

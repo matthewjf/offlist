@@ -170,7 +170,8 @@ module.exports = React.createClass({
     }
   },
 
-  cancelForm: function() {
+  cancelForm: function(e) {
+    e.preventDefault();
     hashHistory.push('account');
   },
 

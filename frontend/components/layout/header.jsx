@@ -1,8 +1,9 @@
 var React = require('react'),
 		UserActions = require("../../actions/user_actions"),
 		CurrentUserState = require("../../mixins/current_user_state"),
-    hashHistory = require('react-router').hashHistory,
-		SearchForm = require('./search_form');
+    hashHistory = require('react-router').hashHistory;
+
+// var SearchForm = require('../search_form');
 
 module.exports = React.createClass({
 	mixins: [CurrentUserState],
@@ -86,14 +87,12 @@ module.exports = React.createClass({
     return (
       <header>
         <nav className="white" role="navigation">
-
           <div className="nav-wrapper container">
 						<div className='logo-wrapper'>
 	            <a id="logo-container" onClick={this.home} className="brand-logo">
 	              <img id='logo' src="/logo.png" />
 	              splashy
 	            </a>
-							<SearchForm />
 						</div>
             {this.notLoggedIn()}
             {this.notLoggedInMobile()}

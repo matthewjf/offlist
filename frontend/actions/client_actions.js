@@ -1,8 +1,8 @@
 var ApiUtil = require('../util/api_util.js');
 
 module.exports = {
-  fetchProducts: function (bounds) {
-    ApiUtil.fetchProducts(bounds);
+  fetchProducts: function (opts) {
+    ApiUtil.fetchProducts(opts);
   },
 
   getProduct: function (id) {

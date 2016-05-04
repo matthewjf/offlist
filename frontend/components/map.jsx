@@ -1,13 +1,18 @@
 var React = require('react'),
     ReactDOM = require('react-dom'),
     ProductStore = require('../stores/product_store'),
-    ClientActions = require('../actions/client_actions'),
     MapUtil = require('../util/map_util'),
-    MarkerStore = require('../stores/marker_store');
+    MarkerStore = require('../stores/marker_store'),
+    SearchActions = require('../actions/search_actions'),
+    SearchStore = require('../stores/search_store');
 
 /* global google */
 
 module.exports = React.createClass({
+  getInitialState: function() {
+    return {};
+  },
+
   onChange: function(){
     var self = this;
     setTimeout(function(){
@@ -28,24 +33,30 @@ module.exports = React.createClass({
     MarkerStore.resetMarkers(markers);
   },
 
-  getProducts: function() {
-    var currLoc = this.map.getBounds();
+  setLatLng: function() {
+    var latLngBounds = this.map.getBounds();
+    this.setState({bounds: this.getBounds(latLngBounds)});
+
+    SearchActions.setSearch(this.state);
+  },
+
+  getBounds: function(latLng) {
     var northEast = {
-      lat: currLoc.getNorthEast().lat(),
-      lng: currLoc.getNorthEast().lng()
+      lat: latLng.getNorthEast().lat(),
+      lng: latLng.getNorthEast().lng()
     };
 
     var southWest = {
-      lat: currLoc.getSouthWest().lat(),
-      lng: currLoc.getSouthWest().lng()
+      lat: latLng.getSouthWest().lat(),
+      lng: latLng.getSouthWest().lng()
     };
 
-    var bounds = {bounds: {
+    var bounds = {
       northEast: northEast,
       southWest: southWest
-    }};
+    };
 
-    ClientActions.fetchProducts(bounds);
+    return bounds;
   },
 
   componentDidMount: function(){
@@ -61,7 +72,7 @@ module.exports = React.createClass({
     };
     this.map = new google.maps.Map(map, mapOptions);
     this.productListener = ProductStore.addListener(this.onChange);
-    this.mapListener = this.map.addListener('idle',this.getProducts);
+    this.mapListener = this.map.addListener('idle',this.setLatLng);
   },
 
   componentWillUnmount: function() {
@@ -69,9 +80,42 @@ module.exports = React.createClass({
     this.productListener.remove();
   },
 
+  lookupAddress: function(address){
+    if (address)
+      MapUtil.geocodeAddress(address, this.lookupSuccess, this.lookupError);
+    else
+      this.setLatLng();
+  },
+
+  lookupError: function(status){
+    /* global Materialize */
+    Materialize.toast('Unknown location: ' + status, 4000, 'red-text');
+  },
+
+  lookupSuccess: function(latLng) {
+    var circle = new google.maps.Circle({
+      center: latLng,
+      radius: parseInt(this.state.distance) / 0.00062137
+    });
+
+    this.map.fitBounds(circle.getBounds());
+    this.setLatLng();
+  },
+
+  componentWillReceiveProps: function(newProps) {
+    this.setState({
+      query: newProps.state.query,
+      distance: newProps.state.distance,
+      address: newProps.state.address
+    });
+
+    this.lookupAddress(newProps.state.address);
+  },
+
   render: function () {
-   return (
+    var resultText = '';
+    return (
       <div id="map" ref='map' className='index' />
-   );
- }
+    );
+  }
 });
