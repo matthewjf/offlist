@@ -4,7 +4,8 @@ var React = require('react'),
     MapUtil = require('../util/map_util'),
     MarkerStore = require('../stores/marker_store'),
     SearchActions = require('../actions/search_actions'),
-    SearchStore = require('../stores/search_store');
+    SearchStore = require('../stores/search_store'),
+    hashHistory = require('react-router').hashHistory;
 
 /* global google */
 
@@ -28,6 +29,14 @@ module.exports = React.createClass({
     Object.keys(products).forEach(function(key) {
       var mark = MapUtil.addMarker(self.map, products[key]);
       markers[products[key]['id']] = mark;
+      google.maps.event.addListener(mark, 'click', function(){
+        self.infoWindow.setContent(self.windowContent(products[key]));
+        self.infoWindow.open(self.map, this);
+        MapUtil.styleInfoWindow();
+        $('#iw-click').click(function(e) {
+          hashHistory.push("/listings/" + $(e.currentTarget).attr("data"));
+        });
+      });
     });
 
     MarkerStore.resetMarkers(markers);
@@ -72,11 +81,21 @@ module.exports = React.createClass({
     };
     this.map = new google.maps.Map(map, mapOptions);
     this.productListener = ProductStore.addListener(this.onChange);
-    this.mapListener = this.map.addListener('idle',this.setLatLng);
+
+    this.dragListener = this.map.addListener('dragend',this.setLatLng);
+    this.zoomListener = this.map.addListener('zoom_changed',this.setLatLng);
+
+    MapUtil.createInfoWindow(this);
+    google.maps.event.addListener(this.map, 'click', function(event) {
+      if (this.infoWindow)
+          this.infoWindow.close();
+    }.bind(this));
   },
 
   componentWillUnmount: function() {
-    google.maps.event.removeListener(this.mapListener);
+    // google.maps.event.removeListener(this.mapListener);
+    google.maps.event.removeListener(this.dragListener);
+    google.maps.event.removeListener(this.zoomListener);
     this.productListener.remove();
   },
 
@@ -119,6 +138,26 @@ module.exports = React.createClass({
     });
 
     this.lookupAddress(newProps.state.address);
+  },
+
+  windowContent: function(product) {
+    return (
+      "<li class='iw'>" +
+        "<div class='iw-price'>" +
+          "$" + product.price +
+        "</div>" +
+        "<div class='iw-image'>" +
+            "<img src='" + product.img_urls[0] + "'/>" +
+          "</div>" +
+        "<div class='iw-content'>" +
+          "<div class='iw-title grey-text text-darken-3'>" +
+            product.title +
+          "</div>" +
+        "</div>" +
+        "<div id='iw-click' class='hover waves-effect waves-light' data='" +
+         product.id + "'>" +
+      "</li>"
+    );
   },
 
   render: function () {

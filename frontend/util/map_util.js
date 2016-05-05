@@ -2,23 +2,27 @@ var ReactDOM = require('react-dom');
 /* global google */
 
 module.exports = {
-  createInfoWindow: function(marker, product) {
-    var self = this;
-    var infowindow = new google.maps.InfoWindow({
-      content: contentString
+  createInfoWindow: function(self) {
+    var contentString = '<div id="marker-box">hello</div>';
+
+    self.infoWindow = new google.maps.InfoWindow({
+      content: contentString,
+      maxWidth: 300
     });
 
-    var contentString = '<div id="marker-box">'+
-      product.name +
-      '</div>';
+  },
 
-    marker.addListener('click', function() {
-      infowindow.open(self.map, this);
-    });
-
-    marker.addListener('mouseout', function() {
-      infowindow.close();
-    });
+  styleInfoWindow: function() {
+    var parent = $('.gm-style-iw').parent();
+    var firstChild = parent.children('div:first-child');
+    parent.find('div').css({maxWidth: '300px'});
+    // remove close button (positioning was too hard)
+    parent.children('div:last-child').css({display: 'none'});
+    // hide infowindow background
+    firstChild.children('div:nth-child(2)').css({display: 'none'});
+    firstChild.children('div:last-child').css({display: 'none'});
+    // raise carrot over shadow
+    firstChild.children('div:nth-child(3)').children('div').css({zIndex: 100});
   },
 
   clearMarkers: function(markers){

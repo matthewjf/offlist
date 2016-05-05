@@ -25616,7 +25616,8 @@
 	    MapUtil = __webpack_require__(250),
 	    MarkerStore = __webpack_require__(251),
 	    SearchActions = __webpack_require__(253),
-	    SearchStore = __webpack_require__(255);
+	    SearchStore = __webpack_require__(255),
+	    hashHistory = __webpack_require__(166).hashHistory;
 	
 	/* global google */
 	
@@ -25642,6 +25643,14 @@
 	    Object.keys(products).forEach(function (key) {
 	      var mark = MapUtil.addMarker(self.map, products[key]);
 	      markers[products[key]['id']] = mark;
+	      google.maps.event.addListener(mark, 'click', function () {
+	        self.infoWindow.setContent(self.windowContent(products[key]));
+	        self.infoWindow.open(self.map, this);
+	        MapUtil.styleInfoWindow();
+	        $('#iw-click').click(function (e) {
+	          hashHistory.push("/listings/" + $(e.currentTarget).attr("data"));
+	        });
+	      });
 	    });
 	
 	    MarkerStore.resetMarkers(markers);
@@ -25686,11 +25695,20 @@
 	    };
 	    this.map = new google.maps.Map(map, mapOptions);
 	    this.productListener = ProductStore.addListener(this.onChange);
-	    this.mapListener = this.map.addListener('idle', this.setLatLng);
+	
+	    this.dragListener = this.map.addListener('dragend', this.setLatLng);
+	    this.zoomListener = this.map.addListener('zoom_changed', this.setLatLng);
+	
+	    MapUtil.createInfoWindow(this);
+	    google.maps.event.addListener(this.map, 'click', function (event) {
+	      if (this.infoWindow) this.infoWindow.close();
+	    }.bind(this));
 	  },
 	
 	  componentWillUnmount: function () {
-	    google.maps.event.removeListener(this.mapListener);
+	    // google.maps.event.removeListener(this.mapListener);
+	    google.maps.event.removeListener(this.dragListener);
+	    google.maps.event.removeListener(this.zoomListener);
 	    this.productListener.remove();
 	  },
 	
@@ -25729,6 +25747,10 @@
 	    });
 	
 	    this.lookupAddress(newProps.state.address);
+	  },
+	
+	  windowContent: function (product) {
+	    return "<li class='iw'>" + "<div class='iw-price'>" + "$" + product.price + "</div>" + "<div class='iw-image'>" + "<img src='" + product.img_urls[0] + "'/>" + "</div>" + "<div class='iw-content'>" + "<div class='iw-title grey-text text-darken-3'>" + product.title + "</div>" + "</div>" + "<div id='iw-click' class='hover waves-effect waves-light' data='" + product.id + "'>" + "</li>";
 	  },
 	
 	  render: function () {
@@ -32571,21 +32593,26 @@
 	/* global google */
 	
 	module.exports = {
-	  createInfoWindow: function (marker, product) {
-	    var self = this;
-	    var infowindow = new google.maps.InfoWindow({
-	      content: contentString
-	    });
+	  createInfoWindow: function (self) {
+	    var contentString = '<div id="marker-box">hello</div>';
 	
-	    var contentString = '<div id="marker-box">' + product.name + '</div>';
-	
-	    marker.addListener('click', function () {
-	      infowindow.open(self.map, this);
+	    self.infoWindow = new google.maps.InfoWindow({
+	      content: contentString,
+	      maxWidth: 300
 	    });
+	  },
 	
-	    marker.addListener('mouseout', function () {
-	      infowindow.close();
-	    });
+	  styleInfoWindow: function () {
+	    var parent = $('.gm-style-iw').parent();
+	    var firstChild = parent.children('div:first-child');
+	    parent.find('div').css({ maxWidth: '300px' });
+	    // remove close button (positioning was too hard)
+	    parent.children('div:last-child').css({ display: 'none' });
+	    // hide infowindow background
+	    firstChild.children('div:nth-child(2)').css({ display: 'none' });
+	    firstChild.children('div:last-child').css({ display: 'none' });
+	    // raise carrot over shadow
+	    firstChild.children('div:nth-child(3)').children('div').css({ zIndex: 100 });
 	  },
 	
 	  clearMarkers: function (markers) {
