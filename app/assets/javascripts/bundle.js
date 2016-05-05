@@ -25476,7 +25476,8 @@
 	    ReactDOM = __webpack_require__(32),
 	    Map = __webpack_require__(226),
 	    Index = __webpack_require__(260),
-	    hashHistory = __webpack_require__(166).hashHistory;
+	    hashHistory = __webpack_require__(166).hashHistory,
+	    SearchStore = __webpack_require__(255);
 	
 	/* global Materialize */
 	
@@ -25493,7 +25494,7 @@
 	  },
 	
 	  handleSubmit: function (e) {
-	    e.preventDefault();
+	    if (e) e.preventDefault();
 	
 	    var query = ReactDOM.findDOMNode(this.refs.query).value;
 	    var address = ReactDOM.findDOMNode(this.refs.address).value;
@@ -25503,6 +25504,23 @@
 	
 	  componentDidMount: function () {
 	    $('select').material_select();
+	    var search = SearchStore.all();
+	    if (search) {
+	      if (search.query) {
+	        this.setState({ query: search.query });
+	        $('#query').val(search.query).change();
+	      }
+	      if (search.address) {
+	        this.setState({ address: search.address });
+	        $('#address').val(search.address).change();
+	      }
+	      if (search.distance) {
+	        this.setState({ distance: search.distance });
+	        $('#distance').val(search.distance).change();
+	        $('#distance').material_select();
+	      }
+	    }
+	    this.handleSubmit();
 	  },
 	
 	  componentWillUnmount: function () {
@@ -25560,7 +25578,7 @@
 	              { className: 'input-field col m2' },
 	              React.createElement(
 	                'select',
-	                { ref: 'distance', defaultValue: '5' },
+	                { id: 'distance', ref: 'distance', defaultValue: '5' },
 	                React.createElement(
 	                  'option',
 	                  { value: '2' },
@@ -33027,7 +33045,7 @@
 	
 	  componentDidMount: function () {
 	    this.productListener = ProductStore.addListener(this.getProducts);
-	    ClientActions.fetchProducts();
+	    // ClientActions.fetchProducts();
 	  },
 	
 	  componentWillUnmount: function () {

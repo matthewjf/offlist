@@ -2,7 +2,8 @@ var React = require('react'),
     ReactDOM = require('react-dom'),
     Map = require('./map'),
     Index = require('./products/index'),
-    hashHistory = require('react-router').hashHistory;
+    hashHistory = require('react-router').hashHistory,
+    SearchStore = require('../stores/search_store');
 
 /* global Materialize */
 
@@ -17,7 +18,8 @@ module.exports = React.createClass({
   },
 
   handleSubmit: function(e) {
-    e.preventDefault();
+    if (e)
+      e.preventDefault();
 
     var query = ReactDOM.findDOMNode(this.refs.query).value;
     var address = ReactDOM.findDOMNode(this.refs.address).value;
@@ -27,6 +29,23 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     $('select').material_select();
+    var search = SearchStore.all();
+    if (search) {
+      if (search.query) {
+        this.setState({query: search.query});
+        $('#query').val(search.query).change();
+      }
+      if (search.address) {
+        this.setState({address: search.address});
+        $('#address').val(search.address).change();
+      }
+      if (search.distance) {
+        this.setState({distance: search.distance});
+        $('#distance').val(search.distance).change();
+        $('#distance').material_select();
+      }
+    }
+    this.handleSubmit();
   },
 
   componentWillUnmount: function() {
@@ -58,7 +77,7 @@ module.exports = React.createClass({
 
             <label htmlFor='distance'>within</label>
             <div className="input-field col m2">
-              <select ref='distance' defaultValue='5' >
+              <select id="distance" ref='distance' defaultValue='5' >
                 <option value="2">2 mi</option>
                 <option value="5">5 mi</option>
                 <option value="10">10 mi</option>
