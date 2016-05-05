@@ -25753,7 +25753,7 @@
 	      strokeWeight: 1
 	    });
 	
-	    this.setState({ center: latLng });
+	    // this.setState({center: latLng});
 	
 	    this.map.fitBounds(this.circle.getBounds());
 	    this.setLatLng();
