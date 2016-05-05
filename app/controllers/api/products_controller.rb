@@ -29,7 +29,6 @@ class Api::ProductsController < ApplicationController
     @product = Product.find(params[:id])
 
     if @product.update(product_params)
-      debugger
       render json: @product
     else
       render json: @product.errors.full_messages, status: 422

@@ -22,7 +22,10 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
     this.productListener = ProductStore.addListener(this.getProducts);
-    // ClientActions.fetchProducts();
+  },
+
+  componentDidUpdate: function () {
+
   },
 
   componentWillUnmount: function() {

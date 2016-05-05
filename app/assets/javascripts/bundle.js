@@ -25753,6 +25753,8 @@
 	      strokeWeight: 1
 	    });
 	
+	    this.setState({ center: latLng });
+	
 	    this.map.fitBounds(this.circle.getBounds());
 	    this.setLatLng();
 	  },
@@ -33045,8 +33047,9 @@
 	
 	  componentDidMount: function () {
 	    this.productListener = ProductStore.addListener(this.getProducts);
-	    // ClientActions.fetchProducts();
 	  },
+	
+	  componentDidUpdate: function () {},
 	
 	  componentWillUnmount: function () {
 	    this.productListener.remove();
