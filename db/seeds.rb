@@ -10,6 +10,10 @@ User.create(
   )
 end
 
+3.times do |i|
+  Tag.create(name: 'tag' + i.to_s)
+end
+
 def create_product(user)
   lat = 37.7 + (rand()/10)
   lng = -122.4 - (rand()/10)
@@ -26,7 +30,8 @@ def create_product(user)
     lng: lng,
     price: rand(1000) + 1,
     user_id: user.id,
-    created_at: Faker::Time.backward(1000)
+    created_at: Faker::Time.backward(1000),
+    tag_list: ['tag0']
   )
 end
 

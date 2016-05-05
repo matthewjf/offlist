@@ -7,8 +7,4 @@ json.seller do
      json.null!
    end
 end
-json.tags do
-  json.array! @product.tags do |tag|
-    json.name tag.name
-  end
-end
+json.tag_list @tags

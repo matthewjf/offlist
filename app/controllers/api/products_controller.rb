@@ -11,12 +11,12 @@ class Api::ProductsController < ApplicationController
 
   def show
     @product = Product.find(params[:id])
+    @tags = @product.tags.map {|tag| tag.name}
   end
 
   def create
     @product = Product.new(product_params)
-    img_urls = params[:product][:img_urls]
-    @product.img_urls = img_urls
+
     @product.user = current_user
     if @product.save
       render json: @product
@@ -29,6 +29,7 @@ class Api::ProductsController < ApplicationController
     @product = Product.find(params[:id])
 
     if @product.update(product_params)
+      debugger
       render json: @product
     else
       render json: @product.errors.full_messages, status: 422
@@ -48,7 +49,7 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:title, :description, :lat, :lng, :price, :tag_list)
+    params.require(:product).permit(:title, :description, :lat, :lng, :price, :img_urls => [], :tag_list => [])
   end
 
   def require_correct_user

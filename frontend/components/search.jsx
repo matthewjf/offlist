@@ -26,9 +26,11 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function() {
-    $(document).ready(function() {
-      $('select').material_select();
-    });
+    $('select').material_select();
+  },
+
+  componentWillUnmount: function() {
+    $('select').material_select('destroy');
   },
 
   render: function() {

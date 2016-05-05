@@ -1,4 +1,5 @@
 var React = require('react'),
+    ReactDOM = require('react-dom'),
     ApiUtil = require('../../util/api_util.js'),
     hashHistory = require('react-router').hashHistory,
     NewProductMap = require('./new_product_map'),
@@ -33,7 +34,8 @@ module.exports = React.createClass({
     lat: '',
     lng: '',
     address: '',
-    img_urls: []
+    img_urls: [],
+    tag_list: []
   },
 
   getInitialState: function () {
@@ -60,6 +62,10 @@ module.exports = React.createClass({
     this.setState({address: addr});
     if (!addr)
       this.setState({lat: '', lng: ''});
+  },
+
+  setTags: function(tags) {
+    this.setState({tag_list: tags});
   },
 
   lookupAddress: function(e){
@@ -119,14 +125,17 @@ module.exports = React.createClass({
 
   handleSubmit: function (event) {
     event.preventDefault();
+
     var listing = {
       title: this.state.title,
       price: this.state.price,
       description: this.state.description,
       lat: this.state.lat,
       lng: this.state.lng,
-      img_urls: this.state.img_urls
+      img_urls: this.state.img_urls,
+      tag_list: this.state.tag_list
     };
+
     if (this.props.params.listingId) {
       listing.id = this.props.params.listingId;
       ApiUtil.updateProduct(listing, this.submitSuccess);
@@ -157,11 +166,19 @@ module.exports = React.createClass({
     this.editForm(this.props);
     $('#upload_widget_opener').cloudinary_upload_widget(
       cloudinaryWidgetOptions,
-      function(error, result) {self.setImageUrls(error, result);});
+      function(error, result) {self.setImageUrls(error, result);}
+    );
+
+    $('#tagselect').material_select();
+    $('#tagselect').change(function(){
+      self.setTags($('#tagselect').val());
+    });
   },
 
   componentWillUnmount: function() {
     this.productListener.remove();
+    $('#tagselect').material_select('destroy');
+    $('#tagselecet').off('change');
   },
 
   editForm: function(props) {
@@ -177,12 +194,15 @@ module.exports = React.createClass({
 
   _productChanged: function () {
     var self = this;
+
     var listingId = this.props.params.listingId;
     var listing = ProductStore.find(listingId);
     if (listing) {
-      Object.keys(listing).forEach(function(key) {
-        self.setState(listing);
-      });
+      self.setState(listing);
+
+      $('#tagselect').val(listing.tag_list).change();
+      $('#tagselect').material_select();
+
       /* global google */
       self.setState({
         googlePos: new google.maps.LatLng(listing.lat, listing.lng)
@@ -219,14 +239,26 @@ module.exports = React.createClass({
               </div>
 
               <div className='row'>
-                <div className='input-field col s12'>
+                <div className='input-field col s6'>
                   <input
                     id='price'
                     type='text'
                     value={this.state.price}
                     onChange={this.setPrice}
                   />
-                <label htmlFor='price'>Price</label>
+                  <label htmlFor='price'>Price</label>
+                </div>
+
+                <div className='input-field col s6'>
+                  <select
+                      multiple
+                      id='tagselect'>
+                    <option value="" disabled>none</option>
+                    <option value="tag0">Tag 0</option>
+                    <option value="tag1">Tag 1</option>
+                    <option value="tag2">Tag 2</option>
+                  </select>
+                  <label>Categories</label>
                 </div>
               </div>
 
@@ -302,4 +334,5 @@ module.exports = React.createClass({
       </div>
     );
   }
+
 });

@@ -39,7 +39,11 @@
   }
 
   .tags {
-    margin: 2rem 0.5rem 0.5rem 0.5rem;
+    margin: 2rem 0.3rem 0.5rem 0.3rem;
+    .chip {
+      margin: 0 .2rem;
+      color: rgba(0, 0, 0, 0.72);
+    }
   }
 
   .seller-link {

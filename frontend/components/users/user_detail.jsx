@@ -30,14 +30,11 @@ module.exports = React.createClass({
               <li className="tab col s3"><a href="#products">Listings</a></li>
               <li className="tab col s3"><a href="#offers">Offers</a></li>
               <li className="tab col s3"><a href='#settings'>Settings</a></li>
-              <li className="tab col s3"><a href='#messages'>Messages</a></li>
             </ul>
           </div>
           <div id="products" className="col s12"><UserProducts /></div>
           <div id="offers" className="col s12"><UserOffers /></div>
           <div id="settings" className="col s12"><h5>coming soon</h5></div>
-          <div id="messages" className="col s12"><h5>coming soon</h5></div>
-
         </div>
       </div>
     );

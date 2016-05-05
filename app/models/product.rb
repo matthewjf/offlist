@@ -25,7 +25,12 @@ class Product < ActiveRecord::Base
   has_many :tags, through: :taggings
 
   def tag_list=(tags)
+    self.destroy_taggings
     self.tags = tags.map { |name| Tag.find_by_name(name) }.compact
+  end
+
+  def destroy_taggings
+    self.taggings.delete_all
   end
 
   def deactivate!

@@ -25502,9 +25502,11 @@
 	  },
 	
 	  componentDidMount: function () {
-	    $(document).ready(function () {
-	      $('select').material_select();
-	    });
+	    $('select').material_select();
+	  },
+	
+	  componentWillUnmount: function () {
+	    $('select').material_select('destroy');
 	  },
 	
 	  render: function () {
@@ -34402,6 +34404,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
+	    ReactDOM = __webpack_require__(32),
 	    ApiUtil = __webpack_require__(257),
 	    hashHistory = __webpack_require__(166).hashHistory,
 	    NewProductMap = __webpack_require__(274),
@@ -34437,7 +34440,8 @@
 	    lat: '',
 	    lng: '',
 	    address: '',
-	    img_urls: []
+	    img_urls: [],
+	    tag_list: []
 	  },
 	
 	  getInitialState: function () {
@@ -34463,6 +34467,10 @@
 	  setAddress: function (addr) {
 	    this.setState({ address: addr });
 	    if (!addr) this.setState({ lat: '', lng: '' });
+	  },
+	
+	  setTags: function (tags) {
+	    this.setState({ tag_list: tags });
 	  },
 	
 	  lookupAddress: function (e) {
@@ -34521,14 +34529,17 @@
 	
 	  handleSubmit: function (event) {
 	    event.preventDefault();
+	
 	    var listing = {
 	      title: this.state.title,
 	      price: this.state.price,
 	      description: this.state.description,
 	      lat: this.state.lat,
 	      lng: this.state.lng,
-	      img_urls: this.state.img_urls
+	      img_urls: this.state.img_urls,
+	      tag_list: this.state.tag_list
 	    };
+	
 	    if (this.props.params.listingId) {
 	      listing.id = this.props.params.listingId;
 	      ApiUtil.updateProduct(listing, this.submitSuccess);
@@ -34559,10 +34570,17 @@
 	    $('#upload_widget_opener').cloudinary_upload_widget(cloudinaryWidgetOptions, function (error, result) {
 	      self.setImageUrls(error, result);
 	    });
+	
+	    $('#tagselect').material_select();
+	    $('#tagselect').change(function () {
+	      self.setTags($('#tagselect').val());
+	    });
 	  },
 	
 	  componentWillUnmount: function () {
 	    this.productListener.remove();
+	    $('#tagselect').material_select('destroy');
+	    $('#tagselecet').off('change');
 	  },
 	
 	  editForm: function (props) {
@@ -34578,12 +34596,15 @@
 	
 	  _productChanged: function () {
 	    var self = this;
+	
 	    var listingId = this.props.params.listingId;
 	    var listing = ProductStore.find(listingId);
 	    if (listing) {
-	      Object.keys(listing).forEach(function (key) {
-	        self.setState(listing);
-	      });
+	      self.setState(listing);
+	
+	      $('#tagselect').val(listing.tag_list).change();
+	      $('#tagselect').material_select();
+	
 	      /* global google */
 	      self.setState({
 	        googlePos: new google.maps.LatLng(listing.lat, listing.lng)
@@ -34641,7 +34662,7 @@
 	              { className: 'row' },
 	              React.createElement(
 	                'div',
-	                { className: 'input-field col s12' },
+	                { className: 'input-field col s6' },
 	                React.createElement('input', {
 	                  id: 'price',
 	                  type: 'text',
@@ -34652,6 +34673,41 @@
 	                  'label',
 	                  { htmlFor: 'price' },
 	                  'Price'
+	                )
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'input-field col s6' },
+	                React.createElement(
+	                  'select',
+	                  {
+	                    multiple: true,
+	                    id: 'tagselect' },
+	                  React.createElement(
+	                    'option',
+	                    { value: '', disabled: true },
+	                    'none'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'tag0' },
+	                    'Tag 0'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'tag1' },
+	                    'Tag 1'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'tag2' },
+	                    'Tag 2'
+	                  )
+	                ),
+	                React.createElement(
+	                  'label',
+	                  null,
+	                  'Categories'
 	                )
 	              )
 	            ),
@@ -34763,6 +34819,7 @@
 	        setAddress: this.setAddress })
 	    );
 	  }
+	
 	});
 
 /***/ },
@@ -60931,7 +60988,7 @@
 	      lat: '',
 	      lng: '',
 	      seller: { username: '' },
-	      tags: []
+	      tag_list: []
 	    };
 	    return blank;
 	  },
@@ -60986,12 +61043,12 @@
 	  },
 	
 	  tagsList: function () {
-	    if (this.state.product && this.state.product.tags) {
-	      return this.state.products.tags.map(function (tag) {
+	    if (this.state.product.tag_list && this.state.product.tag_list.length > 0) {
+	      return this.state.product.tag_list.map(function (tag) {
 	        return React.createElement(
 	          'div',
-	          { className: 'chip' },
-	          tag.name
+	          { key: tag, className: 'chip orange lighten-4' },
+	          tag
 	        );
 	      });
 	    } else {
@@ -61050,7 +61107,11 @@
 	              this.state.address
 	            )
 	          ),
-	          React.createElement('div', { className: 'tags' })
+	          React.createElement(
+	            'div',
+	            { className: 'tags' },
+	            this.tagsList()
+	          )
 	        )
 	      )
 	    );
@@ -63513,15 +63574,6 @@
 	                { href: "#settings" },
 	                "Settings"
 	              )
-	            ),
-	            React.createElement(
-	              "li",
-	              { className: "tab col s3" },
-	              React.createElement(
-	                "a",
-	                { href: "#messages" },
-	                "Messages"
-	              )
 	            )
 	          )
 	        ),
@@ -63538,15 +63590,6 @@
 	        React.createElement(
 	          "div",
 	          { id: "settings", className: "col s12" },
-	          React.createElement(
-	            "h5",
-	            null,
-	            "coming soon"
-	          )
-	        ),
-	        React.createElement(
-	          "div",
-	          { id: "messages", className: "col s12" },
 	          React.createElement(
 	            "h5",
 	            null,

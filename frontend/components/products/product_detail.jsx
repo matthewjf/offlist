@@ -27,7 +27,7 @@ module.exports = React.createClass({
       lat: '',
       lng: '',
       seller: {username: ''},
-      tags: []
+      tag_list: []
     };
     return blank;
   },
@@ -80,10 +80,10 @@ module.exports = React.createClass({
   },
 
   tagsList: function() {
-    if(this.state.product && this.state.product.tags) {
-      return this.state.products.tags.map(function(tag) {
-        return <div className="chip">
-          {tag.name}
+    if (this.state.product.tag_list && this.state.product.tag_list.length > 0) {
+      return this.state.product.tag_list.map(function(tag) {
+        return <div key={tag} className="chip orange lighten-4">
+          {tag}
         </div>;
       });
     } else {
@@ -124,7 +124,7 @@ module.exports = React.createClass({
               </div>
             </div>
             <div className='tags'>
-
+              {this.tagsList()}
             </div>
           </div>
         </div>
