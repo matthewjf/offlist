@@ -12,6 +12,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bcrypt', '~> 3.1.7'
 gem 'faker'
 
+
 group :development, :test do
   gem 'byebug'
   gem 'quiet_assets',    group: :development
@@ -25,4 +26,5 @@ end
 
 group :production do
   gem 'rails_12factor', '0.0.2'
+  gem 'puma'
 end
