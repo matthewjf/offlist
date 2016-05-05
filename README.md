@@ -1,6 +1,6 @@
 # OffList
 
-[OffList][https://OffList-app.herokuapp.com/]
+[OffList][https://www.off-list.com/]
 
 ## Minimum Viable Product
 
@@ -9,7 +9,7 @@ OffList is a web application inspired by Etsy that will be built using Ruby on R
 - [x] New account creation, login, and guest/demo login
 - [x] Smooth, bug-free navigation
 - [ ] Adequate seed data to demonstrate the site's features
-- [ ] The minimally necessary features for an Etsy-inspired site: product browsing and search, product creation and saving
+- [x] The minimally necessary features for an Etsy-inspired site: product browsing and search, product creation and saving
 - [x] Hosting on Heroku
 - [x] CSS styling that is satisfactorily visually appealing
 - [ ] A production README, replacing this README
@@ -23,7 +23,7 @@ progress. Put an x between the brackets for a checkmark: [x] -->
 
 - [x] Create an account (MVP)
 - [x] Log in / Log out, including as a Guest/Demo User (MVP)
-- [ ] Browse and search for products (MVP)
+- [x] Browse and search for products (MVP)
 - [x] Create, read, edit, and delete products (MVP)
 
 ## Design Docs
@@ -102,13 +102,13 @@ user interface.
 
 **Objective:** Products are searchable
 
-- [ ] create `Tag` model and join table
+- [x] create `Tag` model and join table
 - build out API, Flux loop, and components for:
-  - [ ] fetching tags for product
-  - [ ] adding tags to product
-  - [ ] creating tags while adding to products
-  - [ ] searching products by tag
-- [ ] Style new elements
+  - [x] fetching tags for product
+  - [x] adding tags to product
+  - [x] creating tags while adding to products
+  - [x] searching products by tag
+- [x] Style new elements
 
 ### Phase 7: Offers (1.5 days)
 
