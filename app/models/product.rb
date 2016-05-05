@@ -70,7 +70,7 @@ class Product < ActiveRecord::Base
       result = result.union_all(filtered_result.search_by_keyword(keywords.shift))
     end
 
-    result.select(:id).order('count_id desc').group(:id).count(:id)
+    result.select("products.id").order('count_products_id desc').group("products.id").count("products.id")
   end
 
   def self.active
@@ -79,15 +79,23 @@ class Product < ActiveRecord::Base
 
   # need to escape this
   def self.search_by_keyword(keyword)
-    Product.where(
-      'LOWER(title) LIKE ? or LOWER(description) LIKE ?',
+    Product.joins(:taggings).joins(:tags).where(
+      'LOWER(title) LIKE ? or LOWER(description) LIKE ? or LOWER(name) LIKE ?',
       "%#{keyword.downcase}%",
-       "%#{keyword.downcase}%")
+      "%#{keyword.downcase}%",
+      "%#{keyword.downcase}%" )
   end
 
   def self.search(opts)
     scores = Product.score(opts)
     {products: Product.where(id: scores.keys), scores: scores}
+  end
+
+  def self.search_by_tag(keyword)
+    Product.joins(:taggings).joins(:tags).where(
+      'LOWER(name) LIKE ?',
+      "%#{keyword.downcase}%"
+    )
   end
 
 end
