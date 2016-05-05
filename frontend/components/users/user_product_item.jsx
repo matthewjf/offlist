@@ -26,6 +26,14 @@ module.exports = React.createClass({
     hashHistory.push('listings/' + this.props.product.id + '/edit');
   },
 
+  titleLink: function() {
+    $('#title' + this.props.product.id).addClass('orange-text text-darken-2');
+  },
+
+  titleRemove: function() {
+    $('#title' + this.props.product.id).removeClass('orange-text text-darken-2');
+  },
+
   render: function() {
     var product = this.props.product;
 
@@ -34,9 +42,17 @@ module.exports = React.createClass({
                 <Carousel images={product.img_urls} />
               </div>
               <div className='product-content col s12 m5 l7'>
-                <Dotdotdot clamp={1} >
-                  <h5 className='title'>{product.title}</h5>
-                </Dotdotdot>
+                <div
+                    className='title-wrapper'
+                    onClick={this.productLink}
+                    onMouseEnter={this.titleLink}
+                    onMouseLeave={this.titleRemove}>
+                  <Dotdotdot clamp={1} >
+                    <h5 className='title' id={'title' + product.id}>
+                      {product.title}
+                    </h5>
+                  </Dotdotdot>
+                </div>
                 <div className='split-row'>
                   <div>
                     <span className='grey-text'> added </span>

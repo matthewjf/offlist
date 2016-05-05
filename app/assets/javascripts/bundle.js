@@ -59,8 +59,8 @@
 	    SignupForm = __webpack_require__(272),
 	    ProductForm = __webpack_require__(273),
 	    ProductDetail = __webpack_require__(339),
-	    UserDetail = __webpack_require__(353),
-	    SellerDetail = __webpack_require__(359);
+	    UserDetail = __webpack_require__(515),
+	    SellerDetail = __webpack_require__(521);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -60966,9 +60966,9 @@
 	var Map = __webpack_require__(340),
 	    Seller = __webpack_require__(341),
 	    Carousel = __webpack_require__(342),
-	    Offer = __webpack_require__(348),
-	    OfferForm = __webpack_require__(349),
-	    Description = __webpack_require__(351);
+	    Offer = __webpack_require__(510),
+	    OfferForm = __webpack_require__(511),
+	    Description = __webpack_require__(513);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -61242,7 +61242,75 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	var Carousel = __webpack_require__(343);
+	var Carousel = __webpack_require__(577);
+	
+	var Decorators = [{
+	  component: React.createClass({
+	    displayName: 'component',
+	
+	    handleClick: function handleClick(e) {
+	      e.preventDefault();
+	      this.props.previousSlide();
+	    },
+	    getButtonStyles: function getButtonStyles(disabled) {
+	      return {
+	        border: 0,
+	        background: 'rgba(0,0,0,0.4)',
+	        color: 'white',
+	        padding: 10,
+	        outline: 0,
+	        opacity: disabled ? 0.3 : 1,
+	        cursor: 'pointer'
+	      };
+	    },
+	    render: function () {
+	      return React.createElement(
+	        'button',
+	        {
+	          onClick: this.handleClick, style: this.getButtonStyles(this.props.currentSlide === 0) },
+	        React.createElement(
+	          'i',
+	          { className: 'white-text material-icons' },
+	          'chevron_left'
+	        )
+	      );
+	    }
+	  }),
+	  position: 'CenterLeft'
+	}, {
+	  component: React.createClass({
+	    displayName: 'component',
+	
+	    handleClick: function handleClick(e) {
+	      e.preventDefault();
+	      this.props.nextSlide();
+	    },
+	    getButtonStyles: function getButtonStyles(disabled) {
+	      return {
+	        border: 0,
+	        background: 'rgba(0,0,0,0.4)',
+	        color: 'white',
+	        padding: 10,
+	        outline: 0,
+	        opacity: disabled ? 0.3 : 1,
+	        cursor: 'pointer'
+	      };
+	    },
+	    render: function () {
+	      return React.createElement(
+	        'button',
+	        {
+	          onClick: this.props.nextSlide, style: this.getButtonStyles(this.props.currentSlide + this.props.slidesToScroll >= this.props.slideCount) },
+	        React.createElement(
+	          'i',
+	          { className: 'white-text material-icons' },
+	          'chevron_right'
+	        )
+	      );
+	    }
+	  }),
+	  position: 'CenterRight'
+	}];
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -61268,7 +61336,7 @@
 	      { className: 'carousel-wrapper' },
 	      React.createElement(
 	        Carousel,
-	        null,
+	        { decorators: Decorators },
 	        images
 	      )
 	    );
@@ -61276,18 +61344,1554 @@
 	});
 
 /***/ },
-/* 343 */
+/* 343 */,
+/* 344 */,
+/* 345 */,
+/* 346 */,
+/* 347 */,
+/* 348 */,
+/* 349 */,
+/* 350 */,
+/* 351 */,
+/* 352 */,
+/* 353 */,
+/* 354 */,
+/* 355 */,
+/* 356 */,
+/* 357 */,
+/* 358 */,
+/* 359 */,
+/* 360 */,
+/* 361 */,
+/* 362 */,
+/* 363 */,
+/* 364 */,
+/* 365 */,
+/* 366 */,
+/* 367 */,
+/* 368 */,
+/* 369 */,
+/* 370 */,
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */,
+/* 375 */,
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */,
+/* 381 */,
+/* 382 */,
+/* 383 */,
+/* 384 */,
+/* 385 */,
+/* 386 */,
+/* 387 */,
+/* 388 */,
+/* 389 */,
+/* 390 */,
+/* 391 */,
+/* 392 */,
+/* 393 */,
+/* 394 */,
+/* 395 */,
+/* 396 */,
+/* 397 */,
+/* 398 */,
+/* 399 */,
+/* 400 */,
+/* 401 */,
+/* 402 */,
+/* 403 */,
+/* 404 */,
+/* 405 */,
+/* 406 */,
+/* 407 */,
+/* 408 */,
+/* 409 */,
+/* 410 */,
+/* 411 */,
+/* 412 */,
+/* 413 */,
+/* 414 */,
+/* 415 */,
+/* 416 */,
+/* 417 */,
+/* 418 */,
+/* 419 */,
+/* 420 */,
+/* 421 */,
+/* 422 */,
+/* 423 */,
+/* 424 */,
+/* 425 */,
+/* 426 */,
+/* 427 */,
+/* 428 */,
+/* 429 */,
+/* 430 */,
+/* 431 */,
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */,
+/* 464 */,
+/* 465 */,
+/* 466 */,
+/* 467 */,
+/* 468 */,
+/* 469 */,
+/* 470 */,
+/* 471 */,
+/* 472 */,
+/* 473 */,
+/* 474 */,
+/* 475 */,
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */,
+/* 481 */,
+/* 482 */,
+/* 483 */,
+/* 484 */,
+/* 485 */,
+/* 486 */,
+/* 487 */,
+/* 488 */,
+/* 489 */,
+/* 490 */,
+/* 491 */,
+/* 492 */,
+/* 493 */,
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */,
+/* 499 */,
+/* 500 */,
+/* 501 */,
+/* 502 */,
+/* 503 */,
+/* 504 */,
+/* 505 */,
+/* 506 */,
+/* 507 */,
+/* 508 */,
+/* 509 */,
+/* 510 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    CurrentUserState = __webpack_require__(269);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [CurrentUserState],
+	
+	  openOffer: function (e) {
+	    e.preventDefault();
+	    if (this.state.currentUser) {
+	      $('#offer-modal').openModal();
+	    } else {
+	      Materialize.toast('Log in or sign up to make an offer', 4000, 'red-text');
+	    }
+	  },
+	
+	  componentDidUpdate: function () {
+	    $(document).ready(function () {
+	      $('.tooltipped').tooltip({ delay: 50 });
+	    });
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'offer card' },
+	      React.createElement(
+	        'div',
+	        { className: 'detail-offer valign-wrapper' },
+	        React.createElement(
+	          'span',
+	          { className: 'valign' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Ask price:  '
+	          ),
+	          '$' + this.props.price
+	        ),
+	        React.createElement(
+	          'button',
+	          {
+	            onClick: this.openOffer,
+	            className: 'waves-effect waves-light btn right' },
+	          'Offer'
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 511 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    OfferStore = __webpack_require__(512),
+	    ClientActions = __webpack_require__(256);
+	
+	/* global Materialize */
+	
+	var OfferForm = React.createClass({
+	  displayName: 'OfferForm',
+	
+	  closeModal: function (e) {
+	    if (e) e.preventDefault();
+	    $('#offer-modal').closeModal();
+	    this.resetState();
+	  },
+	
+	  getInitialState: function () {
+	    return { amount: '', product_id: '', comment: '' };
+	  },
+	
+	  setAmount: function (e) {
+	    this.setState({ amount: e.target.value });
+	  },
+	
+	  setComment: function (e) {
+	    this.setState({ comment: e.target.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ amount: '', comment: '' });
+	  },
+	
+	  componentDidMount: function () {
+	    this.setState({ product_id: this.props.productId });
+	  },
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({ product_id: this.props.productId });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    ClientActions.createOffer(this.state, this.submitSuccess);
+	  },
+	
+	  submitSuccess: function () {
+	    Materialize.toast('Offer submitted!', 4000, 'green-text');
+	    this.closeModal();
+	  },
+	
+	  form: function () {
+	    return React.createElement(
+	      'form',
+	      { onSubmit: this.handleSubmit },
+	      React.createElement(
+	        'section',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'input-field col s12' },
+	            React.createElement('input', {
+	              type: 'text',
+	              value: this.state.amount,
+	              onChange: this.setAmount,
+	              id: 'amount' }),
+	            React.createElement(
+	              'label',
+	              { id: 'amount-label', htmlFor: 'amount' },
+	              'Amount'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'input-field col s12' },
+	            React.createElement('textarea', {
+	              id: 'comment',
+	              type: 'text',
+	              className: 'materialize-textarea',
+	              value: this.state.comment,
+	              onChange: this.setComment
+	            }),
+	            React.createElement(
+	              'label',
+	              { htmlFor: 'comment' },
+	              'Comment (optional)'
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'btn-row row' },
+	        React.createElement(
+	          'div',
+	          { className: 'col s12' },
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'waves-effect waves-light btn right' },
+	            'Make Offer'
+	          ),
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'waves-effect waves-ripple btn-flat right',
+	              onClick: this.closeModal },
+	            'cancel'
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  render: function () {
+	
+	    return React.createElement(
+	      'div',
+	      { id: 'offer-form' },
+	      React.createElement(
+	        'div',
+	        { id: 'offer-modal', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'modal-content' },
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Make Offer'
+	          ),
+	          this.form()
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	$(document).ready(function () {
+	  $('.modal-trigger').leanModal();
+	});
+	
+	module.exports = OfferForm;
+
+/***/ },
+/* 512 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(228).Store,
+	    Dispatcher = __webpack_require__(246),
+	    OfferConstants = __webpack_require__(259);
+	
+	var _madeOffers = {};
+	var _receivedOffers = {};
+	
+	var resetOffers = function (offers) {
+	  _madeOffers = {};
+	  _receivedOffers = {};
+	
+	  setMadeOffers(offers.made_offers);
+	  setReceivedOffers(offers.received_offers);
+	};
+	
+	var setMadeOffers = function (madeOffers) {
+	  madeOffers.forEach(function (offer) {
+	    _madeOffers[offer.id] = offer;
+	  });
+	};
+	
+	var setReceivedOffers = function (receivedOffers) {
+	  receivedOffers.forEach(function (offer) {
+	    _receivedOffers[offer.id] = offer;
+	  });
+	};
+	
+	var setOfferMade = function (offer) {
+	  _madeOffers[offer.id] = offer;
+	};
+	
+	var setOfferReceived = function (offer) {
+	  _receivedOffers[offer.id] = offer;
+	};
+	
+	var OfferStore = new Store(Dispatcher);
+	
+	OfferStore.receivedOffers = function () {
+	  return Object.keys(_receivedOffers).map(function (offerId) {
+	    return _receivedOffers[offerId];
+	  });
+	};
+	
+	OfferStore.madeOffers = function () {
+	  return Object.keys(_madeOffers).map(function (offerId) {
+	    return _madeOffers[offerId];
+	  });
+	};
+	
+	OfferStore.find = function (id) {
+	  // return _offers[id];
+	};
+	
+	OfferStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case OfferConstants.OFFERS_RECEIVED:
+	      resetOffers(payload.offers);
+	      break;
+	    case OfferConstants.OFFER_CREATED:
+	      setOfferMade(payload.offer);
+	      break;
+	    case OfferConstants.OFFER_UPDATED:
+	      setOfferReceived(payload.offer);
+	      break;
+	  }
+	  this.__emitChange();
+	};
+	
+	module.exports = OfferStore;
+
+/***/ },
+/* 513 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var TimeAgo = __webpack_require__(514).default;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  componentWillReceiveProps: function () {
+	    this.setState({});
+	  },
+	
+	  render: function () {
+	    var time = this.props.created ? React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created }) : React.createElement('span', null);
+	    return React.createElement(
+	      'div',
+	      { className: 'detail-description' },
+	      React.createElement(
+	        'div',
+	        { className: 'right' },
+	        React.createElement(
+	          'span',
+	          { className: 'grey-text' },
+	          ' added '
+	        ),
+	        time
+	      ),
+	      React.createElement(
+	        'span',
+	        { className: 'card-title grey-text text-darken-4' },
+	        this.props.title
+	      ),
+	      React.createElement(
+	        'p',
+	        null,
+	        this.props.description
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 514 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Carousel = __webpack_require__(344);
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// Just some simple constants for readability
+	var MINUTE = 60;
+	var HOUR = MINUTE * 60;
+	var DAY = HOUR * 24;
+	var WEEK = DAY * 7;
+	var MONTH = DAY * 30;
+	var YEAR = DAY * 365;
+	
+	var TimeAgo = function (_Component) {
+	  _inherits(TimeAgo, _Component);
+	
+	  function TimeAgo() {
+	    var _Object$getPrototypeO;
+	
+	    var _temp, _this, _ret;
+	
+	    _classCallCheck(this, TimeAgo);
+	
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+	
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(TimeAgo)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.isStillMounted = false, _this.tick = function (refresh) {
+	      if (!_this.isStillMounted || !_this.props.live) {
+	        return;
+	      }
+	
+	      var then = new Date(_this.props.date).valueOf();
+	      var now = Date.now();
+	      var seconds = Math.round(Math.abs(now - then) / 1000);
+	
+	      var unboundPeriod = seconds < MINUTE ? 1000 : seconds < HOUR ? 1000 * MINUTE : seconds < DAY ? 1000 * HOUR : 0;
+	      var period = Math.min(Math.max(unboundPeriod, _this.props.minPeriod * 1000), _this.props.maxPeriod * 1000);
+	
+	      if (period) {
+	        _this.timeoutId = setTimeout(_this.tick, period);
+	      }
+	
+	      if (!refresh) {
+	        _this.forceUpdate();
+	      }
+	    }, _temp), _possibleConstructorReturn(_this, _ret);
+	  }
+	
+	  _createClass(TimeAgo, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.isStillMounted = true;
+	      if (this.props.live) {
+	        this.tick(true);
+	      }
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(lastProps) {
+	      if (this.props.live !== lastProps.live || this.props.date !== lastProps.date) {
+	        if (!this.props.live && this.timeoutId) {
+	          clearTimeout(this.timeoutId);
+	        }
+	        this.tick();
+	      }
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.isStillMounted = false;
+	      if (this.timeoutId) {
+	        clearTimeout(this.timeoutId);
+	        this.timeoutId = undefined;
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var then = new Date(this.props.date).valueOf();
+	      var now = Date.now();
+	      var seconds = Math.round(Math.abs(now - then) / 1000);
+	      var suffix = then < now ? 'ago' : 'from now';
+	
+	      var _ref = seconds < MINUTE ? [Math.round(seconds), 'second'] : seconds < HOUR ? [Math.round(seconds / MINUTE), 'minute'] : seconds < DAY ? [Math.round(seconds / HOUR), 'hour'] : seconds < WEEK ? [Math.round(seconds / DAY), 'day'] : seconds < MONTH ? [Math.round(seconds / WEEK), 'week'] : seconds < YEAR ? [Math.round(seconds / MONTH), 'month'] : [Math.round(seconds / YEAR), 'year'];
+	
+	      var _ref2 = _slicedToArray(_ref, 2);
+	
+	      var value = _ref2[0];
+	      var unit = _ref2[1];
+	
+	
+	      var props = Object.assign({}, this.props);
+	      props.title = props.title || typeof props.date === 'string' ? props.date : new Date(props.date).toISOString().substr(0, 16).replace('T', ' ');
+	
+	      if (props.component === 'time') {
+	        props.dateTime = new Date(props.date).toISOString();
+	      }
+	
+	      delete props.date;
+	      delete props.formatter;
+	      delete props.component;
+	
+	      var Komponent = this.props.component;
+	      return _react2.default.createElement(
+	        Komponent,
+	        props,
+	        this.props.formatter(value, unit, suffix, then)
+	      );
+	    }
+	  }]);
+	
+	  return TimeAgo;
+	}(_react.Component);
+	
+	TimeAgo.displayName = 'TimeAgo';
+	TimeAgo.propTypes = {
+	  /** If the component should update itself over time */
+	  live: _react.PropTypes.bool.isRequired,
+	  /** minimum amount of time in seceonds between re-renders */
+	  minPeriod: _react.PropTypes.number.isRequired,
+	  /** Maximum time between re-renders in seconds. The component should update at least once every `x` seconds */
+	  maxPeriod: _react.PropTypes.number.isRequired,
+	  /** The container to render the string into. You could use a string like `span` or a custom component */
+	  component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]).isRequired,
+	  /** A function to decide how to format the date.
+	   * If you use this, `react-timeago` is basically acting like a glorified `setInterval`.
+	   */
+	  formatter: _react.PropTypes.func.isRequired,
+	  /** The Date to display. An actual Date object or something that can be fed to new Date */
+	  date: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number, _react.PropTypes.instanceOf(Date)]).isRequired
+	};
+	TimeAgo.defaultProps = {
+	  live: true,
+	  component: 'time',
+	  minPeriod: 0,
+	  maxPeriod: Infinity,
+	  formatter: function formatter(value, unit, suffix) {
+	    if (value !== 1) {
+	      unit += 's';
+	    }
+	    return value + ' ' + unit + ' ' + suffix;
+	  }
+	};
+	exports.default = TimeAgo;
+
+/***/ },
+/* 515 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(265),
+	    CurrentUserState = __webpack_require__(269),
+	    UserStore = __webpack_require__(268),
+	    UserProducts = __webpack_require__(516),
+	    UserOffers = __webpack_require__(518);
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: "exports",
+	
+	  mixins: [CurrentUserState],
+	
+	  componentDidMount: function () {
+	    UserActions.fetchCurrentUserWithAssocs();
+	    $(document).ready(function () {
+	      $('ul.tabs').tabs();
+	    });
+	  },
+	
+	  render: function () {
+	    var username = this.state.currentUser ? this.state.currentUser.username : '';
+	    return React.createElement(
+	      "div",
+	      { className: "user-detail container" },
+	      React.createElement(
+	        "div",
+	        { className: "grey lighten-5 tab-background" },
+	        React.createElement("div", { className: "tab-divider divider" })
+	      ),
+	      React.createElement(
+	        "div",
+	        { className: "row" },
+	        React.createElement(
+	          "div",
+	          { className: "col s12" },
+	          React.createElement(
+	            "ul",
+	            { className: "tabs grey lighten-5" },
+	            React.createElement(
+	              "li",
+	              { className: "tab col s3" },
+	              React.createElement(
+	                "a",
+	                { href: "#products" },
+	                "Listings"
+	              )
+	            ),
+	            React.createElement(
+	              "li",
+	              { className: "tab col s3" },
+	              React.createElement(
+	                "a",
+	                { href: "#offers" },
+	                "Offers"
+	              )
+	            ),
+	            React.createElement(
+	              "li",
+	              { className: "tab col s3" },
+	              React.createElement(
+	                "a",
+	                { href: "#settings" },
+	                "Settings"
+	              )
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          "div",
+	          { id: "products", className: "col s12" },
+	          React.createElement(UserProducts, null)
+	        ),
+	        React.createElement(
+	          "div",
+	          { id: "offers", className: "col s12" },
+	          React.createElement(UserOffers, null)
+	        ),
+	        React.createElement(
+	          "div",
+	          { id: "settings", className: "col s12" },
+	          React.createElement(
+	            "h5",
+	            null,
+	            "coming soon"
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 516 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(265),
+	    ProductStore = __webpack_require__(227),
+	    hashHistory = __webpack_require__(166).hashHistory,
+	    ProductItem = __webpack_require__(517);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { products: [] };
+	  },
+	
+	  getProducts: function () {
+	    this.setState({ products: ProductStore.all() });
+	  },
+	
+	  componentDidMount: function () {
+	    this.productListener = ProductStore.addListener(this.getProducts);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.productListener.remove();
+	  },
+	
+	  newProduct: function () {
+	    hashHistory.push('listings/new');
+	  },
+	
+	  productItems: function () {
+	    if (this.state.products && this.state.products.length > 0) {
+	      return this.state.products.map(function (product) {
+	        return React.createElement(ProductItem, { key: product.id, product: product });
+	      });
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  },
+	
+	  render: function () {
+	    var numProducts = this.state.products ? this.state.products.length : 0;
+	    return React.createElement(
+	      'div',
+	      { className: 'account-products' },
+	      React.createElement(
+	        'div',
+	        { className: 'split-row' },
+	        React.createElement(
+	          'div',
+	          { className: 'num-products grey-text' },
+	          'you have ',
+	          numProducts,
+	          ' active listings'
+	        ),
+	        React.createElement(
+	          'button',
+	          {
+	            className: 'btn waves-effect waves-light', onClick: this.newProduct },
+	          'Add Listing'
+	        )
+	      ),
+	      React.createElement(
+	        'ul',
+	        { className: 'collection' },
+	        this.productItems()
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 517 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(262),
+	    TimeAgo = __webpack_require__(514).default,
+	    Carousel = __webpack_require__(342),
+	    ClientActions = __webpack_require__(256);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  productLink: function () {
+	    hashHistory.push('listings/' + this.props.product.id);
+	  },
+	
+	  deleteProduct: function (e) {
+	    e.preventDefault();
+	    ClientActions.deleteProduct(this.props.product.id, this.deleteSuccess);
+	  },
+	
+	  deleteSuccess: function () {
+	    Materialize.toast('Listing removed!', 4000, 'red-text');
+	  },
+	
+	  editProduct: function (e) {
+	    e.preventDefault();
+	    hashHistory.push('listings/' + this.props.product.id + '/edit');
+	  },
+	
+	  titleLink: function () {
+	    $('#title' + this.props.product.id).addClass('orange-text text-darken-2');
+	  },
+	
+	  titleRemove: function () {
+	    $('#title' + this.props.product.id).removeClass('orange-text text-darken-2');
+	  },
+	
+	  render: function () {
+	    var product = this.props.product;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'account-product grey lighten-5 collection-item row' },
+	      React.createElement(
+	        'div',
+	        { className: 'product-image col s12 m4 l3' },
+	        React.createElement(Carousel, { images: product.img_urls })
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'product-content col s12 m5 l7' },
+	        React.createElement(
+	          'div',
+	          {
+	            className: 'title-wrapper',
+	            onClick: this.productLink,
+	            onMouseEnter: this.titleLink,
+	            onMouseLeave: this.titleRemove },
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 1 },
+	            React.createElement(
+	              'h5',
+	              { className: 'title', id: 'title' + product.id },
+	              product.title
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'split-row' },
+	          React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	              'span',
+	              { className: 'grey-text' },
+	              ' added '
+	            ),
+	            React.createElement(TimeAgo, { className: 'grey-text', date: product.created_at })
+	          ),
+	          React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	              'b',
+	              null,
+	              'Ask price: '
+	            ),
+	            '$' + product.price
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'section' },
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 2 },
+	            product.description
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'product-manage col m3 s12 l2' },
+	        React.createElement(
+	          'div',
+	          { className: 'btn-row' },
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'btn light-blue darken-1 waves-effect waves-light',
+	              type: 'submit',
+	              name: 'action',
+	              onClick: this.editProduct },
+	            'edit'
+	          ),
+	          React.createElement(
+	            'button',
+	            {
+	              className: 'btn red darken-1 waves-effect waves-light',
+	              type: 'submit',
+	              name: 'action',
+	              onClick: this.deleteProduct },
+	            'remove'
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 518 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(265),
+	    OfferStore = __webpack_require__(512),
+	    ReceivedOfferItem = __webpack_require__(519),
+	    MadeOfferItem = __webpack_require__(520);
+	
+	// var _statuses = ['Pending', 'Declined', 'Accepted'];
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { madeOffers: [], receivedOffers: [] };
+	  },
+	
+	  getAllOffers: function () {
+	    this.setState({
+	      madeOffers: this.setMadeOffers(OfferStore.madeOffers()),
+	      receivedOffers: this.setReceivedOffers(OfferStore.receivedOffers())
+	    });
+	  },
+	
+	  setMadeOffers: function (offers) {
+	    return this.statusOffers(offers);
+	  },
+	
+	  setReceivedOffers: function (offers) {
+	    return this.statusOffers(offers);
+	  },
+	
+	  statusOffers: function (offers) {
+	    if (offers) {
+	      var pending = offers.filter(function (offer) {
+	        return offer.status === 'Pending';
+	      });
+	      var declined = offers.filter(function (offer) {
+	        return offer.status === 'Declined';
+	      });
+	      var accepted = offers.filter(function (offer) {
+	        return offer.status === 'Accepted';
+	      });
+	      return {
+	        pending: pending,
+	        declined: declined,
+	        accepted: accepted
+	      };
+	    } else {
+	      return '';
+	    }
+	  },
+	
+	  componentDidMount: function () {
+	    this.offerListener = OfferStore.addListener(this.getAllOffers);
+	  },
+	
+	  componentDidUpdate: function () {
+	    $(document).ready(function () {
+	      $('.collapsible').collapsible({
+	        accordion: false
+	      });
+	    });
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.offerListener.remove();
+	  },
+	
+	  receivedOffersList: function (offers) {
+	    return offers.map(function (offer) {
+	      return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
+	    });
+	  },
+	
+	  madeOffersList: function (offers) {
+	    return offers.map(function (offer) {
+	      return React.createElement(MadeOfferItem, { key: offer.id, offer: offer });
+	    });
+	  },
+	
+	  emptyOffersList: function (offerType) {
+	    return React.createElement(
+	      'li',
+	      { className: 'account-product grey lighten-5 collection-item row' },
+	      React.createElement(
+	        'div',
+	        { className: 'offer-content col s6 m3 l2 grey-text text-darken-1' },
+	        React.createElement(
+	          'em',
+	          null,
+	          'no ',
+	          offerType,
+	          ' offers'
+	        )
+	      )
+	    );
+	  },
+	
+	  receivedPendingOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.pending && receivedOffers.pending.length > 0) return this.receivedOffersList(receivedOffers.pending);else return this.emptyOffersList('pending');
+	  },
+	
+	  receivedAcceptedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.accepted && receivedOffers.accepted.length > 0) return this.receivedOffersList(receivedOffers.accepted);else return this.emptyOffersList('accepted');
+	  },
+	
+	  receivedDeclinedOffersList: function () {
+	    var receivedOffers = this.state.receivedOffers;
+	    if (receivedOffers && receivedOffers.declined && receivedOffers.declined.length > 0) return this.receivedOffersList(receivedOffers.declined);else return this.emptyOffersList('declined');
+	  },
+	
+	  madePendingOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.pending && madeOffers.pending.length > 0) return this.madeOffersList(madeOffers.pending);else return this.emptyOffersList('pending');
+	  },
+	
+	  madeAcceptedOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.accepted && madeOffers.accepted.length > 0) return this.madeOffersList(madeOffers.accepted);else return this.emptyOffersList('accepted');
+	  },
+	
+	  madeDeclinedOffersList: function () {
+	    var madeOffers = this.state.madeOffers;
+	    if (madeOffers && madeOffers.declined && madeOffers.declined.length > 0) return this.madeOffersList(madeOffers.declined);else return this.emptyOffersList('declined');
+	  },
+	
+	  receivedOffersSection: function (offers) {
+	    return React.createElement(
+	      'ul',
+	      { className: 'collapsible', 'data-collapsible': 'expandable' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect active' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Pending'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedPendingOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Accepted'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedAcceptedOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Declined'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.receivedDeclinedOffersList()
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  madeOffersSection: function (offers) {
+	    return React.createElement(
+	      'ul',
+	      { className: 'collapsible', 'data-collapsible': 'expandable' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Pending'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madePendingOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Accepted'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madeAcceptedOffersList()
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-header waves-effect' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Declined'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'collapsible-body' },
+	          React.createElement(
+	            'ul',
+	            { className: 'collection' },
+	            this.madeDeclinedOffersList()
+	          )
+	        )
+	      )
+	    );
+	  },
+	
+	  renderTest: function () {
+	    if (this.state.receivedOffers) var offers = this.state.receivedOffers.filter(function (offer) {
+	      return offer.status === 'Pending';
+	    });
+	    return offers.length;
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'user-offers' },
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Offers Received'
+	      ),
+	      this.receivedOffersSection(),
+	      React.createElement('div', { className: 'row' }),
+	      React.createElement(
+	        'h5',
+	        null,
+	        'Offers Made'
+	      ),
+	      this.madeOffersSection()
+	    );
+	  }
+	});
+
+/***/ },
+/* 519 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(262),
+	    TimeAgo = __webpack_require__(514).default,
+	    ClientActions = __webpack_require__(256);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	
+	  handleAccept: function () {
+	    ClientActions.acceptOffer(this.props.offer.id, this.acceptSuccess);
+	  },
+	
+	  handleDecline: function () {
+	    ClientActions.declineOffer(this.props.offer.id, this.declineSuccess);
+	  },
+	
+	  acceptSuccess: function () {
+	    Materialize.toast('Offer accepted!', 4000, 'green-text');
+	  },
+	
+	  declineSuccess: function () {
+	    Materialize.toast('Offer declined', 4000, 'red-text');
+	  },
+	  componentWillReceiveProps: function (newProps) {},
+	
+	  buttons: function () {
+	    if (this.props.offer.status === 'Pending') {
+	      return React.createElement(
+	        'div',
+	        { className: 'btns' },
+	        React.createElement(
+	          'button',
+	          {
+	            onClick: this.handleAccept,
+	            className: 'waves-effect waves-light btn right green' },
+	          'Accept'
+	        ),
+	        React.createElement(
+	          'button',
+	          {
+	            onClick: this.handleDecline,
+	            className: 'waves-effect waves-light btn right red' },
+	          'Decline'
+	        )
+	      );
+	    } else {
+	      return React.createElement('span', null);
+	    }
+	  },
+	
+	  render: function () {
+	    var offer = this.props.offer;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'offer-item grey lighten-5 collection-item row' },
+	      React.createElement(
+	        'div',
+	        { className: 'split-row content' },
+	        React.createElement(
+	          'div',
+	          { className: 'offer-title' },
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 1 },
+	            offer.title
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-time' },
+	          React.createElement(TimeAgo, { className: 'grey-text', date: offer.created_at })
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'split-row money' },
+	        React.createElement(
+	          'div',
+	          { className: 'offer-price' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Ask:'
+	          ),
+	          ' $',
+	          offer.price
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-amount' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Offer:'
+	          ),
+	          ' $',
+	          offer.amount
+	        )
+	      ),
+	      this.buttons()
+	    );
+	  }
+	});
+
+/***/ },
+/* 520 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var hashHistory = __webpack_require__(166).hashHistory,
+	    Dotdotdot = __webpack_require__(262),
+	    TimeAgo = __webpack_require__(514).default,
+	    ClientActions = __webpack_require__(256);
+	
+	/* global Materialize */
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	
+	  render: function () {
+	    var offer = this.props.offer;
+	
+	    return React.createElement(
+	      'li',
+	      { className: 'offer-item grey lighten-5 collection-item row' },
+	      React.createElement(
+	        'div',
+	        { className: 'split-row content' },
+	        React.createElement(
+	          'div',
+	          { className: 'offer-title' },
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 1 },
+	            offer.title
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-time' },
+	          React.createElement(TimeAgo, { className: 'grey-text', date: offer.created_at })
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'split-row money' },
+	        React.createElement(
+	          'div',
+	          { className: 'offer-price' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Ask:'
+	          ),
+	          ' $',
+	          offer.price
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'offer-amount' },
+	          React.createElement(
+	            'b',
+	            null,
+	            'Offer:'
+	          ),
+	          ' $',
+	          offer.amount
+	        )
+	      )
+	    );
+	  }
+	});
+
+/***/ },
+/* 521 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	var UserActions = __webpack_require__(265),
+	    CurrentUserState = __webpack_require__(269),
+	    UserStore = __webpack_require__(268);
+	
+	module.exports = React.createClass({
+	  displayName: "exports",
+	
+	  render: function () {
+	    return React.createElement(
+	      "h5",
+	      null,
+	      "coming soon"
+	    );
+	  }
+	});
+
+/***/ },
+/* 522 */,
+/* 523 */,
+/* 524 */,
+/* 525 */,
+/* 526 */,
+/* 527 */,
+/* 528 */,
+/* 529 */,
+/* 530 */,
+/* 531 */,
+/* 532 */,
+/* 533 */,
+/* 534 */,
+/* 535 */,
+/* 536 */,
+/* 537 */,
+/* 538 */,
+/* 539 */,
+/* 540 */,
+/* 541 */,
+/* 542 */,
+/* 543 */,
+/* 544 */,
+/* 545 */,
+/* 546 */,
+/* 547 */,
+/* 548 */,
+/* 549 */,
+/* 550 */,
+/* 551 */,
+/* 552 */,
+/* 553 */,
+/* 554 */,
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */,
+/* 559 */,
+/* 560 */,
+/* 561 */,
+/* 562 */,
+/* 563 */,
+/* 564 */,
+/* 565 */,
+/* 566 */,
+/* 567 */,
+/* 568 */,
+/* 569 */,
+/* 570 */,
+/* 571 */,
+/* 572 */,
+/* 573 */,
+/* 574 */,
+/* 575 */,
+/* 576 */,
+/* 577 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Carousel = __webpack_require__(578);
 	
 	module.exports = Carousel;
 
 
 /***/ },
-/* 344 */
+/* 578 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61308,11 +62912,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _kwReactTweenState = __webpack_require__(345);
+	var _kwReactTweenState = __webpack_require__(579);
 	
 	var _kwReactTweenState2 = _interopRequireDefault(_kwReactTweenState);
 	
-	var _decorators = __webpack_require__(346);
+	var _decorators = __webpack_require__(580);
 	
 	var _decorators2 = _interopRequireDefault(_decorators);
 	
@@ -61320,7 +62924,7 @@
 	
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 	
-	var _exenv = __webpack_require__(347);
+	var _exenv = __webpack_require__(581);
 	
 	var _exenv2 = _interopRequireDefault(_exenv);
 	
@@ -62061,7 +63665,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 345 */
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function webpackUniversalModuleDefinition(root, factory) {
@@ -62824,7 +64428,7 @@
 	//# sourceMappingURL=index.js.map
 
 /***/ },
-/* 346 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62965,7 +64569,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 347 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -63009,1304 +64613,6 @@
 	
 	}());
 
-
-/***/ },
-/* 348 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1),
-	    CurrentUserState = __webpack_require__(269);
-	
-	/* global Materialize */
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  mixins: [CurrentUserState],
-	
-	  openOffer: function (e) {
-	    e.preventDefault();
-	    if (this.state.currentUser) {
-	      $('#offer-modal').openModal();
-	    } else {
-	      Materialize.toast('Log in or sign up to make an offer', 4000, 'red-text');
-	    }
-	  },
-	
-	  componentDidUpdate: function () {
-	    $(document).ready(function () {
-	      $('.tooltipped').tooltip({ delay: 50 });
-	    });
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'offer card' },
-	      React.createElement(
-	        'div',
-	        { className: 'detail-offer valign-wrapper' },
-	        React.createElement(
-	          'span',
-	          { className: 'valign' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Ask price:  '
-	          ),
-	          '$' + this.props.price
-	        ),
-	        React.createElement(
-	          'button',
-	          {
-	            onClick: this.openOffer,
-	            className: 'waves-effect waves-light btn right' },
-	          'Offer'
-	        )
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 349 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1),
-	    OfferStore = __webpack_require__(350),
-	    ClientActions = __webpack_require__(256);
-	
-	/* global Materialize */
-	
-	var OfferForm = React.createClass({
-	  displayName: 'OfferForm',
-	
-	  closeModal: function (e) {
-	    if (e) e.preventDefault();
-	    $('#offer-modal').closeModal();
-	    this.resetState();
-	  },
-	
-	  getInitialState: function () {
-	    return { amount: '', product_id: '', comment: '' };
-	  },
-	
-	  setAmount: function (e) {
-	    this.setState({ amount: e.target.value });
-	  },
-	
-	  setComment: function (e) {
-	    this.setState({ comment: e.target.value });
-	  },
-	
-	  resetState: function () {
-	    this.setState({ amount: '', comment: '' });
-	  },
-	
-	  componentDidMount: function () {
-	    this.setState({ product_id: this.props.productId });
-	  },
-	
-	  componentWillReceiveProps: function () {
-	    this.setState({ product_id: this.props.productId });
-	  },
-	
-	  handleSubmit: function (e) {
-	    e.preventDefault();
-	    ClientActions.createOffer(this.state, this.submitSuccess);
-	  },
-	
-	  submitSuccess: function () {
-	    Materialize.toast('Offer submitted!', 4000, 'green-text');
-	    this.closeModal();
-	  },
-	
-	  form: function () {
-	    return React.createElement(
-	      'form',
-	      { onSubmit: this.handleSubmit },
-	      React.createElement(
-	        'section',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'row' },
-	          React.createElement(
-	            'div',
-	            { className: 'input-field col s12' },
-	            React.createElement('input', {
-	              type: 'text',
-	              value: this.state.amount,
-	              onChange: this.setAmount,
-	              id: 'amount' }),
-	            React.createElement(
-	              'label',
-	              { id: 'amount-label', htmlFor: 'amount' },
-	              'Amount'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'row' },
-	          React.createElement(
-	            'div',
-	            { className: 'input-field col s12' },
-	            React.createElement('textarea', {
-	              id: 'comment',
-	              type: 'text',
-	              className: 'materialize-textarea',
-	              value: this.state.comment,
-	              onChange: this.setComment
-	            }),
-	            React.createElement(
-	              'label',
-	              { htmlFor: 'comment' },
-	              'Comment (optional)'
-	            )
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'btn-row row' },
-	        React.createElement(
-	          'div',
-	          { className: 'col s12' },
-	          React.createElement(
-	            'button',
-	            {
-	              className: 'waves-effect waves-light btn right' },
-	            'Make Offer'
-	          ),
-	          React.createElement(
-	            'button',
-	            {
-	              className: 'waves-effect waves-ripple btn-flat right',
-	              onClick: this.closeModal },
-	            'cancel'
-	          )
-	        )
-	      )
-	    );
-	  },
-	
-	  render: function () {
-	
-	    return React.createElement(
-	      'div',
-	      { id: 'offer-form' },
-	      React.createElement(
-	        'div',
-	        { id: 'offer-modal', className: 'modal' },
-	        React.createElement(
-	          'div',
-	          { className: 'modal-content' },
-	          React.createElement(
-	            'h4',
-	            null,
-	            'Make Offer'
-	          ),
-	          this.form()
-	        )
-	      )
-	    );
-	  }
-	});
-	
-	$(document).ready(function () {
-	  $('.modal-trigger').leanModal();
-	});
-	
-	module.exports = OfferForm;
-
-/***/ },
-/* 350 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(228).Store,
-	    Dispatcher = __webpack_require__(246),
-	    OfferConstants = __webpack_require__(259);
-	
-	var _madeOffers = {};
-	var _receivedOffers = {};
-	
-	var resetOffers = function (offers) {
-	  _madeOffers = {};
-	  _receivedOffers = {};
-	
-	  setMadeOffers(offers.made_offers);
-	  setReceivedOffers(offers.received_offers);
-	};
-	
-	var setMadeOffers = function (madeOffers) {
-	  madeOffers.forEach(function (offer) {
-	    _madeOffers[offer.id] = offer;
-	  });
-	};
-	
-	var setReceivedOffers = function (receivedOffers) {
-	  receivedOffers.forEach(function (offer) {
-	    _receivedOffers[offer.id] = offer;
-	  });
-	};
-	
-	var setOfferMade = function (offer) {
-	  _madeOffers[offer.id] = offer;
-	};
-	
-	var setOfferReceived = function (offer) {
-	  _receivedOffers[offer.id] = offer;
-	};
-	
-	var OfferStore = new Store(Dispatcher);
-	
-	OfferStore.receivedOffers = function () {
-	  return Object.keys(_receivedOffers).map(function (offerId) {
-	    return _receivedOffers[offerId];
-	  });
-	};
-	
-	OfferStore.madeOffers = function () {
-	  return Object.keys(_madeOffers).map(function (offerId) {
-	    return _madeOffers[offerId];
-	  });
-	};
-	
-	OfferStore.find = function (id) {
-	  // return _offers[id];
-	};
-	
-	OfferStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case OfferConstants.OFFERS_RECEIVED:
-	      resetOffers(payload.offers);
-	      break;
-	    case OfferConstants.OFFER_CREATED:
-	      setOfferMade(payload.offer);
-	      break;
-	    case OfferConstants.OFFER_UPDATED:
-	      setOfferReceived(payload.offer);
-	      break;
-	  }
-	  this.__emitChange();
-	};
-	
-	module.exports = OfferStore;
-
-/***/ },
-/* 351 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var TimeAgo = __webpack_require__(352).default;
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  componentWillReceiveProps: function () {
-	    this.setState({});
-	  },
-	
-	  render: function () {
-	    var time = this.props.created ? React.createElement(TimeAgo, { className: 'grey-text', date: this.props.created }) : React.createElement('span', null);
-	    return React.createElement(
-	      'div',
-	      { className: 'detail-description' },
-	      React.createElement(
-	        'div',
-	        { className: 'right' },
-	        React.createElement(
-	          'span',
-	          { className: 'grey-text' },
-	          ' added '
-	        ),
-	        time
-	      ),
-	      React.createElement(
-	        'span',
-	        { className: 'card-title grey-text text-darken-4' },
-	        this.props.title
-	      ),
-	      React.createElement(
-	        'p',
-	        null,
-	        this.props.description
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 352 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	// Just some simple constants for readability
-	var MINUTE = 60;
-	var HOUR = MINUTE * 60;
-	var DAY = HOUR * 24;
-	var WEEK = DAY * 7;
-	var MONTH = DAY * 30;
-	var YEAR = DAY * 365;
-	
-	var TimeAgo = function (_Component) {
-	  _inherits(TimeAgo, _Component);
-	
-	  function TimeAgo() {
-	    var _Object$getPrototypeO;
-	
-	    var _temp, _this, _ret;
-	
-	    _classCallCheck(this, TimeAgo);
-	
-	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
-	    }
-	
-	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(TimeAgo)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.isStillMounted = false, _this.tick = function (refresh) {
-	      if (!_this.isStillMounted || !_this.props.live) {
-	        return;
-	      }
-	
-	      var then = new Date(_this.props.date).valueOf();
-	      var now = Date.now();
-	      var seconds = Math.round(Math.abs(now - then) / 1000);
-	
-	      var unboundPeriod = seconds < MINUTE ? 1000 : seconds < HOUR ? 1000 * MINUTE : seconds < DAY ? 1000 * HOUR : 0;
-	      var period = Math.min(Math.max(unboundPeriod, _this.props.minPeriod * 1000), _this.props.maxPeriod * 1000);
-	
-	      if (period) {
-	        _this.timeoutId = setTimeout(_this.tick, period);
-	      }
-	
-	      if (!refresh) {
-	        _this.forceUpdate();
-	      }
-	    }, _temp), _possibleConstructorReturn(_this, _ret);
-	  }
-	
-	  _createClass(TimeAgo, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.isStillMounted = true;
-	      if (this.props.live) {
-	        this.tick(true);
-	      }
-	    }
-	  }, {
-	    key: 'componentDidUpdate',
-	    value: function componentDidUpdate(lastProps) {
-	      if (this.props.live !== lastProps.live || this.props.date !== lastProps.date) {
-	        if (!this.props.live && this.timeoutId) {
-	          clearTimeout(this.timeoutId);
-	        }
-	        this.tick();
-	      }
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      this.isStillMounted = false;
-	      if (this.timeoutId) {
-	        clearTimeout(this.timeoutId);
-	        this.timeoutId = undefined;
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var then = new Date(this.props.date).valueOf();
-	      var now = Date.now();
-	      var seconds = Math.round(Math.abs(now - then) / 1000);
-	      var suffix = then < now ? 'ago' : 'from now';
-	
-	      var _ref = seconds < MINUTE ? [Math.round(seconds), 'second'] : seconds < HOUR ? [Math.round(seconds / MINUTE), 'minute'] : seconds < DAY ? [Math.round(seconds / HOUR), 'hour'] : seconds < WEEK ? [Math.round(seconds / DAY), 'day'] : seconds < MONTH ? [Math.round(seconds / WEEK), 'week'] : seconds < YEAR ? [Math.round(seconds / MONTH), 'month'] : [Math.round(seconds / YEAR), 'year'];
-	
-	      var _ref2 = _slicedToArray(_ref, 2);
-	
-	      var value = _ref2[0];
-	      var unit = _ref2[1];
-	
-	
-	      var props = Object.assign({}, this.props);
-	      props.title = props.title || typeof props.date === 'string' ? props.date : new Date(props.date).toISOString().substr(0, 16).replace('T', ' ');
-	
-	      if (props.component === 'time') {
-	        props.dateTime = new Date(props.date).toISOString();
-	      }
-	
-	      delete props.date;
-	      delete props.formatter;
-	      delete props.component;
-	
-	      var Komponent = this.props.component;
-	      return _react2.default.createElement(
-	        Komponent,
-	        props,
-	        this.props.formatter(value, unit, suffix, then)
-	      );
-	    }
-	  }]);
-	
-	  return TimeAgo;
-	}(_react.Component);
-	
-	TimeAgo.displayName = 'TimeAgo';
-	TimeAgo.propTypes = {
-	  /** If the component should update itself over time */
-	  live: _react.PropTypes.bool.isRequired,
-	  /** minimum amount of time in seceonds between re-renders */
-	  minPeriod: _react.PropTypes.number.isRequired,
-	  /** Maximum time between re-renders in seconds. The component should update at least once every `x` seconds */
-	  maxPeriod: _react.PropTypes.number.isRequired,
-	  /** The container to render the string into. You could use a string like `span` or a custom component */
-	  component: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]).isRequired,
-	  /** A function to decide how to format the date.
-	   * If you use this, `react-timeago` is basically acting like a glorified `setInterval`.
-	   */
-	  formatter: _react.PropTypes.func.isRequired,
-	  /** The Date to display. An actual Date object or something that can be fed to new Date */
-	  date: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number, _react.PropTypes.instanceOf(Date)]).isRequired
-	};
-	TimeAgo.defaultProps = {
-	  live: true,
-	  component: 'time',
-	  minPeriod: 0,
-	  maxPeriod: Infinity,
-	  formatter: function formatter(value, unit, suffix) {
-	    if (value !== 1) {
-	      unit += 's';
-	    }
-	    return value + ' ' + unit + ' ' + suffix;
-	  }
-	};
-	exports.default = TimeAgo;
-
-/***/ },
-/* 353 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var UserActions = __webpack_require__(265),
-	    CurrentUserState = __webpack_require__(269),
-	    UserStore = __webpack_require__(268),
-	    UserProducts = __webpack_require__(354),
-	    UserOffers = __webpack_require__(356);
-	/* global Materialize */
-	
-	module.exports = React.createClass({
-	  displayName: "exports",
-	
-	  mixins: [CurrentUserState],
-	
-	  componentDidMount: function () {
-	    UserActions.fetchCurrentUserWithAssocs();
-	    $(document).ready(function () {
-	      $('ul.tabs').tabs();
-	    });
-	  },
-	
-	  render: function () {
-	    var username = this.state.currentUser ? this.state.currentUser.username : '';
-	    return React.createElement(
-	      "div",
-	      { className: "user-detail container" },
-	      React.createElement(
-	        "div",
-	        { className: "grey lighten-5 tab-background" },
-	        React.createElement("div", { className: "tab-divider divider" })
-	      ),
-	      React.createElement(
-	        "div",
-	        { className: "row" },
-	        React.createElement(
-	          "div",
-	          { className: "col s12" },
-	          React.createElement(
-	            "ul",
-	            { className: "tabs grey lighten-5" },
-	            React.createElement(
-	              "li",
-	              { className: "tab col s3" },
-	              React.createElement(
-	                "a",
-	                { href: "#products" },
-	                "Listings"
-	              )
-	            ),
-	            React.createElement(
-	              "li",
-	              { className: "tab col s3" },
-	              React.createElement(
-	                "a",
-	                { href: "#offers" },
-	                "Offers"
-	              )
-	            ),
-	            React.createElement(
-	              "li",
-	              { className: "tab col s3" },
-	              React.createElement(
-	                "a",
-	                { href: "#settings" },
-	                "Settings"
-	              )
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          "div",
-	          { id: "products", className: "col s12" },
-	          React.createElement(UserProducts, null)
-	        ),
-	        React.createElement(
-	          "div",
-	          { id: "offers", className: "col s12" },
-	          React.createElement(UserOffers, null)
-	        ),
-	        React.createElement(
-	          "div",
-	          { id: "settings", className: "col s12" },
-	          React.createElement(
-	            "h5",
-	            null,
-	            "coming soon"
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 354 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var UserActions = __webpack_require__(265),
-	    ProductStore = __webpack_require__(227),
-	    hashHistory = __webpack_require__(166).hashHistory,
-	    ProductItem = __webpack_require__(355);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  getInitialState: function () {
-	    return { products: [] };
-	  },
-	
-	  getProducts: function () {
-	    this.setState({ products: ProductStore.all() });
-	  },
-	
-	  componentDidMount: function () {
-	    this.productListener = ProductStore.addListener(this.getProducts);
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.productListener.remove();
-	  },
-	
-	  newProduct: function () {
-	    hashHistory.push('listings/new');
-	  },
-	
-	  productItems: function () {
-	    if (this.state.products && this.state.products.length > 0) {
-	      return this.state.products.map(function (product) {
-	        return React.createElement(ProductItem, { key: product.id, product: product });
-	      });
-	    } else {
-	      return React.createElement('div', null);
-	    }
-	  },
-	
-	  render: function () {
-	    var numProducts = this.state.products ? this.state.products.length : 0;
-	    return React.createElement(
-	      'div',
-	      { className: 'account-products' },
-	      React.createElement(
-	        'div',
-	        { className: 'split-row' },
-	        React.createElement(
-	          'div',
-	          { className: 'num-products grey-text' },
-	          'you have ',
-	          numProducts,
-	          ' active listings'
-	        ),
-	        React.createElement(
-	          'button',
-	          {
-	            className: 'btn waves-effect waves-light', onClick: this.newProduct },
-	          'Add Listing'
-	        )
-	      ),
-	      React.createElement(
-	        'ul',
-	        { className: 'collection' },
-	        this.productItems()
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 355 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var hashHistory = __webpack_require__(166).hashHistory,
-	    Dotdotdot = __webpack_require__(262),
-	    TimeAgo = __webpack_require__(352).default,
-	    Carousel = __webpack_require__(342),
-	    ClientActions = __webpack_require__(256);
-	
-	/* global Materialize */
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  productLink: function () {
-	    hashHistory.push('listings/' + this.props.product.id);
-	  },
-	
-	  deleteProduct: function (e) {
-	    e.preventDefault();
-	    ClientActions.deleteProduct(this.props.product.id, this.deleteSuccess);
-	  },
-	
-	  deleteSuccess: function () {
-	    Materialize.toast('Listing removed!', 4000, 'red-text');
-	  },
-	
-	  editProduct: function (e) {
-	    e.preventDefault();
-	    hashHistory.push('listings/' + this.props.product.id + '/edit');
-	  },
-	
-	  render: function () {
-	    var product = this.props.product;
-	
-	    return React.createElement(
-	      'li',
-	      { className: 'account-product grey lighten-5 collection-item row' },
-	      React.createElement(
-	        'div',
-	        { className: 'product-image col s12 m4 l3' },
-	        React.createElement(Carousel, { images: product.img_urls })
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'product-content col s12 m5 l7' },
-	        React.createElement(
-	          Dotdotdot,
-	          { clamp: 1 },
-	          React.createElement(
-	            'h5',
-	            { className: 'title' },
-	            product.title
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'split-row' },
-	          React.createElement(
-	            'div',
-	            null,
-	            React.createElement(
-	              'span',
-	              { className: 'grey-text' },
-	              ' added '
-	            ),
-	            React.createElement(TimeAgo, { className: 'grey-text', date: product.created_at })
-	          ),
-	          React.createElement(
-	            'div',
-	            null,
-	            React.createElement(
-	              'b',
-	              null,
-	              'Ask price: '
-	            ),
-	            '$' + product.price
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'section' },
-	          React.createElement(
-	            Dotdotdot,
-	            { clamp: 2 },
-	            product.description
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'product-manage col m3 s12 l2' },
-	        React.createElement(
-	          'div',
-	          { className: 'btn-row' },
-	          React.createElement(
-	            'button',
-	            {
-	              className: 'btn light-blue darken-1 waves-effect waves-light',
-	              type: 'submit',
-	              name: 'action',
-	              onClick: this.editProduct },
-	            'edit'
-	          ),
-	          React.createElement(
-	            'button',
-	            {
-	              className: 'btn red darken-1 waves-effect waves-light',
-	              type: 'submit',
-	              name: 'action',
-	              onClick: this.deleteProduct },
-	            'remove'
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 356 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var UserActions = __webpack_require__(265),
-	    OfferStore = __webpack_require__(350),
-	    ReceivedOfferItem = __webpack_require__(357),
-	    MadeOfferItem = __webpack_require__(358);
-	
-	// var _statuses = ['Pending', 'Declined', 'Accepted'];
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  getInitialState: function () {
-	    return { madeOffers: [], receivedOffers: [] };
-	  },
-	
-	  getAllOffers: function () {
-	    this.setState({
-	      madeOffers: this.setMadeOffers(OfferStore.madeOffers()),
-	      receivedOffers: this.setReceivedOffers(OfferStore.receivedOffers())
-	    });
-	  },
-	
-	  setMadeOffers: function (offers) {
-	    return this.statusOffers(offers);
-	  },
-	
-	  setReceivedOffers: function (offers) {
-	    return this.statusOffers(offers);
-	  },
-	
-	  statusOffers: function (offers) {
-	    if (offers) {
-	      var pending = offers.filter(function (offer) {
-	        return offer.status === 'Pending';
-	      });
-	      var declined = offers.filter(function (offer) {
-	        return offer.status === 'Declined';
-	      });
-	      var accepted = offers.filter(function (offer) {
-	        return offer.status === 'Accepted';
-	      });
-	      return {
-	        pending: pending,
-	        declined: declined,
-	        accepted: accepted
-	      };
-	    } else {
-	      return '';
-	    }
-	  },
-	
-	  componentDidMount: function () {
-	    this.offerListener = OfferStore.addListener(this.getAllOffers);
-	  },
-	
-	  componentDidUpdate: function () {
-	    $(document).ready(function () {
-	      $('.collapsible').collapsible({
-	        accordion: false
-	      });
-	    });
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.offerListener.remove();
-	  },
-	
-	  receivedOffersList: function (offers) {
-	    return offers.map(function (offer) {
-	      return React.createElement(ReceivedOfferItem, { key: offer.id, offer: offer });
-	    });
-	  },
-	
-	  madeOffersList: function (offers) {
-	    return offers.map(function (offer) {
-	      return React.createElement(MadeOfferItem, { key: offer.id, offer: offer });
-	    });
-	  },
-	
-	  emptyOffersList: function (offerType) {
-	    return React.createElement(
-	      'li',
-	      { className: 'account-product grey lighten-5 collection-item row' },
-	      React.createElement(
-	        'div',
-	        { className: 'offer-content col s6 m3 l2 grey-text text-darken-1' },
-	        React.createElement(
-	          'em',
-	          null,
-	          'no ',
-	          offerType,
-	          ' offers'
-	        )
-	      )
-	    );
-	  },
-	
-	  receivedPendingOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.pending && receivedOffers.pending.length > 0) return this.receivedOffersList(receivedOffers.pending);else return this.emptyOffersList('pending');
-	  },
-	
-	  receivedAcceptedOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.accepted && receivedOffers.accepted.length > 0) return this.receivedOffersList(receivedOffers.accepted);else return this.emptyOffersList('accepted');
-	  },
-	
-	  receivedDeclinedOffersList: function () {
-	    var receivedOffers = this.state.receivedOffers;
-	    if (receivedOffers && receivedOffers.declined && receivedOffers.declined.length > 0) return this.receivedOffersList(receivedOffers.declined);else return this.emptyOffersList('declined');
-	  },
-	
-	  madePendingOffersList: function () {
-	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.pending && madeOffers.pending.length > 0) return this.madeOffersList(madeOffers.pending);else return this.emptyOffersList('pending');
-	  },
-	
-	  madeAcceptedOffersList: function () {
-	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.accepted && madeOffers.accepted.length > 0) return this.madeOffersList(madeOffers.accepted);else return this.emptyOffersList('accepted');
-	  },
-	
-	  madeDeclinedOffersList: function () {
-	    var madeOffers = this.state.madeOffers;
-	    if (madeOffers && madeOffers.declined && madeOffers.declined.length > 0) return this.madeOffersList(madeOffers.declined);else return this.emptyOffersList('declined');
-	  },
-	
-	  receivedOffersSection: function (offers) {
-	    return React.createElement(
-	      'ul',
-	      { className: 'collapsible', 'data-collapsible': 'expandable' },
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header waves-effect active' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Pending'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.receivedPendingOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header waves-effect' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Accepted'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.receivedAcceptedOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header waves-effect' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Declined'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.receivedDeclinedOffersList()
-	          )
-	        )
-	      )
-	    );
-	  },
-	
-	  madeOffersSection: function (offers) {
-	    return React.createElement(
-	      'ul',
-	      { className: 'collapsible', 'data-collapsible': 'expandable' },
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header waves-effect' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Pending'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.madePendingOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header waves-effect' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Accepted'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.madeAcceptedOffersList()
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'li',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-header waves-effect' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Declined'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'collapsible-body' },
-	          React.createElement(
-	            'ul',
-	            { className: 'collection' },
-	            this.madeDeclinedOffersList()
-	          )
-	        )
-	      )
-	    );
-	  },
-	
-	  renderTest: function () {
-	    if (this.state.receivedOffers) var offers = this.state.receivedOffers.filter(function (offer) {
-	      return offer.status === 'Pending';
-	    });
-	    return offers.length;
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'user-offers' },
-	      React.createElement(
-	        'h5',
-	        null,
-	        'Offers Received'
-	      ),
-	      this.receivedOffersSection(),
-	      React.createElement('div', { className: 'row' }),
-	      React.createElement(
-	        'h5',
-	        null,
-	        'Offers Made'
-	      ),
-	      this.madeOffersSection()
-	    );
-	  }
-	});
-
-/***/ },
-/* 357 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var hashHistory = __webpack_require__(166).hashHistory,
-	    Dotdotdot = __webpack_require__(262),
-	    TimeAgo = __webpack_require__(352).default,
-	    ClientActions = __webpack_require__(256);
-	
-	/* global Materialize */
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	
-	  handleAccept: function () {
-	    ClientActions.acceptOffer(this.props.offer.id, this.acceptSuccess);
-	  },
-	
-	  handleDecline: function () {
-	    ClientActions.declineOffer(this.props.offer.id, this.declineSuccess);
-	  },
-	
-	  acceptSuccess: function () {
-	    Materialize.toast('Offer accepted!', 4000, 'green-text');
-	  },
-	
-	  declineSuccess: function () {
-	    Materialize.toast('Offer declined', 4000, 'red-text');
-	  },
-	  componentWillReceiveProps: function (newProps) {},
-	
-	  buttons: function () {
-	    if (this.props.offer.status === 'Pending') {
-	      return React.createElement(
-	        'div',
-	        { className: 'btns' },
-	        React.createElement(
-	          'button',
-	          {
-	            onClick: this.handleAccept,
-	            className: 'waves-effect waves-light btn right green' },
-	          'Accept'
-	        ),
-	        React.createElement(
-	          'button',
-	          {
-	            onClick: this.handleDecline,
-	            className: 'waves-effect waves-light btn right red' },
-	          'Decline'
-	        )
-	      );
-	    } else {
-	      return React.createElement('span', null);
-	    }
-	  },
-	
-	  render: function () {
-	    var offer = this.props.offer;
-	
-	    return React.createElement(
-	      'li',
-	      { className: 'offer-item grey lighten-5 collection-item row' },
-	      React.createElement(
-	        'div',
-	        { className: 'split-row content' },
-	        React.createElement(
-	          'div',
-	          { className: 'offer-title' },
-	          React.createElement(
-	            Dotdotdot,
-	            { clamp: 1 },
-	            offer.title
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'offer-time' },
-	          React.createElement(TimeAgo, { className: 'grey-text', date: offer.created_at })
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'split-row money' },
-	        React.createElement(
-	          'div',
-	          { className: 'offer-price' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Ask:'
-	          ),
-	          ' $',
-	          offer.price
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'offer-amount' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Offer:'
-	          ),
-	          ' $',
-	          offer.amount
-	        )
-	      ),
-	      this.buttons()
-	    );
-	  }
-	});
-
-/***/ },
-/* 358 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var hashHistory = __webpack_require__(166).hashHistory,
-	    Dotdotdot = __webpack_require__(262),
-	    TimeAgo = __webpack_require__(352).default,
-	    ClientActions = __webpack_require__(256);
-	
-	/* global Materialize */
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	
-	  render: function () {
-	    var offer = this.props.offer;
-	
-	    return React.createElement(
-	      'li',
-	      { className: 'offer-item grey lighten-5 collection-item row' },
-	      React.createElement(
-	        'div',
-	        { className: 'split-row content' },
-	        React.createElement(
-	          'div',
-	          { className: 'offer-title' },
-	          React.createElement(
-	            Dotdotdot,
-	            { clamp: 1 },
-	            offer.title
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'offer-time' },
-	          React.createElement(TimeAgo, { className: 'grey-text', date: offer.created_at })
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'split-row money' },
-	        React.createElement(
-	          'div',
-	          { className: 'offer-price' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Ask:'
-	          ),
-	          ' $',
-	          offer.price
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'offer-amount' },
-	          React.createElement(
-	            'b',
-	            null,
-	            'Offer:'
-	          ),
-	          ' $',
-	          offer.amount
-	        )
-	      )
-	    );
-	  }
-	});
-
-/***/ },
-/* 359 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	var UserActions = __webpack_require__(265),
-	    CurrentUserState = __webpack_require__(269),
-	    UserStore = __webpack_require__(268);
-	
-	module.exports = React.createClass({
-	  displayName: "exports",
-	
-	  render: function () {
-	    return React.createElement(
-	      "h5",
-	      null,
-	      "coming soon"
-	    );
-	  }
-	});
 
 /***/ }
 /******/ ]);
