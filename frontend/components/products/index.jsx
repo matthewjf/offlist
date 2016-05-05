@@ -1,7 +1,8 @@
 var React = require('react'),
     ProductStore = require('../../stores/product_store'),
     IndexItem = require('./index_item'),
-    ClientActions = require('../../actions/client_actions');
+    ClientActions = require('../../actions/client_actions'),
+    SearchStore = require('../../stores/search_store');
 
 module.exports = React.createClass({
   getInitialState: function() {
@@ -12,8 +13,18 @@ module.exports = React.createClass({
     this.setState({ products: ProductStore.all() });
   },
 
-  setProducts: function() {
+  searchText: function() {
+    var search = SearchStore.all();
+    var resultText = '';
+    if (search) {
+      resultText += "Listings";
+      if (search.query)
+        resultText += " for '" + search.query + "'";
+      if (search.address)
+        resultText += " near '" + search.address + "'";
+    }
 
+    return resultText;
   },
 
   setNearbyProducts: function() {
@@ -66,7 +77,9 @@ module.exports = React.createClass({
 
     return <div id='sidebar'>
       <div className='sidebar-content'>
+        <div className='results-text grey-text'>{this.searchText()}</div>
         <ul className='sidebar-list'>
+
           {this.productItems()}
           {this.placeholder()}
           {this.placeholder()}

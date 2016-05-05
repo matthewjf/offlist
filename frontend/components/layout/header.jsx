@@ -34,7 +34,7 @@ module.exports = React.createClass({
 			return (
         <ul className="hide-on-med-and-down">
 					<li><a onClick={this.goToAccount}>
-						{this.state.currentUser.username}
+						Account
 					</a></li>
           <li><a onClick={this.logout}>Log Out</a></li>
         </ul>

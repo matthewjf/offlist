@@ -25750,23 +25750,22 @@
 	      fillOpacity: 0.20,
 	      strokeColor: '#F57C00',
 	      strokeOpacity: 0.5,
-	      strokeWeight: 1
+	      strokeWeight: 1,
+	      clickable: false
 	    });
-	
-	    // this.setState({center: latLng});
 	
 	    this.map.fitBounds(this.circle.getBounds());
 	    this.setLatLng();
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
+	    this.lookupAddress(newProps.state.address);
+	
 	    this.setState({
 	      query: newProps.state.query,
 	      distance: newProps.state.distance,
 	      address: newProps.state.address
 	    });
-	
-	    this.lookupAddress(newProps.state.address);
 	  },
 	
 	  windowContent: function (product) {
@@ -33028,7 +33027,8 @@
 	var React = __webpack_require__(1),
 	    ProductStore = __webpack_require__(227),
 	    IndexItem = __webpack_require__(261),
-	    ClientActions = __webpack_require__(256);
+	    ClientActions = __webpack_require__(256),
+	    SearchStore = __webpack_require__(255);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -33041,7 +33041,17 @@
 	    this.setState({ products: ProductStore.all() });
 	  },
 	
-	  setProducts: function () {},
+	  searchText: function () {
+	    var search = SearchStore.all();
+	    var resultText = '';
+	    if (search) {
+	      resultText += "Listings";
+	      if (search.query) resultText += " for '" + search.query + "'";
+	      if (search.address) resultText += " near '" + search.address + "'";
+	    }
+	
+	    return resultText;
+	  },
 	
 	  setNearbyProducts: function () {},
 	
@@ -33095,6 +33105,11 @@
 	      React.createElement(
 	        'div',
 	        { className: 'sidebar-content' },
+	        React.createElement(
+	          'div',
+	          { className: 'results-text grey-text' },
+	          this.searchText()
+	        ),
 	        React.createElement(
 	          'ul',
 	          { className: 'sidebar-list' },
@@ -33581,7 +33596,7 @@
 											React.createElement(
 													"a",
 													{ onClick: this.goToAccount },
-													this.state.currentUser.username
+													"Account"
 											)
 									),
 									React.createElement(
@@ -61137,7 +61152,7 @@
 	          'div',
 	          { className: 'col s12 m5 l4 detail-right' },
 	          React.createElement(Seller, { seller: seller }),
-	          React.createElement(Offer, { price: product.price }),
+	          React.createElement(Offer, { price: product.price, seller: product.seller }),
 	          React.createElement(OfferForm, { productId: this.props.params.listingId }),
 	          React.createElement(
 	            'div',

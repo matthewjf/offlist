@@ -113,7 +113,7 @@ module.exports = React.createClass({
           </div>
           <div className='col s12 m5 l4 detail-right'>
             <Seller seller={seller} />
-            <Offer price={product.price}/>
+            <Offer price={product.price} seller={product.seller}/>
             <OfferForm productId={this.props.params.listingId} />
             <div className='card'>
               <div className='card-image'>

@@ -123,23 +123,22 @@ module.exports = React.createClass({
       fillOpacity: 0.20,
       strokeColor: '#F57C00',
       strokeOpacity: 0.5,
-      strokeWeight: 1
+      strokeWeight: 1,
+      clickable: false
     });
-
-    // this.setState({center: latLng});
 
     this.map.fitBounds(this.circle.getBounds());
     this.setLatLng();
   },
 
   componentWillReceiveProps: function(newProps) {
+    this.lookupAddress(newProps.state.address);
+
     this.setState({
       query: newProps.state.query,
       distance: newProps.state.distance,
       address: newProps.state.address
     });
-
-    this.lookupAddress(newProps.state.address);
   },
 
   windowContent: function(product) {
