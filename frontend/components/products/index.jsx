@@ -24,10 +24,6 @@ module.exports = React.createClass({
     this.productListener = ProductStore.addListener(this.getProducts);
   },
 
-  componentDidUpdate: function () {
-
-  },
-
   componentWillUnmount: function() {
     this.productListener.remove();
   },

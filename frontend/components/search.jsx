@@ -33,7 +33,7 @@ module.exports = React.createClass({
     if (search) {
       if (search.query) {
         this.setState({query: search.query});
-        $('#query').val(search.query).change();
+        $('#search').val(search.query).change();
       }
       if (search.address) {
         this.setState({address: search.address});
