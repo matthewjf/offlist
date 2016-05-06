@@ -15,8 +15,12 @@ module.exports = React.createClass({
     this.setState({ products: ProductStore.all() });
   },
 
+  getSearch: function() {
+    this.setState({search: SearchStore.all(), circle: SearchStore.getCircle()});
+  },
+
   inCircle: function(product) {
-    var circle = SearchStore.getCircle();
+    var circle = this.state.circle;
     if (product && circle) {
       var latLng = new google.maps.LatLng(product.lat, product.lng);
       if (circle.getBounds().contains(latLng)) {
@@ -30,7 +34,8 @@ module.exports = React.createClass({
   },
 
   searchText: function() {
-    var search = SearchStore.all();
+
+    var search = this.state.search;
     var resultText = '';
     if (search) {
       resultText += this.containedProducts().length;
@@ -39,12 +44,11 @@ module.exports = React.createClass({
         resultText += 's';
       if (search.query)
         resultText += " for '" + search.query + "'";
-      if (search.distance)
+      if (search.address && search.distance) {
         resultText += " within " + search.distance + " miles";
-      if (search.address)
         resultText += " of '" + search.address + "'";
+      }
     }
-
     return resultText;
   },
 
@@ -71,11 +75,13 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function () {
+    this.searchListener = SearchStore.addListener(this.getSearch);
     this.productListener = ProductStore.addListener(this.getProducts);
   },
 
   componentWillUnmount: function() {
     this.productListener.remove();
+    this.searchListener.remove();
   },
 
   placeholder: function() {

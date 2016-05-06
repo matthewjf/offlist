@@ -95,8 +95,14 @@ var UserActions = {
 		});
 	},
 
-	logout: function(){
-		UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
+	logout: function(successCB){
+		UserApiUtil.logout(
+			function() {
+				UserActions.removeCurrentUser();
+				successCB();
+			},
+			UserActions.handleError
+		);
 	},
 
 	resetErrors: function(errors) {

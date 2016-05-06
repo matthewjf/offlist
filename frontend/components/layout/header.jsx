@@ -3,16 +3,20 @@ var React = require('react'),
 		CurrentUserState = require("../../mixins/current_user_state"),
     hashHistory = require('react-router').hashHistory;
 
-// var SearchForm = require('../search_form');
+/* global Materialize */
 
 module.exports = React.createClass({
 	mixins: [CurrentUserState],
 
   logout: function(e){
     e.preventDefault();
-    UserActions.logout();
-		hashHistory.push('/');
+    UserActions.logout(this.successLogout);
   },
+
+	successLogout: function() {
+		hashHistory.push('/');
+	  Materialize.toast('Logged out', 2000, 'green-text');
+	},
 
 	openLogin: function() {
 		$('#login-modal').openModal();

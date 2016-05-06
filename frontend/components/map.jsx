@@ -45,8 +45,6 @@ module.exports = React.createClass({
   setLatLng: function() {
     var latLngBounds = this.map.getBounds();
     this.setState({bounds: this.getBounds(latLngBounds)});
-
-    SearchActions.setSearch(this.state);
   },
 
   getBounds: function(latLng) {
@@ -108,6 +106,12 @@ module.exports = React.createClass({
   lookupError: function(status){
     /* global Materialize */
     Materialize.toast('Unknown location: ' + status, 4000, 'red-text');
+    var addr = $('#address');
+    addr.addClass('invalid');
+    this.focusListener = addr.focus(function(){
+      addr.removeClass('invalid');
+      addr.off(this.focusListener);
+    });
   },
 
   lookupSuccess: function(latLng) {
@@ -133,13 +137,20 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function(newProps) {
-    this.lookupAddress(newProps.state.address);
+    console.log('map received props: ' + newProps.state.address);
 
     this.setState({
       query: newProps.state.query,
       distance: newProps.state.distance,
       address: newProps.state.address
     });
+    console.log('state set: ' + newProps.state.address);
+
+    this.lookupAddress(newProps.state.address);
+  },
+
+  componentDidUpdate: function() {
+    SearchActions.setSearch(this.state);
   },
 
   windowContent: function(product) {

@@ -25,6 +25,7 @@ module.exports = React.createClass({
     var address = ReactDOM.findDOMNode(this.refs.address).value;
     var distance = ReactDOM.findDOMNode(this.refs.distance).value;
     this.setState({query: query, address: address, distance: distance});
+
   },
 
   componentDidMount: function() {

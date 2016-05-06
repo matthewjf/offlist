@@ -100,7 +100,7 @@ var LoginForm = React.createClass({
 			return;
 		}
 		var self = this;
-		return (<ul>
+		return (<ul className='user-errors'>
 		{
 			Object.keys(this.state.userErrors).map(function(key, i){
 				return (<li key={i}>{self.state.userErrors[key]}</li>);

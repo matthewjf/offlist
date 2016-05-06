@@ -25677,8 +25677,6 @@
 	  setLatLng: function () {
 	    var latLngBounds = this.map.getBounds();
 	    this.setState({ bounds: this.getBounds(latLngBounds) });
-	
-	    SearchActions.setSearch(this.state);
 	  },
 	
 	  getBounds: function (latLng) {
@@ -25736,6 +25734,12 @@
 	  lookupError: function (status) {
 	    /* global Materialize */
 	    Materialize.toast('Unknown location: ' + status, 4000, 'red-text');
+	    var addr = $('#address');
+	    addr.addClass('invalid');
+	    this.focusListener = addr.focus(function () {
+	      addr.removeClass('invalid');
+	      addr.off(this.focusListener);
+	    });
 	  },
 	
 	  lookupSuccess: function (latLng) {
@@ -25760,13 +25764,20 @@
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    this.lookupAddress(newProps.state.address);
+	    console.log('map received props: ' + newProps.state.address);
 	
 	    this.setState({
 	      query: newProps.state.query,
 	      distance: newProps.state.distance,
 	      address: newProps.state.address
 	    });
+	    console.log('state set: ' + newProps.state.address);
+	
+	    this.lookupAddress(newProps.state.address);
+	  },
+	
+	  componentDidUpdate: function () {
+	    SearchActions.setSearch(this.state);
 	  },
 	
 	  windowContent: function (product) {
@@ -33063,8 +33074,12 @@
 	    this.setState({ products: ProductStore.all() });
 	  },
 	
+	  getSearch: function () {
+	    this.setState({ search: SearchStore.all(), circle: SearchStore.getCircle() });
+	  },
+	
 	  inCircle: function (product) {
-	    var circle = SearchStore.getCircle();
+	    var circle = this.state.circle;
 	    if (product && circle) {
 	      var latLng = new google.maps.LatLng(product.lat, product.lng);
 	      if (circle.getBounds().contains(latLng)) {
@@ -33078,17 +33093,19 @@
 	  },
 	
 	  searchText: function () {
-	    var search = SearchStore.all();
+	
+	    var search = this.state.search;
 	    var resultText = '';
 	    if (search) {
 	      resultText += this.containedProducts().length;
 	      resultText += " listing";
 	      if (this.containedProducts().length !== 1) resultText += 's';
 	      if (search.query) resultText += " for '" + search.query + "'";
-	      if (search.distance) resultText += " within " + search.distance + " miles";
-	      if (search.address) resultText += " of '" + search.address + "'";
+	      if (search.address && search.distance) {
+	        resultText += " within " + search.distance + " miles";
+	        resultText += " of '" + search.address + "'";
+	      }
 	    }
-	
 	    return resultText;
 	  },
 	
@@ -33115,11 +33132,13 @@
 	  },
 	
 	  componentDidMount: function () {
+	    this.searchListener = SearchStore.addListener(this.getSearch);
 	    this.productListener = ProductStore.addListener(this.getProducts);
 	  },
 	
 	  componentWillUnmount: function () {
 	    this.productListener.remove();
+	    this.searchListener.remove();
 	  },
 	
 	  placeholder: function () {
@@ -33633,173 +33652,177 @@
 	    CurrentUserState = __webpack_require__(269),
 	    hashHistory = __webpack_require__(166).hashHistory;
 	
-	// var SearchForm = require('../search_form');
+	/* global Materialize */
 	
 	module.exports = React.createClass({
-			displayName: "exports",
+		displayName: "exports",
 	
-			mixins: [CurrentUserState],
+		mixins: [CurrentUserState],
 	
-			logout: function (e) {
-					e.preventDefault();
-					UserActions.logout();
-					hashHistory.push('/');
-			},
+		logout: function (e) {
+			e.preventDefault();
+			UserActions.logout(this.successLogout);
+		},
 	
-			openLogin: function () {
-					$('#login-modal').openModal();
-			},
+		successLogout: function () {
+			hashHistory.push('/');
+			Materialize.toast('Logged out', 2000, 'green-text');
+		},
 	
-			openSignup: function () {
-					$('#signup-modal').openModal();
-			},
+		openLogin: function () {
+			$('#login-modal').openModal();
+		},
 	
-			goToAccount: function () {
-					hashHistory.push('account');
-			},
+		openSignup: function () {
+			$('#signup-modal').openModal();
+		},
 	
-			home: function () {
-					hashHistory.push('/');
-			},
+		goToAccount: function () {
+			hashHistory.push('account');
+		},
 	
-			notLoggedIn: function () {
-					if (this.state.currentUser) {
-							return React.createElement(
-									"ul",
-									{ className: "hide-on-med-and-down" },
-									React.createElement(
-											"li",
-											null,
-											React.createElement(
-													"a",
-													{ onClick: this.goToAccount },
-													"Account"
-											)
-									),
-									React.createElement(
-											"li",
-											null,
-											React.createElement(
-													"a",
-													{ onClick: this.logout },
-													"Log Out"
-											)
-									)
-							);
-					}
-					return React.createElement(
-							"ul",
-							{ className: "hide-on-med-and-down" },
-							React.createElement(
-									"li",
-									null,
-									React.createElement(
-											"a",
-											{ onClick: this.openSignup, className: "modal-trigger" },
-											"Sign Up"
-									)
-							),
-							React.createElement(
-									"li",
-									null,
-									React.createElement(
-											"a",
-											{ onClick: this.openLogin, className: "modal-trigger" },
-											"Log In"
-									)
-							)
-					);
-			},
+		home: function () {
+			hashHistory.push('/');
+		},
 	
-			notLoggedInMobile: function () {
-					if (this.state.currentUser) {
-							return React.createElement(
-									"ul",
-									{ id: "nav-mobile", className: "side-nav" },
-									React.createElement(
-											"li",
-											null,
-											React.createElement(
-													"a",
-													{ onClick: this.goToAccount },
-													this.state.currentUser.username
-											)
-									),
-									React.createElement(
-											"li",
-											null,
-											React.createElement(
-													"a",
-													{ onClick: this.logout },
-													"Log Out"
-											)
-									)
-							);
-					}
-					return React.createElement(
-							"ul",
-							{ id: "nav-mobile", className: "side-nav" },
-							React.createElement(
-									"li",
-									null,
-									React.createElement(
-											"a",
-											{ onClick: this.openSignup, className: "modal-trigger" },
-											"Sign Up"
-									)
-							),
-							React.createElement(
-									"li",
-									null,
-									React.createElement(
-											"a",
-											{ onClick: this.openLogin, className: "modal-trigger" },
-											"Log In"
-									)
-							)
-					);
-			},
-	
-			render: function () {
-					return React.createElement(
-							"header",
-							null,
-							React.createElement(
-									"nav",
-									{ className: "white", role: "navigation" },
-									React.createElement(
-											"div",
-											{ className: "nav-wrapper container" },
-											React.createElement(
-													"div",
-													{ className: "logo-wrapper" },
-													React.createElement(
-															"a",
-															{ id: "logo-container", onClick: this.home, className: "brand-logo" },
-															"OffList"
-													)
-											),
-											this.notLoggedIn(),
-											this.notLoggedInMobile(),
-											React.createElement(
-													"a",
-													{ "data-activates": "nav-mobile", className: "button-collapse" },
-													React.createElement(
-															"i",
-															{ className: "material-icons" },
-															"menu"
-													)
-											)
-									)
-							)
-					);
+		notLoggedIn: function () {
+			if (this.state.currentUser) {
+				return React.createElement(
+					"ul",
+					{ className: "hide-on-med-and-down" },
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ onClick: this.goToAccount },
+							"Account"
+						)
+					),
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ onClick: this.logout },
+							"Log Out"
+						)
+					)
+				);
 			}
+			return React.createElement(
+				"ul",
+				{ className: "hide-on-med-and-down" },
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ onClick: this.openSignup, className: "modal-trigger" },
+						"Sign Up"
+					)
+				),
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ onClick: this.openLogin, className: "modal-trigger" },
+						"Log In"
+					)
+				)
+			);
+		},
+	
+		notLoggedInMobile: function () {
+			if (this.state.currentUser) {
+				return React.createElement(
+					"ul",
+					{ id: "nav-mobile", className: "side-nav" },
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ onClick: this.goToAccount },
+							this.state.currentUser.username
+						)
+					),
+					React.createElement(
+						"li",
+						null,
+						React.createElement(
+							"a",
+							{ onClick: this.logout },
+							"Log Out"
+						)
+					)
+				);
+			}
+			return React.createElement(
+				"ul",
+				{ id: "nav-mobile", className: "side-nav" },
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ onClick: this.openSignup, className: "modal-trigger" },
+						"Sign Up"
+					)
+				),
+				React.createElement(
+					"li",
+					null,
+					React.createElement(
+						"a",
+						{ onClick: this.openLogin, className: "modal-trigger" },
+						"Log In"
+					)
+				)
+			);
+		},
+	
+		render: function () {
+			return React.createElement(
+				"header",
+				null,
+				React.createElement(
+					"nav",
+					{ className: "white", role: "navigation" },
+					React.createElement(
+						"div",
+						{ className: "nav-wrapper container" },
+						React.createElement(
+							"div",
+							{ className: "logo-wrapper" },
+							React.createElement(
+								"a",
+								{ id: "logo-container", onClick: this.home, className: "brand-logo" },
+								"OffList"
+							)
+						),
+						this.notLoggedIn(),
+						this.notLoggedInMobile(),
+						React.createElement(
+							"a",
+							{ "data-activates": "nav-mobile", className: "button-collapse" },
+							React.createElement(
+								"i",
+								{ className: "material-icons" },
+								"menu"
+							)
+						)
+					)
+				)
+			);
+		}
 	
 	});
 	
 	$(document).ready(function () {
-			$('.modal-trigger').leanModal();
-			$(".button-collapse").sideNav();
+		$('.modal-trigger').leanModal();
+		$(".button-collapse").sideNav();
 	});
 
 /***/ },
@@ -33892,8 +33915,11 @@
 			});
 		},
 	
-		logout: function () {
-			UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
+		logout: function (successCB) {
+			UserApiUtil.logout(function () {
+				UserActions.removeCurrentUser();
+				successCB();
+			}, UserActions.handleError);
 		},
 	
 		resetErrors: function (errors) {
@@ -34248,7 +34274,7 @@
 			var self = this;
 			return React.createElement(
 				"ul",
-				null,
+				{ className: "user-errors" },
 				Object.keys(this.state.userErrors).map(function (key, i) {
 					return React.createElement(
 						"li",
