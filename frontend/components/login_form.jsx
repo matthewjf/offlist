@@ -153,13 +153,15 @@ var LoginForm = React.createClass({
 								onClick={this.closeModal}>cancel
 							</button>
 							<button
-								className='waves-effect btn-flat left'
-								onClick={this.toggleForm} >Sign Up
-							</button>
-							<button
+								id='demo'
 								className='waves-effect waves-light btn grey darken-1 left'
 								onClick={this.demoSubmit}>demo
 							</button>
+							<div className='left'>
+								New?
+								<a onClick={this.toggleForm} className='clickable'> Sign up </a>
+							</div>
+
 						</div>
 					</div>
 				</form>

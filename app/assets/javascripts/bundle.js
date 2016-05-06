@@ -34369,16 +34369,20 @@
 						React.createElement(
 							"button",
 							{
-								className: "waves-effect btn-flat left",
-								onClick: this.toggleForm },
-							"Sign Up"
-						),
-						React.createElement(
-							"button",
-							{
+								id: "demo",
 								className: "waves-effect waves-light btn grey darken-1 left",
 								onClick: this.demoSubmit },
 							"demo"
+						),
+						React.createElement(
+							"div",
+							{ className: "left" },
+							"New?",
+							React.createElement(
+								"a",
+								{ onClick: this.toggleForm, className: "clickable" },
+								" Sign up "
+							)
 						)
 					)
 				)
@@ -34484,6 +34488,12 @@
 			$('.input').siblings().addClass('activate');
 		},
 	
+		demoLogin: function (e) {
+			e.preventDefault();
+			this.toggleForm(e);
+			setTimeout($('#demo').trigger('click'), 300);
+		},
+	
 		errors: function () {
 			if (!this.state.userErrors) {
 				return;
@@ -34567,16 +34577,26 @@
 						React.createElement(
 							"button",
 							{
-								className: "waves-effect waves-light btn-flat",
+								className: "waves-effect waves-light btn-flat right",
 								onClick: this.closeModal },
 							"cancel"
 						),
 						React.createElement(
 							"button",
 							{
-								className: "waves-effect waves-grey btn-flat left",
-								onClick: this.toggleForm },
-							"Log In"
+								onClick: this.demoLogin,
+								className: "waves-effect waves-light btn grey darken-1 left" },
+							"demo"
+						),
+						React.createElement(
+							"div",
+							{ className: "left" },
+							"Have an account?",
+							React.createElement(
+								"a",
+								{ onClick: this.toggleForm, className: "clickable" },
+								" Log in "
+							)
 						)
 					)
 				)
