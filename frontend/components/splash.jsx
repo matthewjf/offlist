@@ -16,7 +16,7 @@ module.exports = React.createClass({
         <div id='splash'>
           <div className='welcome'>
             <h1 className='title orange-text text-darken-2'>OffList</h1>
-            <h5 className='slogan'>Buy  ·  Sell  ·  Easy</h5>
+            <h5 className='slogan'>Buy  ·  Sell  ·  Simple</h5>
           </div>
           <button onClick={this.buy}
             className='waves-effect waves-light btn btn-large'>

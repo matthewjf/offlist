@@ -64805,7 +64805,7 @@
 	          React.createElement(
 	            'h5',
 	            { className: 'slogan' },
-	            'Buy  ·  Sell  ·  Easy'
+	            'Buy  ·  Sell  ·  Simple'
 	          )
 	        ),
 	        React.createElement(
