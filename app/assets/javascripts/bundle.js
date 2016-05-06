@@ -25729,7 +25729,12 @@
 	  },
 	
 	  lookupAddress: function (address) {
-	    if (address) MapUtil.geocodeAddress(address, this.lookupSuccess, this.lookupError);else this.setLatLng();
+	    if (address) {
+	      MapUtil.geocodeAddress(address, this.lookupSuccess, this.lookupError);
+	    } else {
+	      this.setLatLng();
+	      if (this.circle) this.circle.setMap(null);
+	    }
 	  },
 	
 	  lookupError: function (status) {
@@ -25765,14 +25770,11 @@
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    console.log('map received props: ' + newProps.state.address);
-	
 	    this.setState({
 	      query: newProps.state.query,
 	      distance: newProps.state.distance,
 	      address: newProps.state.address
 	    });
-	    console.log('state set: ' + newProps.state.address);
 	
 	    this.lookupAddress(newProps.state.address);
 	  },

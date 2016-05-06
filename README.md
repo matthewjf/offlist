@@ -1,142 +1,100 @@
 # OffList
 
-[OffList][https://www.off-list.com/]
+[OffList live][heroku]
 
-## Minimum Viable Product
+[heroku]: http://www.off-list.com
 
-OffList is a web application inspired by Etsy that will be built using Ruby on Rails and React.js.  It's a site for people selling locally made products, locally.  By the end of Week 9, this app will, at a minimum, satisfy the following criteria:
+OffList is a full-stack web application inspired by Evernote.  It utilizes Ruby on Rails on the backend, a PostgreSQL database, and React.js with a Flux architectural framework on the frontend.  
 
-- [x] New account creation, login, and guest/demo login
-- [x] Smooth, bug-free navigation
-- [ ] Adequate seed data to demonstrate the site's features
-- [x] The minimally necessary features for an Etsy-inspired site: product browsing and search, product creation and saving
-- [x] Hosting on Heroku
-- [x] CSS styling that is satisfactorily visually appealing
-- [ ] A production README, replacing this README
+## Features & Implementation
 
-## Product Goals and Priorities
+### Single-Page App
 
-OffList will allow users to do the following:
+OffList is truly a single-page; all content is delivered on one static page.  The root page listens to a `SessionStore` and renders content based on a call to `SessionStore.currentUser()`.  Sensitive information is kept out of the frontend of the app by making an API call to `SessionsController#get_user`.
 
-<!-- This is a Markdown checklist. Use it to keep track of your
-progress. Put an x between the brackets for a checkmark: [x] -->
+```ruby
+class Api::SessionsController < ApplicationController
+    def get_user
+      if current_user
+        render :current_user
+      else
+        render json: errors.full_messages
+      end
+    end
+ end
+  ```
 
-- [x] Create an account (MVP)
-- [x] Log in / Log out, including as a Guest/Demo User (MVP)
-- [x] Browse and search for products (MVP)
-- [x] Create, read, edit, and delete products (MVP)
+### Note Rendering and Editing
 
-## Design Docs
-* [View Wireframes][views]
-* [React Components][components]
-* [Flux Cycles][flux-cycles]
-* [API endpoints][api-endpoints]
-* [DB schema][schema]
+  On the database side, the notes are stored in one table in the database, which contains columns for `id`, `user_id`, `content`, and `updated_at`.  Upon login, an API call is made to the database which joins the user table and the note table on `user_id` and filters by the current user's `id`.  These notes are held in the `NoteStore` until the user's session is destroyed.  
 
-[views]: ./docs/views.md
-[components]: ./docs/components.md
-[flux-cycles]: ./docs/flux-cycles.md
-[api-endpoints]: ./docs/api-endpoints.md
-[schema]: ./docs/schema.md
+  Notes are rendered in two different components: the `CondensedNote` components, which show the title and first few words of the note content, and the `ExpandedNote` components, which are editable and show all note text.  The `NoteIndex` renders all of the `CondensedNote`s as subcomponents, as well as one `ExpandedNote` component, which renders based on `NoteStore.selectedNote()`. The UI of the `NoteIndex` is taken directly from Evernote for a professional, clean look:  
 
-## Implementation Timeline
+![image of notebook index](https://github.com/appacademy/sample-project-proposal/blob/master/docs/noteIndex.png)
 
-### Phase 1: Backend setup and User Authentication (0.5 days)
+Note editing is implemented using the Quill.js library, allowing for a Word-processor-like user experience.
 
-**Objective:** Functioning rails project with Authentication
+### Notebooks
 
-- [x] create new project
-- [x] create `User` model
-- [x] authentication
-- [x] user signup/signin pages
-- [x] blank landing page after signin
+Implementing Notebooks started with a notebook table in the database.  The `Notebook` table contains two columns: `title` and `id`.  Additionally, a `notebook_id` column was added to the `Note` table.  
 
-### Phase 2: Product Model, API, and basic APIUtil (1.5 days)
+The React component structure for notebooks mirrored that of notes: the `NotebookIndex` component renders a list of `CondensedNotebook`s as subcomponents, along with one `ExpandedNotebook`, kept track of by `NotebookStore.selectedNotebook()`.  
 
-**Objective:** Products can be created, read, edited and destroyed through
-the API.
+`NotebookIndex` render method:
 
-- [x] create `Product` model
-- [x] seed the database with a small amount of test data
-- [x] CRUD API for products (`ProductsController`)
-- [x] jBuilder views for products
-- [x] setup Webpack & Flux scaffold
-- [x] setup `APIUtil` to interact with the API
-- [x] test out API interaction in the console.
+```javascript
+render: function () {
+  return ({this.state.notebooks.map(function (notebook) {
+    return <CondensedNotebook notebook={notebook} />
+  }
+  <ExpandedNotebook notebook={this.state.selectedNotebook} />)
+}
+```
 
-### Phase 3: Flux Architecture and Router (1 day)
+### Search
 
-**Objective:** Products can be created, read, edited and destroyed with the
-user interface.
+Search is written as a single SQL query using ActiveRercord query methods. It accepts an options hash with sensible defaults. The search will match an arbitrary number of keywords. Search results are ranked by the number of matching keywords.
 
-- [x] setup the flux loop with skeleton files
-- [x] setup React Router
-- implement each product component, building out the flux loop as needed.
-  - [x] `ProductIndex`
-  - [x] `ProductIndexItem`
-  - [x] `ProductForm`
-  - [x] `ProductDetail`
+`Listing` score method:
 
-### Phase 4: Start Styling (1 day)
+```ruby
+def self.score(opts={})
+  defaults = { "query" => '', "bounds" => nil, "active" => true}
+  opts = (opts ? defaults.merge(opts) : defaults)
 
-**Objective:** Existing pages (including singup/signin) will look good.
+  filtered_result = Product.where(active: opts["active"])
+                           .in_bounds(opts["bounds"])
 
-- [x] create a basic style guide
-- [x] position elements on the page
-- [x] add basic colors & styles
+  if opts["query"].empty?
+    return filtered_result.select(:id)
+                          .order('count_id desc')
+                          .group(:id)
+                          .count(:id)
+  end
 
-### Phase 5: Location (1 day)
 
-**Objective:** Products will be sold offline by location (similar to craigslist)
+  keywords = opts["query"].split(' ')
+  result = filtered_result.search_by_keyword(keywords.shift)
 
-- [x] Update product model
-- build out API, Flux loop, and components for:
-  - [x] Map
-  - [x] Map markers
-  - [x] View products by location
-  - [x] Filter search results by map location
-  - [x] Default map location on new search includes all results
-- Use CSS to style new views
+  until keywords.empty?
+    result = result.union_all(filtered_result.search_by_keyword(keywords.shift))
+  end
 
-### Phase 6: Search (1 day)
+  result.select("products.id")
+        .order('count_products_id desc')
+        .group("products.id")
+        .count("products.id")
+end
+```
 
-**Objective:** Products are searchable
+### Location
 
-- [x] create `Tag` model and join table
-- build out API, Flux loop, and components for:
-  - [x] fetching tags for product
-  - [x] adding tags to product
-  - [x] creating tags while adding to products
-  - [x] searching products by tag
-- [x] Style new elements
+Listing location was implemented with the Google Maps API. The goal was to create a 2-way sync between the data on the page and what appears on the map.
 
-### Phase 7: Offers (1.5 days)
+In the listing edit form, users can either enter an address in the address field or select a location on the map. Entering data in one will update the other.
 
-**objective:** Buying occurs through offers.
+On the listing search, users can either select an address or position on the map to run a search.
 
-- [x] create offer model
-- build out API, Flux loop, and components for:
-  - [x] fetching offers
-  - [x] creating offers
-  - [ ] offer notifications
+## Future Directions for the Project
 
-### Phase 8: Styling Cleanup and Seeding (1 day)
-
-**objective:** Make the site feel more cohesive and awesome.
-
-- [x] Get feedback on my UI from others
-- [x] Refactor HTML classes & CSS rules
-- [x] Add modals, transitions, and other styling flourishes
-- [ ] Add splash page
-
-### Bonus Features (TBD)
-- [ ] Filtering results
-- [ ] Pagination / infinite scroll for products index
-- [ ] Offer conversation so users may negotiate/sort out exchange details
-- [ ] Seller reviews
-
-[phase-one]: ./docs/phases/phase1.md
-[phase-two]: ./docs/phases/phase2.md
-[phase-three]: ./docs/phases/phase3.md
-[phase-four]: ./docs/phases/phase4.md
-[phase-five]: ./docs/phases/phase5.md
+In addition to the features already implemented, I plan to continue work on this project.  The next steps for OffList are outlined below.
