@@ -18,9 +18,7 @@ module.exports = React.createClass({
 
   componentDidMount: function() {
     this.sellerListener = SellerStore.addListener(this.updateSeller);
-		if (typeof SellerStore.seller() === 'undefined') {
-			UserActions.fetchSeller(this.props.params.userId);
-		}
+		UserActions.fetchSeller(this.props.params.userId);
   },
 
   componentWillUnmount: function() {

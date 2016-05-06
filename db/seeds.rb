@@ -12,7 +12,7 @@ listings = [
     tag_list: ['cars']
   },
   {
-    title: '1998 honda accord 3.0 v-tech dually',
+    title: '1998 honda accord 3.0',
     description: 'alright for sale is something that you will never see again and might have to see to believe. its a highly customized 1998 honda accord.it has 198k on it. there is a long list of custom work
 whelen off road spot lights
 44 inch off road spot and flood bar
@@ -38,7 +38,7 @@ will trade or consider reasonable offers.',
     tag_list: ['cars']
   },
   {
-    title: 'Toilet Box - Terrify Children on Christmas',
+    title: 'Toilet Box',
     description: "Just installed a new toilet, big sturdy box left. Would be great for moving, but better to put your child's Christmas present inside.
 
 Imagine the excitement building with such a huge gift waiting under the tree, only to see it dashed when they rip off the paper and a photo of a potty is on the front.
@@ -56,7 +56,7 @@ Merry Christmas!",
     tag_list: ['other']
   },
   {
-    title: '6 top ramen chicken flavor packets',
+    title: 'Top ramen flavor packets',
     description: "I recently finished a 6 pack of Top Ramen Chicken Flavor noodles that someone gave me. I don't eat meat, so I just made vegetarian stock and cooked the noodles in that. I didn't want to throw the flavor packets away because what if someone out there (someone like you!) really loves the Chicken Flavor packets and has always wished for some extra that they didn't have to use to flavor their noodles. . .
 
 TODAY IS YOUR DAY
@@ -106,7 +106,7 @@ Nary a pence less.",
     tag_list: ['gadget']
   },
   {
-    title: 'IMCA registered unicorn mare',
+    title: 'IMCA registered unicorn',
     description: "5 year old white unicorn mare, broke to ride, some trail experience. Friendly with humans and dogs, should be kept separate from horses because they get jealous. International Mythical Creatures Association registration parchment scroll on hand, can only be read under the light of a full moon so come on the 18th. Poops some glitter, mostly just poop though.
 Serious offers only, please.",
     img_urls: [
@@ -133,7 +133,7 @@ Measures 7.5 Inches long',
     tag_list: ['kitchen']
   },
   {
-    title: 'George the camel',
+    title: 'George the Camel',
     description: "Despite his age, George is really a beautiful camel. Get him while you can!",
     img_urls: [
       'https://s3-us-west-1.amazonaws.com/offlist/camel0.jpg',
@@ -169,8 +169,8 @@ tags.each do |tag|
 end
 
 def create_product(listing, user)
-  rand_lat = 37.5 + (rand()/2)
-  rand_lng = -122.45 + (rand()/2)
+  rand_lat = 37.7 + (rand()/10)
+  rand_lng = -122.5 + (rand()/10)
 
   Product.create(
     title: listing[:title],
