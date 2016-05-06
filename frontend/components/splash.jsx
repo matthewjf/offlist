@@ -14,7 +14,7 @@ module.exports = React.createClass({
       $('#login-modal').openModal();
     }
     setTimeout($('#demo').trigger('click'), 300);
-    setTimeout(hashHistory.push('/account'), 10000);
+    setTimeout(hashHistory.push('/account'), 4000);
   },
 
   render: function(){
@@ -27,14 +27,17 @@ module.exports = React.createClass({
           </div>
           <button onClick={this.buy}
             className='waves-effect waves-light btn btn-large'>
-            BUY
+            BROWSE
           </button>
-          <button onClick={this.sell}
-            className='waves-effect waves-light btn btn-large'>
-            SELL
-          </button>
+
         </div>
       </div>
     );
   }
 });
+
+// weird bug here
+// <button onClick={this.sell}
+//   className='waves-effect waves-light btn btn-large'>
+//   SELL
+// </button>

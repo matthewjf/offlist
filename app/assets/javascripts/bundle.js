@@ -64795,7 +64795,7 @@
 	      $('#login-modal').openModal();
 	    }
 	    setTimeout($('#demo').trigger('click'), 300);
-	    setTimeout(hashHistory.push('/account'), 10000);
+	    setTimeout(hashHistory.push('/account'), 4000);
 	  },
 	
 	  render: function () {
@@ -64823,18 +64823,18 @@
 	          'button',
 	          { onClick: this.buy,
 	            className: 'waves-effect waves-light btn btn-large' },
-	          'BUY'
-	        ),
-	        React.createElement(
-	          'button',
-	          { onClick: this.sell,
-	            className: 'waves-effect waves-light btn btn-large' },
-	          'SELL'
+	          'BROWSE'
 	        )
 	      )
 	    );
 	  }
 	});
+	
+	// weird bug here
+	// <button onClick={this.sell}
+	//   className='waves-effect waves-light btn btn-large'>
+	//   SELL
+	// </button>
 
 /***/ }
 /******/ ]);
