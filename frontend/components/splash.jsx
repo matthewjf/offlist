@@ -1,13 +1,20 @@
 var React = require('react'),
-    hashHistory = require('react-router').hashHistory;
+    hashHistory = require('react-router').hashHistory,
+    CurrentUserState = require("../mixins/current_user_state");
 
 module.exports = React.createClass({
+  mixins: [CurrentUserState],
+
   buy: function() {
     hashHistory.push('/listings');
   },
 
   sell: function() {
-    hashHistory.push('/listings');
+    if (!this.state.currentUser) {
+      $('#login-modal').openModal();
+    }
+    setTimeout($('#demo').trigger('click'), 300);
+    setTimeout(hashHistory.push('/account'), 10000);
   },
 
   render: function(){

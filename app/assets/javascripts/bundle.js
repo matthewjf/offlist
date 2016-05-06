@@ -64778,17 +64778,24 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    hashHistory = __webpack_require__(166).hashHistory;
+	    hashHistory = __webpack_require__(166).hashHistory,
+	    CurrentUserState = __webpack_require__(269);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
+	
+	  mixins: [CurrentUserState],
 	
 	  buy: function () {
 	    hashHistory.push('/listings');
 	  },
 	
 	  sell: function () {
-	    hashHistory.push('/listings');
+	    if (!this.state.currentUser) {
+	      $('#login-modal').openModal();
+	    }
+	    setTimeout($('#demo').trigger('click'), 300);
+	    setTimeout(hashHistory.push('/account'), 10000);
 	  },
 	
 	  render: function () {
