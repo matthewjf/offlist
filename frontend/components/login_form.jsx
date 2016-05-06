@@ -157,9 +157,10 @@ var LoginForm = React.createClass({
 								className='waves-effect waves-light btn grey darken-1 left'
 								onClick={this.demoSubmit}>demo
 							</button>
-							<div className='left'>
-								New?
-								<a onClick={this.toggleForm} className='clickable'> Sign up </a>
+							<div className='modal-text left'>
+								<div>New?
+									<a onClick={this.toggleForm} className='clickable'> Sign up </a>
+								</div>
 							</div>
 
 						</div>

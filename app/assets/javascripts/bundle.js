@@ -34382,12 +34382,16 @@
 						),
 						React.createElement(
 							"div",
-							{ className: "left" },
-							"New?",
+							{ className: "modal-text left" },
 							React.createElement(
-								"a",
-								{ onClick: this.toggleForm, className: "clickable" },
-								" Sign up "
+								"div",
+								null,
+								"New?",
+								React.createElement(
+									"a",
+									{ onClick: this.toggleForm, className: "clickable" },
+									" Sign up "
+								)
 							)
 						)
 					)
@@ -34596,12 +34600,16 @@
 						),
 						React.createElement(
 							"div",
-							{ className: "left" },
-							"Have an account?",
+							{ className: "modal-text left" },
 							React.createElement(
-								"a",
-								{ onClick: this.toggleForm, className: "clickable" },
-								" Log in "
+								"div",
+								null,
+								"Have an account?",
+								React.createElement(
+									"a",
+									{ onClick: this.toggleForm, className: "clickable" },
+									" Log in "
+								)
 							)
 						)
 					)
