@@ -33291,7 +33291,11 @@
 	        React.createElement(
 	          'span',
 	          { className: 'card-title grey-text text-darken-3' },
-	          product.title
+	          React.createElement(
+	            Dotdotdot,
+	            { clamp: 1 },
+	            product.title
+	          )
 	        )
 	      ),
 	      React.createElement(

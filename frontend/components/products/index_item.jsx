@@ -51,7 +51,7 @@ module.exports = React.createClass({
 
       <div className='card-content'>
         <span className='card-title grey-text text-darken-3'>
-          {product.title}
+          <Dotdotdot clamp={1}>{product.title}</Dotdotdot>
         </span>
       </div>
       <div className='truncated description'>
