@@ -4,7 +4,8 @@ var UserActions = require("../../actions/user_actions"),
     CurrentUserState = require("../../mixins/current_user_state"),
     UserStore = require('../../stores/user_store'),
     UserProducts = require('./user_products'),
-    UserOffers = require('./user_offers');
+    UserOffers = require('./user_offers'),
+    hashHistory = require('react-router').hashHistory;
     /* global Materialize */
 
 module.exports = React.createClass({
@@ -16,6 +17,14 @@ module.exports = React.createClass({
        $('ul.tabs').tabs();
      });
   },
+
+  componentDidUpdate: function() {
+    // debugger;
+    // if (!this.state.currentUser.username)
+    //   Materialize.toast('Log in or sign up', 4000, 'red-text');
+    //   hashHistory.push('/');
+  },
+
 
   render: function(){
     var username = (this.state.currentUser ? this.state.currentUser.username : '');

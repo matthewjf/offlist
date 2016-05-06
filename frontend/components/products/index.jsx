@@ -4,6 +4,8 @@ var React = require('react'),
     ClientActions = require('../../actions/client_actions'),
     SearchStore = require('../../stores/search_store');
 
+/* global google */
+
 module.exports = React.createClass({
   getInitialState: function() {
     return { products: [] };
@@ -13,22 +15,59 @@ module.exports = React.createClass({
     this.setState({ products: ProductStore.all() });
   },
 
+  inCircle: function(product) {
+    var circle = SearchStore.getCircle();
+    if (product && circle) {
+      var latLng = new google.maps.LatLng(product.lat, product.lng);
+      if (circle.getBounds().contains(latLng)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  },
+
   searchText: function() {
     var search = SearchStore.all();
     var resultText = '';
     if (search) {
-      resultText += "Listings";
+      resultText += this.containedProducts().length;
+      resultText += " listing";
+      if (this.containedProducts().length !== 1)
+        resultText += 's';
       if (search.query)
         resultText += " for '" + search.query + "'";
+      if (search.distance)
+        resultText += " within " + search.distance + " miles";
       if (search.address)
-        resultText += " near '" + search.address + "'";
+        resultText += " of '" + search.address + "'";
     }
 
     return resultText;
   },
 
-  setNearbyProducts: function() {
+  containedProducts: function() {
+    var self = this;
+    return this.state.products.filter(function(product) {
+      if (self.inCircle(product)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  },
 
+  nearbyProducts: function() {
+    var self = this;
+    return this.state.products.filter(function(product) {
+      if (self.inCircle(product)) {
+        return false;
+      } else {
+        return true;
+      }
+    });
   },
 
   componentDidMount: function () {
@@ -44,49 +83,59 @@ module.exports = React.createClass({
   },
 
   productItems: function() {
-    return this.itemList(this.state.products);
+    return this.itemList(this.containedProducts());
   },
 
   nearbyItems: function() {
-    return (
+    return this.itemList(this.nearbyProducts());
+  },
+
+  nearBySection: function() {
+    if (this.nearbyProducts().length > 0) {
+      return <div><div className='divider'/>
+      <div className='results-text grey-text text-darken-1'>
+        Nearby listings
+      </div>
       <ul className='sidebar-list'>
+        {this.nearbyItems()}
         {this.placeholder()}
         {this.placeholder()}
         {this.placeholder()}
         {this.placeholder()}
       </ul>
-    );
+    </div>;
+    } else {
+      return <div></div>;
+    }
   },
 
   itemList: function(items) {
-    return items.map(function(item) {
-      return <IndexItem
-        product={item}
-        key={item.id}
-      />;
-    });
+    if (items) {
+      return items.map(function(item) {
+        return <IndexItem
+          product={item}
+          key={item.id}
+        />;
+      });
+    } else {
+      return <div></div>;
+    }
   },
 
   render: function() {
-    var links = this.state.products.map(function(product) {
-      return <IndexItem
-        product={product}
-        key={product.id}
-      />;
-    });
-
     return <div id='sidebar'>
       <div className='sidebar-content'>
-        <div className='results-text grey-text'>{this.searchText()}</div>
+        <div className='results-text grey-text text-darken-1'>
+          {this.searchText()}
+        </div>
         <ul className='sidebar-list'>
-
           {this.productItems()}
           {this.placeholder()}
           {this.placeholder()}
           {this.placeholder()}
           {this.placeholder()}
         </ul>
-
+        {this.nearBySection()}
       </div>
     </div>;
   }

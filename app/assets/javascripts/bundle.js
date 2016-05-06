@@ -25704,7 +25704,7 @@
 	    var map = ReactDOM.findDOMNode(this.refs.map);
 	    var mapOptions = {
 	      center: { lat: 37.7749295, lng: -122.4194155 },
-	      zoom: 12,
+	      zoom: 13,
 	      zoomControl: true,
 	      zoomControlOptions: {
 	        position: google.maps.ControlPosition.TOP_RIGHT
@@ -25724,7 +25724,6 @@
 	  },
 	
 	  componentWillUnmount: function () {
-	    // google.maps.event.removeListener(this.mapListener);
 	    google.maps.event.removeListener(this.dragListener);
 	    google.maps.event.removeListener(this.zoomListener);
 	    this.productListener.remove();
@@ -25753,6 +25752,8 @@
 	      strokeWeight: 1,
 	      clickable: false
 	    });
+	
+	    SearchActions.setCircle(this.circle);
 	
 	    this.map.fitBounds(this.circle.getBounds());
 	    this.setLatLng();
@@ -32751,6 +32752,12 @@
 	      actionType: SearchConstants.BOUNDS_RECEIVED,
 	      bounds: bounds
 	    });
+	  },
+	  setCircle: function (circle) {
+	    AppDispatcher.dispatch({
+	      actionType: SearchConstants.CIRCLE_SET,
+	      circle: circle
+	    });
 	  }
 	};
 
@@ -32760,7 +32767,8 @@
 
 	module.exports = {
 	  SEARCH_RECEIVED: "SEARCH_RECEIVED",
-	  BOUNDS_RECEIVED: "BOUNDS_RECEIVED"
+	  BOUNDS_RECEIVED: "BOUNDS_RECEIVED",
+	  CIRCLE_SET: "CIRCLE_SET"
 	};
 
 /***/ },
@@ -32775,6 +32783,7 @@
 	var SearchStore = new Store(AppDispatcher);
 	
 	var _search;
+	var _circle;
 	
 	var resetSearch = function (searchArgs) {
 	  _search = searchArgs;
@@ -32786,12 +32795,20 @@
 	  fetchProducts();
 	};
 	
+	var setCircle = function (circle) {
+	  _circle = circle;
+	};
+	
 	var fetchProducts = function () {
 	  ClientActions.fetchProducts(SearchStore.all()); // =(
 	};
 	
 	SearchStore.all = function () {
 	  return _search;
+	};
+	
+	SearchStore.getCircle = function () {
+	  return _circle;
 	};
 	
 	SearchStore.__onDispatch = function (payload) {
@@ -32801,6 +32818,9 @@
 	      break;
 	    case SearchConstants.BOUNDS_RECEIVED:
 	      setBounds(payload.bounds);
+	      break;
+	    case SearchConstants.CIRCLE_SET:
+	      setCircle(payload.circle);
 	      break;
 	  }
 	  SearchStore.__emitChange();
@@ -33030,6 +33050,8 @@
 	    ClientActions = __webpack_require__(256),
 	    SearchStore = __webpack_require__(255);
 	
+	/* global google */
+	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
@@ -33041,19 +33063,56 @@
 	    this.setState({ products: ProductStore.all() });
 	  },
 	
+	  inCircle: function (product) {
+	    var circle = SearchStore.getCircle();
+	    if (product && circle) {
+	      var latLng = new google.maps.LatLng(product.lat, product.lng);
+	      if (circle.getBounds().contains(latLng)) {
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    } else {
+	      return true;
+	    }
+	  },
+	
 	  searchText: function () {
 	    var search = SearchStore.all();
 	    var resultText = '';
 	    if (search) {
-	      resultText += "Listings";
+	      resultText += this.containedProducts().length;
+	      resultText += " listing";
+	      if (this.containedProducts().length !== 1) resultText += 's';
 	      if (search.query) resultText += " for '" + search.query + "'";
-	      if (search.address) resultText += " near '" + search.address + "'";
+	      if (search.distance) resultText += " within " + search.distance + " miles";
+	      if (search.address) resultText += " of '" + search.address + "'";
 	    }
 	
 	    return resultText;
 	  },
 	
-	  setNearbyProducts: function () {},
+	  containedProducts: function () {
+	    var self = this;
+	    return this.state.products.filter(function (product) {
+	      if (self.inCircle(product)) {
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    });
+	  },
+	
+	  nearbyProducts: function () {
+	    var self = this;
+	    return this.state.products.filter(function (product) {
+	      if (self.inCircle(product)) {
+	        return false;
+	      } else {
+	        return true;
+	      }
+	    });
+	  },
 	
 	  componentDidMount: function () {
 	    this.productListener = ProductStore.addListener(this.getProducts);
@@ -33068,37 +33127,53 @@
 	  },
 	
 	  productItems: function () {
-	    return this.itemList(this.state.products);
+	    return this.itemList(this.containedProducts());
 	  },
 	
 	  nearbyItems: function () {
-	    return React.createElement(
-	      'ul',
-	      { className: 'sidebar-list' },
-	      this.placeholder(),
-	      this.placeholder(),
-	      this.placeholder(),
-	      this.placeholder()
-	    );
+	    return this.itemList(this.nearbyProducts());
+	  },
+	
+	  nearBySection: function () {
+	    if (this.nearbyProducts().length > 0) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement('div', { className: 'divider' }),
+	        React.createElement(
+	          'div',
+	          { className: 'results-text grey-text text-darken-1' },
+	          'Nearby listings'
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'sidebar-list' },
+	          this.nearbyItems(),
+	          this.placeholder(),
+	          this.placeholder(),
+	          this.placeholder(),
+	          this.placeholder()
+	        )
+	      );
+	    } else {
+	      return React.createElement('div', null);
+	    }
 	  },
 	
 	  itemList: function (items) {
-	    return items.map(function (item) {
-	      return React.createElement(IndexItem, {
-	        product: item,
-	        key: item.id
+	    if (items) {
+	      return items.map(function (item) {
+	        return React.createElement(IndexItem, {
+	          product: item,
+	          key: item.id
+	        });
 	      });
-	    });
+	    } else {
+	      return React.createElement('div', null);
+	    }
 	  },
 	
 	  render: function () {
-	    var links = this.state.products.map(function (product) {
-	      return React.createElement(IndexItem, {
-	        product: product,
-	        key: product.id
-	      });
-	    });
-	
 	    return React.createElement(
 	      'div',
 	      { id: 'sidebar' },
@@ -33107,7 +33182,7 @@
 	        { className: 'sidebar-content' },
 	        React.createElement(
 	          'div',
-	          { className: 'results-text grey-text' },
+	          { className: 'results-text grey-text text-darken-1' },
 	          this.searchText()
 	        ),
 	        React.createElement(
@@ -33118,7 +33193,8 @@
 	          this.placeholder(),
 	          this.placeholder(),
 	          this.placeholder()
-	        )
+	        ),
+	        this.nearBySection()
 	      )
 	    );
 	  }
@@ -33567,6 +33643,7 @@
 			logout: function (e) {
 					e.preventDefault();
 					UserActions.logout();
+					hashHistory.push('/');
 			},
 	
 			openLogin: function () {
@@ -33744,20 +33821,30 @@
 			UserApiUtil.fetchCurrentUser(UserActions.receiveCurrentUserWithAssocs, UserActions.handleError, { includeAssocs: true });
 		},
 	
-		signup: function (user) {
+		fetchSeller: function (id) {
+			UserApiUtil.fetchSeller(id, UserActions.receiveSeller, UserActions.handleError);
+		},
+	
+		signup: function (user, successCB) {
 			UserApiUtil.post({
 				url: "/api/user",
 				user: user,
-				success: UserActions.receiveCurrentUser,
+				success: function (data) {
+					UserActions.receiveCurrentUser(data);
+					successCB(data.username);
+				},
 				error: UserActions.handleError
 			});
 		},
 	
-		login: function (user) {
+		login: function (user, successCB) {
 			UserApiUtil.post({
 				url: "/api/session",
 				user: user,
-				success: UserActions.receiveCurrentUser,
+				success: function (data) {
+					UserActions.receiveCurrentUser(data);
+					successCB(data.username);
+				},
 				error: UserActions.handleError
 			});
 		},
@@ -33784,6 +33871,14 @@
 			ServerActions.receiveAll(data.products);
 		},
 	
+		receiveSeller: function (data) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.SELLER_RECEIVED,
+				seller: data.username,
+				products: data.products
+			});
+		},
+	
 		handleError: function (error) {
 			AppDispatcher.dispatch({
 				actionType: UserConstants.ERROR,
@@ -33796,6 +33891,7 @@
 				actionType: UserConstants.LOGOUT
 			});
 		},
+	
 		logout: function () {
 			UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
 		},
@@ -33817,7 +33913,8 @@
 	var UserConstants = {
 		LOGIN: "LOGIN",
 		ERROR: "ERROR",
-		LOGOUT: "LOGOUT"
+		LOGOUT: "LOGOUT",
+		SELLER_RECEIVED: "SELLER_RECEIVED"
 	};
 	
 	module.exports = UserConstants;
@@ -33852,6 +33949,14 @@
 				url: '/api/session',
 				method: 'get',
 				data: data,
+				success: success,
+				error: error
+			});
+		},
+		fetchSeller: function (id, success, error) {
+			$.ajax({
+				url: '/api/users/' + id,
+				method: 'get',
 				success: success,
 				error: error
 			});
@@ -33944,7 +34049,6 @@
 				userErrors: UserStore.errors()
 			});
 		}
-	
 	};
 	
 	module.exports = CurrentUserState;
@@ -34045,6 +34149,8 @@
 	var CurrentUserState = __webpack_require__(269);
 	var UserStore = __webpack_require__(268);
 	
+	/* global Materialize */
+	
 	var LoginForm = React.createClass({
 		displayName: "LoginForm",
 	
@@ -34083,8 +34189,12 @@
 			UserActions['login']({
 				username: this.state.username,
 				password: this.state.password
-			});
+			}, this.loginSuccess);
 			this.resetState();
+		},
+	
+		loginSuccess: function (username) {
+			Materialize.toast('Welcome back, ' + username + '!', 2000);
 		},
 	
 		demoSubmit: function (event) {
@@ -34280,6 +34390,7 @@
 	var UserActions = __webpack_require__(265);
 	var CurrentUserState = __webpack_require__(269);
 	var UserStore = __webpack_require__(268);
+	/* global Materialize */
 	
 	var SignupForm = React.createClass({
 		displayName: "SignupForm",
@@ -34319,8 +34430,12 @@
 			UserActions['signup']({
 				username: this.state.username,
 				password: this.state.password
-			});
+			}, this.signupSuccess);
 			this.resetState();
+		},
+	
+		signupSuccess: function (username) {
+			Materialize.toast('Welcome, ' + username + '!', 2000);
 		},
 	
 		resetState: function () {
@@ -63643,7 +63758,8 @@
 	    CurrentUserState = __webpack_require__(269),
 	    UserStore = __webpack_require__(268),
 	    UserProducts = __webpack_require__(354),
-	    UserOffers = __webpack_require__(356);
+	    UserOffers = __webpack_require__(356),
+	    hashHistory = __webpack_require__(166).hashHistory;
 	/* global Materialize */
 	
 	module.exports = React.createClass({
@@ -63656,6 +63772,13 @@
 	    $(document).ready(function () {
 	      $('ul.tabs').tabs();
 	    });
+	  },
+	
+	  componentDidUpdate: function () {
+	    // debugger;
+	    // if (!this.state.currentUser.username)
+	    //   Materialize.toast('Log in or sign up', 4000, 'red-text');
+	    //   hashHistory.push('/');
 	  },
 	
 	  render: function () {
@@ -64438,20 +64561,145 @@
 	var React = __webpack_require__(1);
 	
 	var UserActions = __webpack_require__(265),
-	    CurrentUserState = __webpack_require__(269),
-	    UserStore = __webpack_require__(268);
+	    SellerStore = __webpack_require__(360),
+	    ProductStore = __webpack_require__(227),
+	    IndexItem = __webpack_require__(261);
 	
 	module.exports = React.createClass({
-	  displayName: "exports",
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    var sellerId = this.props.params.userId;
+	    var seller = SellerStore.seller() || '';
+	    var products = SellerStore.products() || [];
+	    return {
+	      seller: seller,
+	      products: products
+	    };
+	  },
+	
+	  componentDidMount: function () {
+	    this.sellerListener = SellerStore.addListener(this.updateSeller);
+	    if (typeof SellerStore.seller() === 'undefined') {
+	      UserActions.fetchSeller(this.props.params.userId);
+	    }
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.sellerListener.remove();
+	  },
+	
+	  componentWillReceiveProps: function (nextProps) {
+	    UserActions.fetchSeller(nextProps.params.userId);
+	  },
+	
+	  getProducts: function () {
+	    this.setState({ products: ProductStore.all() });
+	  },
+	
+	  updateSeller: function () {
+	    this.setState({
+	      seller: SellerStore.seller(),
+	      products: SellerStore.products(),
+	      errors: SellerStore.errors()
+	    });
+	  },
+	
+	  placeholder: function () {
+	    return React.createElement('li', { className: 'placeholder-card card product-item' });
+	  },
+	
+	  productList: function () {
+	    if (this.state.products) {
+	      return this.state.products.map(function (product) {
+	        return React.createElement(IndexItem, {
+	          product: product,
+	          key: product.id
+	        });
+	      });
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  },
 	
 	  render: function () {
 	    return React.createElement(
-	      "h5",
-	      null,
-	      "coming soon"
+	      'div',
+	      { className: 'container seller-detail' },
+	      React.createElement(
+	        'h5',
+	        null,
+	        this.state.seller + "'s ",
+	        'Store'
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'sidebar-content' },
+	        React.createElement(
+	          'ul',
+	          { className: 'sidebar-list' },
+	          this.productList(),
+	          this.placeholder(),
+	          this.placeholder(),
+	          this.placeholder(),
+	          this.placeholder()
+	        )
+	      )
 	    );
 	  }
 	});
+
+/***/ },
+/* 360 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(246);
+	var Store = __webpack_require__(228).Store;
+	
+	var SellerStore = new Store(AppDispatcher);
+	
+	var _seller, _products, _errors;
+	
+	var setSeller = function (seller) {
+	  _seller = seller;
+	};
+	
+	var setProducts = function (products) {
+	  _products = products;
+	};
+	
+	SellerStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case "SELLER_RECEIVED":
+	      setSeller(payload.seller);
+	      setProducts(payload.products);
+	      break;
+	    case "ERROR":
+	      SellerStore.setErrors(payload.errors);
+	      break;
+	  }
+	  SellerStore.__emitChange();
+	};
+	
+	SellerStore.setErrors = function (errors) {
+	  _errors = errors;
+	};
+	
+	SellerStore.errors = function () {
+	  if (_errors) {
+	    return [].slice.call(_errors);
+	  }
+	};
+	
+	SellerStore.seller = function () {
+	  if (_seller) return _seller;
+	};
+	
+	SellerStore.products = function () {
+	  if (_products) return _products.slice();
+	};
+	
+	module.exports = SellerStore;
 
 /***/ }
 /******/ ]);

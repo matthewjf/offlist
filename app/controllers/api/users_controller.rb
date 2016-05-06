@@ -10,6 +10,17 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def show
+    @user = User.find(params[:id])
+    if @user
+      @products = @user.products.where(active: true)
+      render "api/users/show"
+    else
+      @errors = nil
+      render "api/shared/error", status: 404
+    end
+  end
+
   private
 
   def user_params

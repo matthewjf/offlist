@@ -28,6 +28,14 @@ var UserApiUtil = {
 			error: error
 		});
 	},
+	fetchSeller: function(id, success, error){
+		$.ajax({
+			url: '/api/users/' + id,
+			method: 'get',
+			success: success,
+			error: error
+		});
+	}
 };
 
 module.exports = UserApiUtil;

@@ -11,6 +11,7 @@ module.exports = React.createClass({
   logout: function(e){
     e.preventDefault();
     UserActions.logout();
+		hashHistory.push('/');
   },
 
 	openLogin: function() {

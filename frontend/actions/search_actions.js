@@ -14,5 +14,11 @@ module.exports = {
       actionType: SearchConstants.BOUNDS_RECEIVED,
       bounds: bounds
     });
+  },
+  setCircle: function(circle) {
+    AppDispatcher.dispatch({
+      actionType: SearchConstants.CIRCLE_SET,
+      circle: circle
+    });
   }
 };

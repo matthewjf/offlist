@@ -72,7 +72,7 @@ module.exports = React.createClass({
     var map = ReactDOM.findDOMNode(this.refs.map);
     var mapOptions = {
       center: {lat: 37.7749295, lng: -122.4194155},
-      zoom: 12,
+      zoom: 13,
       zoomControl: true,
       zoomControlOptions: {
         position: google.maps.ControlPosition.TOP_RIGHT
@@ -93,7 +93,6 @@ module.exports = React.createClass({
   },
 
   componentWillUnmount: function() {
-    // google.maps.event.removeListener(this.mapListener);
     google.maps.event.removeListener(this.dragListener);
     google.maps.event.removeListener(this.zoomListener);
     this.productListener.remove();
@@ -126,6 +125,8 @@ module.exports = React.createClass({
       strokeWeight: 1,
       clickable: false
     });
+
+    SearchActions.setCircle(this.circle);
 
     this.map.fitBounds(this.circle.getBounds());
     this.setLatLng();

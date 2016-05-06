@@ -2,7 +2,7 @@ var React = require("react");
 var UserActions = require("../actions/user_actions");
 var CurrentUserState = require("../mixins/current_user_state");
 var UserStore = require('../stores/user_store');
-
+/* global Materialize */
 
 var SignupForm = React.createClass({
 	mixins: [CurrentUserState],
@@ -41,8 +41,12 @@ var SignupForm = React.createClass({
 		UserActions['signup']({
 			username: this.state.username,
 			password: this.state.password
-		});
+		}, this.signupSuccess);
 		this.resetState();
+	},
+
+	signupSuccess: function(username){
+		Materialize.toast('Welcome, ' + username + '!', 2000);
 	},
 
 	resetState: function() {

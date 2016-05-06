@@ -6,6 +6,7 @@ var AppDispatcher = require('../dispatcher/dispatcher.js'),
 var SearchStore = new Store(AppDispatcher);
 
 var _search;
+var _circle;
 
 var resetSearch = function(searchArgs) {
   _search = searchArgs;
@@ -17,12 +18,20 @@ var setBounds = function(bounds) {
   fetchProducts();
 };
 
+var setCircle = function(circle) {
+  _circle = circle;
+};
+
 var fetchProducts = function() {
   ClientActions.fetchProducts(SearchStore.all());  // =(
 };
 
 SearchStore.all = function() {
   return _search;
+};
+
+SearchStore.getCircle = function() {
+  return _circle;
 };
 
 SearchStore.__onDispatch = function (payload) {
@@ -32,6 +41,9 @@ SearchStore.__onDispatch = function (payload) {
       break;
     case SearchConstants.BOUNDS_RECEIVED:
     	setBounds(payload.bounds);
+      break;
+    case SearchConstants.CIRCLE_SET:
+      setCircle(payload.circle);
       break;
   }
   SearchStore.__emitChange();

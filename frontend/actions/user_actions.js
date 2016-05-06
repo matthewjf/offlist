@@ -20,20 +20,34 @@ var UserActions = {
 		);
 	},
 
-	signup: function(user){
+	fetchSeller: function(id) {
+		UserApiUtil.fetchSeller(
+			id,
+			UserActions.receiveSeller,
+			UserActions.handleError
+		);
+	},
+
+	signup: function(user, successCB){
 		UserApiUtil.post({
 			url: "/api/user",
 			user: user,
-			success: UserActions.receiveCurrentUser,
+			success: (function(data) {
+				UserActions.receiveCurrentUser(data);
+				successCB(data.username);
+			}),
 			error: UserActions.handleError
 		});
 	},
 
-	login: function(user){
+	login: function(user, successCB){
 		UserApiUtil.post({
 			url: "/api/session",
 			user: user,
-			success: UserActions.receiveCurrentUser,
+			success: (function(data) {
+				UserActions.receiveCurrentUser(data);
+				successCB(data.username);
+			}),
 			error: UserActions.handleError
 		});
 	},
@@ -60,6 +74,13 @@ var UserActions = {
 		ServerActions.receiveAll(data.products);
 	},
 
+	receiveSeller: function(data) {
+		AppDispatcher.dispatch({
+			actionType: UserConstants.SELLER_RECEIVED,
+			seller: data.username,
+			products: data.products
+		});
+	},
 
 	handleError: function(error) {
 		AppDispatcher.dispatch({
@@ -73,6 +94,7 @@ var UserActions = {
 			actionType: UserConstants.LOGOUT,
 		});
 	},
+
 	logout: function(){
 		UserApiUtil.logout(UserActions.removeCurrentUser, UserActions.handleError);
 	},
