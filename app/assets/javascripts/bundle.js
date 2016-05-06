@@ -32910,7 +32910,7 @@
 	    });
 	  },
 	
-	  createProduct: function (data, successCB) {
+	  createProduct: function (data, successCB, error) {
 	    $.ajax({
 	      url: "api/products",
 	      type: "POST",
@@ -32918,11 +32918,12 @@
 	      success: function (product) {
 	        ServerActions.receiveProduct(product);
 	        if (successCB) successCB(product.id);
-	      }
+	      },
+	      error: error
 	    });
 	  },
 	
-	  updateProduct: function (data, successCB) {
+	  updateProduct: function (data, successCB, error) {
 	    $.ajax({
 	      url: "api/products/" + data.id,
 	      type: "PATCH",
@@ -32930,18 +32931,20 @@
 	      success: function (product) {
 	        ServerActions.receiveProduct(product);
 	        if (successCB) successCB(product.id);
-	      }
+	      },
+	      error: error
 	    });
 	  },
 	
-	  deleteProduct: function (id, successCB) {
+	  deleteProduct: function (id, successCB, error) {
 	    $.ajax({
 	      url: "api/products/" + id,
 	      type: "DELETE",
 	      success: function (product) {
 	        ServerActions.removeProduct(product);
 	        if (successCB) successCB(product.id);
-	      }
+	      },
+	      error: error
 	    });
 	  },
 	
@@ -32954,7 +32957,7 @@
 	    });
 	  },
 	
-	  createOffer: function (data, successCB) {
+	  createOffer: function (data, successCB, error) {
 	    $.ajax({
 	      url: "api/offers",
 	      type: "POST",
@@ -32962,7 +32965,8 @@
 	      success: function (offer) {
 	        ServerActions.receiveMadeOffer(offer);
 	        if (successCB) successCB(offer.id);
-	      }
+	      },
+	      error: error
 	    });
 	  },
 	
@@ -34278,7 +34282,7 @@
 				Object.keys(this.state.userErrors).map(function (key, i) {
 					return React.createElement(
 						"li",
-						{ key: i },
+						{ className: "red-text", key: i },
 						self.state.userErrors[key]
 					);
 				})
@@ -34483,7 +34487,7 @@
 				Object.keys(this.state.userErrors).map(function (key, i) {
 					return React.createElement(
 						"li",
-						{ key: i },
+						{ className: "red-text", key: i },
 						self.state.userErrors[key]
 					);
 				})
@@ -63296,7 +63300,9 @@
 	
 	  openOffer: function (e) {
 	    e.preventDefault();
-	    if (this.state.currentUser) {
+	    if (this.state.currentUser && this.props.seller && this.props.seller.username === this.state.currentUser.username) {
+	      Materialize.toast('This is your listing', 4000, 'red-text');
+	    } else if (this.state.currentUser) {
 	      $('#offer-modal').openModal();
 	    } else {
 	      Materialize.toast('Log in or sign up to make an offer', 4000, 'red-text');
@@ -63308,6 +63314,8 @@
 	      $('.tooltipped').tooltip({ delay: 50 });
 	    });
 	  },
+	
+	  componentWillReceiveProps: function (newProps) {},
 	
 	  render: function () {
 	    return React.createElement(
@@ -63500,6 +63508,7 @@
 	
 	var _madeOffers = {};
 	var _receivedOffers = {};
+	var _errors;
 	
 	var resetOffers = function (offers) {
 	  _madeOffers = {};
@@ -63519,6 +63528,10 @@
 	  receivedOffers.forEach(function (offer) {
 	    _receivedOffers[offer.id] = offer;
 	  });
+	};
+	
+	var setErrors = function (errors) {
+	  _errors = errors;
 	};
 	
 	var setOfferMade = function (offer) {
@@ -63543,8 +63556,10 @@
 	  });
 	};
 	
-	OfferStore.find = function (id) {
-	  // return _offers[id];
+	OfferStore.errors = function () {
+	  if (_errors) {
+	    return [].slice.call(_errors);
+	  }
 	};
 	
 	OfferStore.__onDispatch = function (payload) {
@@ -63557,6 +63572,9 @@
 	      break;
 	    case OfferConstants.OFFER_UPDATED:
 	      setOfferReceived(payload.offer);
+	      break;
+	    case "ERROR":
+	      setErrors(payload.errors);
 	      break;
 	  }
 	  this.__emitChange();

@@ -8,7 +8,12 @@ module.exports = React.createClass({
 
   openOffer: function(e) {
     e.preventDefault();
-    if (this.state.currentUser) {
+		if (
+				this.state.currentUser &&
+				this.props.seller &&
+				this.props.seller.username === this.state.currentUser.username) {
+			Materialize.toast('This is your listing', 4000, 'red-text');
+		} else if (this.state.currentUser) {
 	    $('#offer-modal').openModal();
     } else {
       Materialize.toast('Log in or sign up to make an offer', 4000, 'red-text');
@@ -20,6 +25,10 @@ module.exports = React.createClass({
       $('.tooltipped').tooltip({delay: 50});
     });
   },
+
+	componentWillReceiveProps: function(newProps) {
+
+	},
 
   render: function(){
     return(

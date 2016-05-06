@@ -4,6 +4,7 @@ var Store = require('flux/utils').Store,
 
 var _madeOffers = {};
 var _receivedOffers = {};
+var _errors;
 
 var resetOffers = function (offers) {
   _madeOffers = {};
@@ -23,6 +24,10 @@ var setReceivedOffers = function(receivedOffers) {
   receivedOffers.forEach(function (offer) {
     _receivedOffers[offer.id] = offer;
   });
+};
+
+var setErrors = function(errors) {
+  _errors = errors;
 };
 
 var setOfferMade = function (offer) {
@@ -47,8 +52,10 @@ OfferStore.madeOffers = function () {
   });
 };
 
-OfferStore.find = function(id) {
-  // return _offers[id];
+OfferStore.errors = function(){
+  if (_errors){
+    return [].slice.call(_errors);
+  }
 };
 
 OfferStore.__onDispatch = function (payload) {
@@ -61,6 +68,9 @@ OfferStore.__onDispatch = function (payload) {
       break;
     case OfferConstants.OFFER_UPDATED:
       setOfferReceived(payload.offer);
+      break;
+    case "ERROR":
+      setErrors(payload.errors);
       break;
   }
   this.__emitChange();

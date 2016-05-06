@@ -20,7 +20,7 @@ module.exports = {
     });
   },
 
-  createProduct: function (data, successCB) {
+  createProduct: function (data, successCB, error) {
     $.ajax({
       url: "api/products",
       type: "POST",
@@ -29,11 +29,12 @@ module.exports = {
         ServerActions.receiveProduct(product);
         if (successCB)
           successCB(product.id);
-      }
+      },
+      error: error
     });
   },
 
-  updateProduct: function (data, successCB) {
+  updateProduct: function (data, successCB, error) {
     $.ajax({
       url: "api/products/" + data.id,
       type: "PATCH",
@@ -42,11 +43,12 @@ module.exports = {
         ServerActions.receiveProduct(product);
         if (successCB)
           successCB(product.id);
-      }
+      },
+      error: error
     });
   },
 
-  deleteProduct: function (id, successCB) {
+  deleteProduct: function (id, successCB, error) {
     $.ajax({
       url: "api/products/" + id,
       type: "DELETE",
@@ -54,7 +56,8 @@ module.exports = {
         ServerActions.removeProduct(product);
         if (successCB)
           successCB(product.id);
-      }
+      },
+      error: error
     });
   },
 
@@ -67,7 +70,7 @@ module.exports = {
     });
   },
 
-  createOffer: function (data, successCB) {
+  createOffer: function (data, successCB, error) {
     $.ajax({
       url: "api/offers",
       type: "POST",
@@ -76,7 +79,8 @@ module.exports = {
         ServerActions.receiveMadeOffer(offer);
         if (successCB)
           successCB(offer.id);
-      }
+      },
+      error: error
     });
   },
 

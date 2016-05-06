@@ -17,6 +17,8 @@ class Offer < ActiveRecord::Base
   validate :active_product_validation, on: :create
   validate :product_belongs_to_self, on: :create
   validates :status, inclusion: {in: ['Pending', 'Accepted', 'Declined']}
+  validates :amount, :numericality => { greater_than_or_equal_to: 0 }
+
 
   belongs_to :user
   belongs_to :product
