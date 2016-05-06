@@ -60,7 +60,8 @@
 	    ProductForm = __webpack_require__(273),
 	    ProductDetail = __webpack_require__(339),
 	    UserDetail = __webpack_require__(353),
-	    SellerDetail = __webpack_require__(359);
+	    SellerDetail = __webpack_require__(359),
+	    Splash = __webpack_require__(361);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -87,7 +88,7 @@
 	  React.createElement(
 	    Route,
 	    { path: '/', component: App },
-	    React.createElement(IndexRoute, { component: ProductList }),
+	    React.createElement(IndexRoute, { component: Splash }),
 	    React.createElement(Route, { path: 'listings/new', component: ProductForm }),
 	    React.createElement(Route, { path: 'listings', component: ProductList }),
 	    React.createElement(Route, { path: 'listings/:listingId', component: ProductDetail }),
@@ -33663,13 +33664,20 @@
 	
 		mixins: [CurrentUserState],
 	
+		componentDidMount: function () {
+			$(".button-collapse").sideNav({
+				edge: 'right',
+				closeOnClick: true
+			});
+		},
+	
 		logout: function (e) {
 			e.preventDefault();
 			UserActions.logout(this.successLogout);
 		},
 	
 		successLogout: function () {
-			hashHistory.push('/');
+			hashHistory.push('/listings');
 			Materialize.toast('Logged out', 2000, 'green-text');
 		},
 	
@@ -33686,7 +33694,7 @@
 		},
 	
 		home: function () {
-			hashHistory.push('/');
+			hashHistory.push('/listings');
 		},
 	
 		notLoggedIn: function () {
@@ -33749,7 +33757,7 @@
 						React.createElement(
 							"a",
 							{ onClick: this.goToAccount },
-							this.state.currentUser.username
+							"Account"
 						)
 					),
 					React.createElement(
@@ -34636,6 +34644,7 @@
 	  thumbnails: '.thumbnails'
 	};
 	
+	// inline_container: '#upload_widget'
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
@@ -35010,7 +35019,7 @@
 	                ),
 	                React.createElement(
 	                  'div',
-	                  { className: 'upload_widget left' },
+	                  { id: 'upload_widget', className: 'upload_widget left' },
 	                  React.createElement('a', { id: 'upload_widget_opener' })
 	                )
 	              )
@@ -61253,7 +61262,7 @@
 	      return this.state.product.tag_list.map(function (tag) {
 	        return React.createElement(
 	          'div',
-	          { key: tag, className: 'chip orange lighten-4' },
+	          { key: tag, className: 'chip yellow lighten-4' },
 	          tag
 	        );
 	      });
@@ -63818,12 +63827,7 @@
 	    });
 	  },
 	
-	  componentDidUpdate: function () {
-	    // debugger;
-	    // if (!this.state.currentUser.username)
-	    //   Materialize.toast('Log in or sign up', 4000, 'red-text');
-	    //   hashHistory.push('/');
-	  },
+	  componentDidUpdate: function () {},
 	
 	  render: function () {
 	    var username = this.state.currentUser ? this.state.currentUser.username : '';
@@ -64744,6 +64748,62 @@
 	};
 	
 	module.exports = SellerStore;
+
+/***/ },
+/* 361 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1),
+	    hashHistory = __webpack_require__(166).hashHistory;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  buy: function () {
+	    hashHistory.push('/listings');
+	  },
+	
+	  sell: function () {
+	    hashHistory.push('/listings');
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'splash-wrapper' },
+	      React.createElement(
+	        'div',
+	        { id: 'splash' },
+	        React.createElement(
+	          'div',
+	          { className: 'welcome' },
+	          React.createElement(
+	            'h1',
+	            { className: 'title orange-text text-darken-2' },
+	            'OffList'
+	          ),
+	          React.createElement(
+	            'h5',
+	            { className: 'slogan' },
+	            'Buy  ·  Sell  ·  Easy'
+	          )
+	        ),
+	        React.createElement(
+	          'button',
+	          { onClick: this.buy,
+	            className: 'waves-effect waves-light btn btn-large' },
+	          'BUY'
+	        ),
+	        React.createElement(
+	          'button',
+	          { onClick: this.sell,
+	            className: 'waves-effect waves-light btn btn-large' },
+	          'SELL'
+	        )
+	      )
+	    );
+	  }
+	});
 
 /***/ }
 /******/ ]);

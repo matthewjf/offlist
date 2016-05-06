@@ -82,7 +82,7 @@ module.exports = React.createClass({
   tagsList: function() {
     if (this.state.product.tag_list && this.state.product.tag_list.length > 0) {
       return this.state.product.tag_list.map(function(tag) {
-        return <div key={tag} className="chip orange lighten-4">
+        return <div key={tag} className="chip yellow lighten-4">
           {tag}
         </div>;
       });

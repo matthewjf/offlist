@@ -24,6 +24,7 @@ var cloudinaryWidgetOptions = {
   sources: ['local', 'url'],
   folder: 'splashy',
   thumbnails: '.thumbnails',
+  // inline_container: '#upload_widget'
 };
 
 module.exports = React.createClass({
@@ -317,7 +318,7 @@ module.exports = React.createClass({
                     className="waves-effect waves-ripple btn-flat right">
                     cancel
                   </button>
-                  <div className='upload_widget left'>
+                  <div id='upload_widget' className='upload_widget left'>
                     <a id='upload_widget_opener' />
                   </div>
                 </div>

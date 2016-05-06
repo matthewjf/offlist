@@ -1,0 +1,64 @@
+.splash-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+#splash {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-end;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: url("https://s3-us-west-1.amazonaws.com/offlist/splash.jpeg") center center no-repeat;
+  height: 100vh;
+  width: 100vw;
+  overflow-y: hidden;
+  &:before {
+    content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-image: linear-gradient(to top right,rgba(0,0,0,.6), rgba(255,255,255,0.2));
+  }
+  .welcome {
+    position: absolute;
+    bottom: 25%;
+    padding-left: 1em;
+    left: 0;
+    color: white;
+    font-family: 'Raleway', sans-serif;
+  }
+  .title, .slogan {
+    padding-left: 5rem;
+    margin: 0;
+  }
+
+  .title {
+    font-size: 80px;
+  }
+
+  .slogan, button {
+    font-family: 'Open Sans', sans-serif;
+    white-space: pre-wrap;
+    font-weight: lighter;
+  }
+
+  button {
+    font-size: 18px;
+    z-index: 100;
+    border: 1px solid white;
+    background-color: transparent;
+    box-shadow: none !important;
+    margin: 1em 1em 5em 1em;
+    &:hover {
+      color: #f57c00;
+      border-color: #f57c00;
+    }
+  }
+}

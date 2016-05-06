@@ -19,10 +19,6 @@ module.exports = React.createClass({
   },
 
   componentDidUpdate: function() {
-    // debugger;
-    // if (!this.state.currentUser.username)
-    //   Materialize.toast('Log in or sign up', 4000, 'red-text');
-    //   hashHistory.push('/');
   },
 
 

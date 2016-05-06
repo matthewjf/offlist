@@ -15,7 +15,8 @@ var ProductList = require('./components/search'),
     ProductForm = require('./components/products/product_form'),
     ProductDetail = require('./components/products/product_detail'),
     UserDetail = require('./components/users/user_detail'),
-    SellerDetail = require('./components/users/seller_detail');
+    SellerDetail = require('./components/users/seller_detail'),
+    Splash = require('./components/splash');
 
 var App = React.createClass({
   render: function(){
@@ -35,7 +36,7 @@ var App = React.createClass({
 var Rtr = (
   <Router history={hashHistory}>
     <Route path='/' component={App}>
-      <IndexRoute component={ProductList} />
+      <IndexRoute component={Splash} />
       <Route path='listings/new' component={ProductForm} />
       <Route path='listings' component={ProductList} />
       <Route path='listings/:listingId' component={ProductDetail} />

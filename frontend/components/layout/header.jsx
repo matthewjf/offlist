@@ -8,13 +8,20 @@ var React = require('react'),
 module.exports = React.createClass({
 	mixins: [CurrentUserState],
 
+	componentDidMount: function() {
+		$(".button-collapse").sideNav({
+			edge: 'right',
+			closeOnClick: true
+		});
+	},
+
   logout: function(e){
     e.preventDefault();
     UserActions.logout(this.successLogout);
   },
 
 	successLogout: function() {
-		hashHistory.push('/');
+		hashHistory.push('/listings');
 	  Materialize.toast('Logged out', 2000, 'green-text');
 	},
 
@@ -31,7 +38,7 @@ module.exports = React.createClass({
 	},
 
 	home: function() {
-		hashHistory.push('/');
+		hashHistory.push('/listings');
 	},
 
   notLoggedIn: function(){
@@ -66,7 +73,7 @@ module.exports = React.createClass({
 			return (
         <ul id="nav-mobile" className="side-nav">
           <li><a onClick={this.goToAccount}>
-						{this.state.currentUser.username}
+						Account
 					</a></li>
           <li><a onClick={this.logout}>Log Out</a></li>
         </ul>
