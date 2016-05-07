@@ -33087,9 +33087,13 @@
 	
 	  inCircle: function (product) {
 	    var circle = this.state.circle;
+	    var searchDistance = parseInt(this.state.search.distance) / 0.00062137;
+	
 	    if (product && circle) {
 	      var latLng = new google.maps.LatLng(product.lat, product.lng);
-	      if (circle.getBounds().contains(latLng)) {
+	      var distance = google.maps.geometry.spherical.computeDistanceBetween(circle.getCenter(), latLng);
+	      console.log(distance + ':' + searchDistance);
+	      if (distance < searchDistance) {
 	        return true;
 	      } else {
 	        return false;
@@ -33100,7 +33104,6 @@
 	  },
 	
 	  searchText: function () {
-	
 	    var search = this.state.search;
 	    var resultText = '';
 	    if (search) {
