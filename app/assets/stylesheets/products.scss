@@ -80,6 +80,15 @@ body, html, main, #app, #root {
     min-width:100%;
     min-height:100%;
   }
+  .fillwidth {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .fillheight {
+    height: 100% !important;
+    width: auto !important;
+  }
 }
 
 .card-price {

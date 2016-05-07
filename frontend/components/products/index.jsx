@@ -26,7 +26,6 @@ module.exports = React.createClass({
     if (product && circle) {
       var latLng = new google.maps.LatLng(product.lat, product.lng);
       var distance = google.maps.geometry.spherical.computeDistanceBetween(circle.getCenter(), latLng);
-      console.log(distance + ':' + searchDistance);
       if (distance < searchDistance) {
         return true;
       } else {
@@ -35,6 +34,20 @@ module.exports = React.createClass({
     } else {
       return true;
     }
+  },
+
+  setImgFill: function() {
+    $('.sidebar-content img').each(function(idx, el) {
+      if (el.naturalHeight / el.naturalWidth > 0.7 ) {
+        $(el).addClass('fillwidth');
+      } else {
+        $(el).addClass('fillheight');
+      }
+    });
+  },
+
+  componentDidUpdate: function(prevProps, prevState) {
+    this.setImgFill();
   },
 
   searchText: function() {

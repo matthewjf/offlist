@@ -33092,7 +33092,6 @@
 	    if (product && circle) {
 	      var latLng = new google.maps.LatLng(product.lat, product.lng);
 	      var distance = google.maps.geometry.spherical.computeDistanceBetween(circle.getCenter(), latLng);
-	      console.log(distance + ':' + searchDistance);
 	      if (distance < searchDistance) {
 	        return true;
 	      } else {
@@ -33101,6 +33100,20 @@
 	    } else {
 	      return true;
 	    }
+	  },
+	
+	  setImgFill: function () {
+	    $('.sidebar-content img').each(function (idx, el) {
+	      if (el.naturalHeight / el.naturalWidth > 0.7) {
+	        $(el).addClass('fillwidth');
+	      } else {
+	        $(el).addClass('fillheight');
+	      }
+	    });
+	  },
+	
+	  componentDidUpdate: function (prevProps, prevState) {
+	    this.setImgFill();
 	  },
 	
 	  searchText: function () {
@@ -34678,10 +34691,11 @@
 	  button_class: 'waves-effect waves-light btn light-blue darken-1',
 	  sources: ['local', 'url'],
 	  folder: 'splashy',
-	  thumbnails: '.thumbnails'
+	  thumbnails: '.thumbnails',
+	  transformation: { width: 800, height: 600, gravity: 'xy_center' }
+	  // inline_container: '#upload_widget'
 	};
 	
-	// inline_container: '#upload_widget'
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	

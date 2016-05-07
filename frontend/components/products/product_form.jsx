@@ -24,6 +24,7 @@ var cloudinaryWidgetOptions = {
   sources: ['local', 'url'],
   folder: 'splashy',
   thumbnails: '.thumbnails',
+  transformation: {width: 800, height: 600, gravity: 'xy_center'}
   // inline_container: '#upload_widget'
 };
 
