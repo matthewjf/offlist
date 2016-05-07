@@ -78,7 +78,7 @@ module.exports = React.createClass({
 
             <label htmlFor='distance'>within</label>
             <div className="input-field col m2">
-              <select id="distance" ref='distance' defaultValue='5' >
+              <select id="distance" ref='distance' defaultValue='2' >
                 <option value="2">2 mi</option>
                 <option value="5">5 mi</option>
                 <option value="10">10 mi</option>

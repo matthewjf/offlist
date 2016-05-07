@@ -25579,7 +25579,7 @@
 	              { className: 'input-field col m2' },
 	              React.createElement(
 	                'select',
-	                { id: 'distance', ref: 'distance', defaultValue: '5' },
+	                { id: 'distance', ref: 'distance', defaultValue: '2' },
 	                React.createElement(
 	                  'option',
 	                  { value: '2' },
