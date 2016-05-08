@@ -33157,6 +33157,7 @@
 	  componentDidMount: function () {
 	    this.searchListener = SearchStore.addListener(this.getSearch);
 	    this.productListener = ProductStore.addListener(this.getProducts);
+	    this.setImgFill();
 	  },
 	
 	  componentWillUnmount: function () {
