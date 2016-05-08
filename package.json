@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "heroku-postbuild": "webpack --config webpack.config.prod.js"
   },
   "repository": {
     "type": "git",
@@ -34,5 +34,9 @@
     "react-router": "^2.3.0",
     "react-timeago": "^3.0.0",
     "webpack": "^1.13.0"
+  },
+  "engines": {
+    "node": "5.7.1",
+    "npm": "3.6.0"
   }
 }
