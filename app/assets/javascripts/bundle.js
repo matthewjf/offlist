@@ -34950,6 +34950,7 @@
 	                  {
 	                    multiple: true,
 	                    id: 'tagselect' },
+	                  ' // tags = [\'cars\', \'animals\', \'tools\', \'kitchen\', \'gadget\', \'other\', \'food\']',
 	                  React.createElement(
 	                    'option',
 	                    { value: '', disabled: true },
@@ -34957,18 +34958,38 @@
 	                  ),
 	                  React.createElement(
 	                    'option',
-	                    { value: 'tag0' },
-	                    'Tag 0'
+	                    { value: 'animals' },
+	                    'animals'
 	                  ),
 	                  React.createElement(
 	                    'option',
-	                    { value: 'tag1' },
-	                    'Tag 1'
+	                    { value: 'cars' },
+	                    'cars'
 	                  ),
 	                  React.createElement(
 	                    'option',
-	                    { value: 'tag2' },
-	                    'Tag 2'
+	                    { value: 'food' },
+	                    'food'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'gadget' },
+	                    'gadget'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'kitchen' },
+	                    'kitchen'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'other' },
+	                    'other'
+	                  ),
+	                  React.createElement(
+	                    'option',
+	                    { value: 'tools' },
+	                    'tools'
 	                  )
 	                ),
 	                React.createElement(

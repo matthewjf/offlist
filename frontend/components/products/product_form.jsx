@@ -254,11 +254,15 @@ module.exports = React.createClass({
                 <div className='input-field col s6'>
                   <select
                       multiple
-                      id='tagselect'>
+                      id='tagselect'> // tags = ['cars', 'animals', 'tools', 'kitchen', 'gadget', 'other', 'food']
                     <option value="" disabled>none</option>
-                    <option value="tag0">Tag 0</option>
-                    <option value="tag1">Tag 1</option>
-                    <option value="tag2">Tag 2</option>
+                    <option value="animals">animals</option>
+                    <option value="cars">cars</option>
+                    <option value="food">food</option>
+                    <option value="gadget">gadget</option>
+                    <option value="kitchen">kitchen</option>
+                    <option value="other">other</option>
+                    <option value="tools">tools</option>
                   </select>
                   <label>Categories</label>
                 </div>
