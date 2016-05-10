@@ -39,7 +39,11 @@ module.exports = React.createClass({
           </div>
           <div id="products" className="col s12"><UserProducts /></div>
           <div id="offers" className="col s12"><UserOffers /></div>
-          <div id="settings" className="col s12"><h5>coming soon</h5></div>
+          <div id="settings" className="col s12">
+            <h5>
+              {username}
+            </h5>
+          </div>
         </div>
       </div>
     );
