@@ -1,6 +1,6 @@
 # OffList
 
-[OffList live][heroku]
+[Live][heroku]
 
 [heroku]: http://www.off-list.com
 
@@ -12,11 +12,11 @@ OffList is a full-stack web application inspired by Craigslist.  It utilizes Rub
 
 OffList is truly a single-page; all content is delivered on one static page.  The root page listens to a `SessionStore` and renders content based on a call to `SessionStore.currentUser()`.  Sensitive information is kept out of the frontend of the app by making an API call to `SessionsController#get_user`.
 
-### Models
+### Listings
 
-Listings are the primary objects. Users can make and receive offers for listings.
+Users can manage listings and offers in their account settings.
 
-Users can either accept or decline any offers made for their products.
+<img src='docs/account-settings.png' width='600'>
 
 ### Location
 
@@ -30,7 +30,7 @@ Location is stored as a coordinate pair in the database. When pulling a listing 
 
 ### Search
 
-Search is written as a single SQL query using ActiveRercord query methods. It accepts an options hash with sensible defaults. The search will match an arbitrary number of keywords. Search results are ranked by the number of matching keywords.
+Search is written as a single SQL query using ActiveRecord query methods. It accepts an options hash with sensible defaults. The search will match an arbitrary number of keywords. Search results are ranked by the number of matching keywords.
 
 `Listing` score method:
 
@@ -64,4 +64,6 @@ def self.score(opts={})
 end
 ```
 
-The search will also return all results within the current map bounds. The search will update results each time a user moves the map (the search is not run if the map moves as a result of an info window). On the front end, results are split into 2 groups: results within the radius of the initial search and results that are within the bounds of the map, but not inside the search radius (if a search radius and location are provided).
+The search will also return all results within the current map bounds. The search will update results each time a user moves the map (the search is not run if the map moves as a result of an info window).
+
+On the front end, results are split into 2 groups: results within the radius of the initial search and results that are within the bounds of the map, but not inside the search radius (if a search radius and location are provided).
