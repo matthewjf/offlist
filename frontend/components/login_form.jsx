@@ -125,7 +125,7 @@ var LoginForm = React.createClass({
 									value={this.state.username}
 									onChange={this.setUsername}
 									id='username' />
-								<label id='username-label' htmlFor='username'>Username</label>
+									<label id='username-label' htmlFor='username'>Username</label>
 							</div>
 						</div>
 

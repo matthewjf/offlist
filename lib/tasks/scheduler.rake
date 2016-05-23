@@ -16,7 +16,7 @@ namespace :heroku do
 
   def run_command(cmd, app_name)
     Bundler.with_clean_env do
-      sh build_command(cmd, app_name)
+      build_command(cmd, app_name)
     end
   end
 
