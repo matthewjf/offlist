@@ -22,7 +22,7 @@ namespace :heroku do
 
   def run_command_with_output(cmd, app_name)
     Bundler.with_clean_env do
-      `#{build_command(cmd, app_name)}`
+      "#{build_command(cmd, app_name)}"
     end.gsub("\n", "")
   end
 
